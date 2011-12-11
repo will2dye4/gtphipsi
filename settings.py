@@ -1,4 +1,5 @@
 # Django settings for gtphipsi.
+# TODO: Set the global variable telling Django this is where this project's settings are.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -56,7 +57,7 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = '/Users/William/Git/gtphipsi/media/static'
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -69,8 +70,7 @@ ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    # Put strings here, like "/home/html/static" or "C:/www/django/static".
-    # Always use forward slashes, even on Windows.
+    '/Users/William/Git/gtphipsi/static',
     # Don't forget to use absolute paths, not relative paths.
 )
 
@@ -103,8 +103,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'gtphipsi.urls'
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
+    '/Users/William/Git/gtphipsi/templates',
     # Don't forget to use absolute paths, not relative paths.
 )
 
@@ -121,28 +120,76 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'brothers',
     'rush',
+    'chapter',
 )
 
-# A sample logging configuration. The only tangible logging
-# performed by this configuration is to send an email to
-# the site admins on every HTTP 500 error.
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[%(levelname)s] %(module)s (%(asctime)s, %(process)d, %(thread)d) : %(message)s'
+        },
+        'simple': {
+            'format': '[%(levelname)s] %(message)s'
+        },
+        'default': {
+            'format': '[%(levelname)s] %(asctime)s %(module)s.%(funcName)s (%(lineno)d) : %(message)s'
+        }
+    },
     'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'app_log': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'formatter': 'default',
+            'filename': '/Users/William/Git/gtphipsi/log/application.log'
+        },
+        'request_log': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'formatter': 'default',
+            'filename': '/Users/William/Git/gtphipsi/log/request.log'
+        },
+        'query_log': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'formatter': 'default',
+            'filename': '/Users/William/Git/gtphipsi/log/query.log'
+        },
+        'error_log': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'formatter': 'verbose',
+            'filename': '/Users/William/Git/gtphipsi/log/error.log'
+        },
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler'
         }
     },
     'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
+        'django': {
+            'handlers': ['app_log', 'error_log', 'console'],
+            'level': 'DEBUG',
+            'propagate': True
         },
+        'django.request': {
+            'handlers': ['request_log', 'mail_admins'],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+        'django.db.backends': {
+            'handlers': ['query_log'],
+            'level': 'DEBUG',
+            'propagate': True
+        }
     }
 }
 
