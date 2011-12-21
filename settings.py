@@ -100,7 +100,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     #'django.core.context_processors.tz',
     'django.contrib.messages.context_processors.messages',
-    'gtphipsi.context_processors.announcements_processor'
+    'gtphipsi.context_processors.announcements_processor',
+    'gtphipsi.context_processors.menu_item_processor'
 )
 
 MIDDLEWARE_CLASSES = (
