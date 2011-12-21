@@ -20,7 +20,7 @@ class Rush(models.Model):
 
     def title(self):
         """Returns the title of this rush, in the format '<Season> Rush <Year>'."""
-        return '%s Rush %d' % (self.get_season_display(), self.start_date.year)
+        return '{0} Rush {1}'.format(self.get_season_display(), self.start_date.year)
 
     class Meta:
         ordering = ['-start_date']
@@ -36,7 +36,7 @@ class RushEvent(models.Model):
     food = models.CharField(max_length=75, blank=True)
 
     def __unicode__(self):
-        return '%s - %s' % (self.title, self.rush.title())
+        return '{0} - {1}'.format(self.title, self.rush.title())
 
     def is_future(self):
         """Returns True if the event is in the future or is happening now."""

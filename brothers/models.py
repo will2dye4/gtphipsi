@@ -111,12 +111,12 @@ class UserProfile(models.Model):
                 ' ' if suffix else '',
                 self.get_suffix_display()
         )
-        return '%s%s%s %s%s%s%s' % values
+        return '{0}{1}{2} {3}{4}{5}{6}'.format(*values)
 
 
     def common_name(self):
         """Returns the brother's nickname (if defined; first name otherwise) and last name."""
-        return '%s %s' % ((self.nickname if self.nickname else self.user.first_name), self.user.last_name)
+        return '{0} {1}'.format((self.nickname if self.nickname else self.user.first_name), self.user.last_name)
 
     def is_undergrad(self):
         """Returns True if the brother is currently an active undergraduate."""
