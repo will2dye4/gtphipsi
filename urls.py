@@ -1,17 +1,22 @@
 from django.conf.urls.defaults import patterns, include, url
 
-# Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
 
-urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'gtphipsi.views.home', name='home'),
-    # url(r'^gtphipsi/', include('gtphipsi.foo.urls')),
-
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
-    # url(r'^admin/', include(admin.site.urls)),
+urlpatterns = patterns('gtphipsi.views',
+    url(r'^$', 'home', name='home'),
+    url(r'^login/$', 'login', name='login'),
+    url(r'^logout/$', 'logout', name='logout'),
+    url(r'^calendar/$', 'calendar', name='calendar')
+    # other global pages here
 )
+
+urlpatterns += patterns('',
+#    url(r'^brothers/', include('gtphipsi.brothers.urls')),
+     url(r'^rush/', include('gtphipsi.rush.urls')),
+#    url(r'^chapter/', include('gtphipsi.chapter.urls')),
+    # other app-specific URLs here
+)
+
+# url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+# url(r'^admin/', include(admin.site.urls)),
