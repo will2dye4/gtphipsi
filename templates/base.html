@@ -48,16 +48,16 @@
             {% block menu %}
                 <div id="menu">
                     <ul>
-                        <li><a title="Home page" href="{% url 'gtphipsi.views.home' %}">Home</a></li>
-                        <li><a title="Learn how to become a Phi Psi" href="#">Rush Phi Psi</a>
+                        <li><a title="Home page" href="{% url 'gtphipsi.views.home' %}" {% ifequal menu_item 'home' %}class="selected"{% endifequal %}>Home</a></li>
+                        <li><a title="Learn how to become a Phi Psi" href="{% url 'gtphipsi.rush.views.rush' %}" {% ifequal menu_item 'rush' %}class="selected"{% endifequal %}>Rush Phi Psi</a>
                             <ul>
-                                <li><a title="About Rush" href="#">About Rush</a></li>
-                                <li><a title="Why Rush Phi Psi" href="#">Why Rush Phi Psi</a></li>
-                                <li><a title="Rush Schedule" href="#">Rush Schedule</a></li>
+                                <li><a title="About Rush" href="{% url 'gtphipsi.rush.views.rush' %}">About Rush</a></li>
+                                <li><a title="Why Rush Phi Psi" href="{% url 'gtphipsi.rush.views.rushphipsi' %}">Why Rush Phi Psi</a></li>
+                                <li><a title="Rush Schedule" href="{% url 'gtphipsi.rush.views.schedule' %}">Rush Schedule</a></li>
                                 <li><a title="Information Card" href="#">Information Card</a></li>
                             </ul>
                         </li>
-                        <li><a title="Information about the chapter" href="#">The Chapter</a>
+                        <li><a title="Information about the chapter" href="#" {% ifequal menu_item 'chapter' %}class="selected"{% endifequal %}>The Chapter</a>
                             <ul>
                                 <li><a title="About Georgia Beta" href="#">About Georgia Beta</a></li>
                                 <li><a title="Phi Psi History" href="#">Chapter History</a></li>
@@ -65,9 +65,9 @@
                                 <li><a title="The Brothers" href="#">The Brothers</a></li>
                             </ul>
                         </li>
-                        <li><a title="What events we're having" href="#">Calendar</a></li>
+                        <li><a title="What events we're having" href="{% url 'gtphipsi.views.calendar' %}" {% ifequal menu_item 'calendar' %}class="selected"{% endifequal %}>Calendar</a></li>
                         <li><a title="Pictures, videos, etc." href="http://www.flickr.com/photos/georgiabeta/sets/" target="_blank">Media</a></li>
-                        <li><a title="Get in touch with Georgia Beta" href="#">Contact Us</a></li>
+                        <li><a title="Get in touch with Georgia Beta" href="#" {% ifequal menu_item 'contact' %}class="selected"{% endifequal %}>Contact Us</a></li>
                     </ul>
                 </div>
             {% endblock %}
@@ -76,7 +76,7 @@
             {% block sidebar %}
                 <h3 class="sidebar">Recent News</h3>
                 <ul>
-                {% for announcement in request.recent_news %}
+                {% for announcement in recent_news %}
                     <li>{{ announcement }}</li>
                 {% empty %}
                     </ul>

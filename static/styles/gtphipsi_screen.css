@@ -49,9 +49,14 @@ a:visited {
     color: #af1e2d; /* #990000 */
 }
 
+a.selected {
+    color: #006b3f !important;
+    font-weight: bold !important;
+}
+
 img.content-left {
 	float: left;
-	margin: 0 5px 0 0;
+	margin: 5px 5px 0 0;
 	padding: 3px;
 	border: 1px solid #cccccc;
 }
@@ -148,7 +153,7 @@ div#menu li a:hover,
 div#menu ul li:hover a 
 {
 	background: #af1e2d url("../images/menu_hover.gif") bottom center no-repeat;
-	color: #eeeeee;
+	color: #eeeeee !important;
 	text-decoration: none;
 }
 
