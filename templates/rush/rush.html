@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% load static %}
+{% load url from future %}
+
+{% block title %}
+    Rush | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <h1>Introduction</h1>
+    <p><img class="content-right" alt="Phi Psis Rule" src="{% get_static_prefix %}images/werule.jpg" />
+        No matter what your perceptions of fraternities are, you should take the time to really
+        find out for yourself what fraternity life is all about. We are here to help you
+        understand all of the advantages that Phi Psi, and many of the other fraternities
+        on campus, have to offer.</p>
+    <p>While you can read all about Georgia Tech's fraternities online or in pamphlets, you
+        will not know for sure whether or not a fraternity is suited for you until you meet
+        them. RUSH is a great opportunity for us to meet you, and help aquaint you with
+        Georgia Tech by sharing what we have learned while attending college.</p>
+    <p>If you are interested in talking with us, or finding out more information about
+        Phi Psi, please fill out our Information Card and our Rush Chair will be glad to
+        answer any questions that you or your parents may have.</p>
+
+    <a name="top"></a><h1>Frequently Asked Questions</h1>
+    <p>- <a href="#what" title="What is Rush?">What is Rush?</a><br />
+        - <a href="#when" title="When is Rush?">When is Rush?</a><br />
+        - <a href="#prepare" title="How can I prepare for Rush?">How can I prepare for Rush?</a><br />
+        - <a href="#info" title="How can I get more information?">How can I get more information?</a><br />
+        - <a href="#pkp" title="What is Rush at Phi Psi like?">What is Rush at Phi Psi like?</a><br />
+        - <a href="#cost" title="How much does it cost?">How much does it cost?</a></p>
+
+    <a name="what"></a><h4>what is rush?</h4>
+    <p>RUSH is the term used for the official time in the beginning of Fall and Spring
+        semesters when fraternities recruit potential members. Many events go on during
+        this time, and it is one of the most exciting weeks of the semester. It is an
+        excellent opportunity to meet and visit many different fraternities to see what
+        is best for you in the Georgia Tech Greek System.<br />
+        <a href="#top" title="back to the top">&uarr; top</a></p>
+
+    <a name="when"></a><h4>when is rush?</h4>
+    <p>RUSH is typically the first week of the Fall and Spring semesters. Check the
+        <a href="http://fraternity.gatech.edu/" target="_blank" title="Interfraternity Council's website">Interfraternity Council's website</a>
+        for exact dates and times. And for a more detailed description of what WE will
+        be doing and when, be sure to check out
+        <a href="{% url 'gtphipsi.rush.views.schedule' %}" title="our rush schedule">our rush schedule</a>.</p>
+    <p><strong>spring rush, summer rush, and more</strong><br />
+        If you've missed Fall Rush, don't be discouraged - Phi Psi RUSH is 365
+        days a year. While there are structured rush weeks in the fall and spring,
+        we gladly take the time to meet prospective members any time of the year.
+        You can get it touch with us by filling out an
+        <a href="#" title="information card">information card</a> and we'll
+        get back to you, or you can check <a href="#" title="our calendar">our calendar</a>
+        for upcoming events. If you do interact with the brothers outside of the
+        scheduled rush week, remember that you may not receive a bid until a time
+        closer to Fall or Spring rush. However, do not think that that will stop
+        you from becoming friends with any of the brothers before then.<br />
+        <a href="#top" title="back to the top">&uarr; top</a></p>
+
+    <a name="prepare"></a><h4>how can i prepare?</h4>
+    <p>There are a lot of things to consider when participating in rush, most
+        importantly, where. With over thirty fraternities on campus, there is a
+        chance that you will not be able to get around to all of them during rush
+        week. This is why it is important to know where you want to go ahead of
+        time. Some fraternities will send you information over the summer, and
+        some will contain packets for you to send back to them. If the information
+        interests you, it is a good idea to send it back so you can let the
+        fraternity know that you are interested. This way, they will be able
+        to contact you personally to get to know you and possibly invite you
+        to their summer activities. Once rush starts, having already met some
+        of the fraternities, gives you an advantage.</p>
+    <p><strong>some advice</strong><br />
+        Get started early in the week. You will be able to meet the guys at each
+        fraternity you are interested in and focus your efforts later in the week on
+        the fraternities that kept your interest.</p>
+    <p>Don't forget to ask questions about the fraternity itself! What are
+        the responsibilities and financial obligations of an associate member
+        and brother? Will you be able to have friends outside the fraternity?
+        What kind of academic support will you get? You don't drink, is that
+        ok? Do their answers seemed rehearsed or honest?</p>
+    <p>Do the brothers seem genuinely interested in you? Remember that
+        they want you as much as you want them, so make sure that you are
+        picking the best one suited for you. If you go back to the fraternity for
+        a second night, see if they remember you. This may be a sign that
+        they are genuinely interested in you as a potential brother. Most
+        fraternities require that you meet a majority of the brothers
+        before receiving a bid. If you haven't received one by your third
+        night, speak with the Rush Chair about how you are feeling. He may
+        inform you that it's unlikely that you will be given a bid. This may
+        be disappointing, but do not get discouraged. The Georgia Tech Greek
+        System offers over thirty different fraternities, all of which have
+        different personalities with a place for everyone, so take your time
+        in finding yours.<br />
+        <a href="#top" title="back to the top">&uarr; top</a></p>
+
+    <a name="info"></a><h4>how can I get more information?</h4>
+    <p>Another good place to find information is online. Many of the fraternities
+        on campus have a website. The content can help you decide whether or not
+        their goals and principles match up with yours.<br />
+        <a href="#top" title="back to the top">&uarr; top</a></p>
+
+    <a name="pkp"></a><h4>what is rush at phi psi like?</h4>
+    <p>The Phi Kappa Psi Fraternity is an association of men of integrity who
+        strive to develop the individual in his intellect, in his involvement
+        in the community, and in his faith. Recognizing and valuing the diversity
+        of all, the Fraternity unites the principles and traditions of our past
+        with the resources and creativity of our present to provide an environment
+        in which our members can realize their highest potential. To this end, we
+        offer a lifelong experience, guided by our faith in a power greater than
+        ourselves, in contributing to the betterment of both the individual and
+        the community. Every year, our goal is to find men of character that
+        will in some way increase the quality of our brotherhood.</p>
+    <p><strong>bids from phi psi</strong><br />
+        If you have received a bid from Phi Psi, do not feel pressured to accept it.
+        We want you to be completely certain about your decision. If you are
+        uncertain, take the time to ensure that you are comfortable and that
+        your parents agree with your feelings. If they have some concerns, have
+        the Rush Chair or President get in touch with them. Fraternity life has
+        changed a great deal since your parents were in college and they can
+        often have wrong impressions about fraternity life at Georgia Tech.
+        Many times, their concerns can be cleared up simply by talking to a
+        representative of our chapter or even another parent associated with
+        our chapter. If academis are their concern, consider that Greek men
+        consistently outperform those that are non-Greek.</p>
+    <p>Consider your bid carefully, but don't overwhelm yourself. It is not
+        a decision to join, but to begin the process of joining, a decision that
+        can be reconsidered if other concerns surface.<br />
+        <a href="#top" title="back to the top">&uarr; top</a></p>
+
+    <a name="cost"></a><h4>how much does it cost?</h4>
+    <p>To <em>participate</em>, nothing; the cost to you is zero. Having a look
+        around to find out what greek life is all about is free and you can even
+        get a good meal out of it most of the time. However, the cost of actually
+        <em>joining</em> a fraternity can vary. Some fraternities may have bigger
+        houses, plan more events, and/or provide a meal plan, all of which could
+        add up quickly. With over 30 fraternities on campus, there's a good chance
+        that you can find one that satisfies both your personal and financial needs.</p>
+    <p><strong>reducing the cost</strong><br />
+        Many fraternities offer scholarships to incoming freshman to help lighten the load.
+        Phi Psi may be offering scholarships each semester, so if you are interested in or
+        would like to receive more information, please
+        <a href="#" title="contact the chapter">contact the chapter</a>.<br />
+        <a href="#top" title="back to the top">&uarr; top</a></p>
+{% endblock %}
