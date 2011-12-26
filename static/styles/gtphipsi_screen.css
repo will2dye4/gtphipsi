@@ -30,7 +30,7 @@ div.rounded {
     background: #eeeeee;
 }
 
-div#wrapper {
+#wrapper {
     width: 80%;
     margin: 0 10% 0 10%;
     clear: both;
@@ -73,21 +73,22 @@ p {
 }
 
 /* ---- [Common Elements] ---- */
-div#header, div#menu, div#footer {
+#header, #menu, #footer {
     min-width: 250px;
-    margin: 20px 0 10px 0;
+    margin: 10px 0;
     float: none;
     clear: both;
     overflow-x: hidden;
 }
 
-div#header {
+#header {
+    margin-top: 20px;
     min-height: 170px;
     border: 3px solid #000000;
     padding: 5px 0 5px 5px;
 }
 
-div#menu {
+#menu {
     height: 35px;
     min-height: 35px;
     border: none 0;
@@ -97,22 +98,23 @@ div#menu {
 	font-weight: bold;
 }
 
-div#sidebar {
+#sidebar {
     width: 20%;
     margin: 10px 0 10px 0;
     float: left;
 }
 
-div#content {
+#content {
     width: 73%;
     min-width: 150px;
     min-height: 150px;
     float: right;
     margin: 10px 0 10px 0;
     border: 3px solid #000000;
+    overflow-x: hidden;
 }
 
-div#footer {
+#footer {
     padding: 2px 0 2px 0;
 }
 
@@ -125,19 +127,19 @@ h3.sidebar {
 }
 
 /* ---- [Main Menu] ---- */
-div#menu ul {
+#menu ul {
 	height: 20px;
 	list-style: none;
 	margin: 0;
 	padding: 0;
 }
 
-div#menu li {
+#menu li {
 	float: left;
 	padding: 0;
 }
 
-div#menu li a {
+#menu li a {
 	color: #282828;
 	display: block;
 	font-weight: normal;
@@ -149,15 +151,15 @@ div#menu li a {
 }
 
 
-div#menu li a:hover,
-div#menu ul li:hover a 
+#menu li a:hover,
+#menu ul li:hover a 
 {
 	background: #af1e2d url("../images/menu_hover.gif") bottom center no-repeat;
 	color: #eeeeee !important;
 	text-decoration: none;
 }
 
-div#menu li ul {
+#menu li ul {
 	background: #006b3f;
 	display: none;
 	height: auto;
@@ -169,11 +171,11 @@ div#menu li ul {
 	z-index: 200;
 }
 
-div#menu li:hover ul {
+#menu li:hover ul {
 	display: block;
 }
 
-div#menu li li {
+#menu li li {
 	background: url('../images/menu_sub_sep.gif') bottom left repeat-x;
 	display: block;
 	float: none;
@@ -182,11 +184,11 @@ div#menu li li {
 	width: 150px;
 }
 
-div#menu li:hover li a {
+#menu li:hover li a {
 	background: none;
 }
 
-div#menu li ul a {
+#menu li ul a {
 	display: block;
 	height: 35px;
 	font-size: 12px;
@@ -196,8 +198,8 @@ div#menu li ul a {
 	text-align: left;
 }
 
-div#menu li ul a:hover,
-div#menu li ul li:hover a
+#menu li ul a:hover,
+#menu li ul li:hover a
 {
 	background: #af1e2d url('../images/menu_hover_sub.gif') center left no-repeat; /* #d82240 */
 	border: 0;
@@ -205,6 +207,76 @@ div#menu li ul li:hover a
 	text-decoration: none;
 }
 
-div#menu p {
+#menu p {
 	clear: left;
+}
+
+/* ---- [Forms] ---- */
+label {
+	float: left;
+	margin-right: 15px;
+	padding-top: 5px;
+	width: 125px;
+	text-align: left;
+}
+
+input, select {
+	padding: 5px;
+	width: 350px;
+	font: normal 1em "Lucida Sans Unicode", "Bitstream Vera Sans", "Trebuchet Unicode MS", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+	border: 2px solid #cccccc;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+input.submit {
+    width: 100px;
+    background: #006b3f;
+    color: #eeeeee;
+    cursor: pointer;
+}
+
+input:focus, select:focus {
+	border: 2px solid #d82240 !important;
+}
+
+input[type=checkbox] {
+    width: auto;
+    margin-bottom: 0;
+}
+
+table.form {
+    margin: 10px;
+    border-collapse: collapse;
+}
+
+table.form tr {
+    margin: 0;
+}
+
+table.form tr td {
+    vertical-align: middle;
+}
+
+table.form tr td.error {
+    color: #d82240;
+}
+
+table.form tr td.error ul {
+    list-style-type: none;
+    margin: 0;
+}
+
+table.form tr td.small {
+    font-size: 0.85em;
+}
+
+table.form tr td.help-text {
+	color: #999999;
+    padding-bottom: 10px;
+}
+
+table.form tr td.spaced {
+    padding-bottom: 10px;
 }

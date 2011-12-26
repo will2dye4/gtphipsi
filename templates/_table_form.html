@@ -1,0 +1,36 @@
+{% csrf_token %}
+<table class="form">
+    <tbody>
+    {% for field in form %}
+        <tr>
+            <td {% if field.errors %}class="error" style="font-weight: bold"{% endif %}>
+                {{ field.label_tag }}
+            </td>
+            <td {% if not field.help_text %} class="spaced"{% endif %}>
+                {{ field }}
+            </td>
+            <td class="error small">
+                <ul>
+                    {% for error in field.errors %}
+                        <li>{{ error|escape }}</li>
+                    {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        {% if field.help_text %}
+            <tr>
+                <td></td>
+                <td class="help-text small">
+                    {{ field.help_text }}
+                </td>
+                <td></td>
+            </tr>
+        {% endif %}
+    {% endfor %}
+    <tr>
+        <td colspan="3">
+            <input class="submit" type="submit" value="Submit" />
+        </td>
+    </tr>
+    </tbody>
+</table>
