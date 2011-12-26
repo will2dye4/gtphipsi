@@ -72,6 +72,11 @@ p {
     margin-top: 0;
 }
 
+span.more {
+    color: #bbbbbb;
+    font-style: italic;
+}
+
 /* ---- [Common Elements] ---- */
 #header, #menu, #footer {
     min-width: 250px;

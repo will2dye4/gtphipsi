@@ -14,7 +14,7 @@ urlpatterns = patterns('gtphipsi.views',
 urlpatterns += patterns('',
 #    url(r'^brothers/', include('gtphipsi.brothers.urls')),
      url(r'^rush/', include('gtphipsi.rush.urls')),
-#    url(r'^chapter/', include('gtphipsi.chapter.urls')),
+     url(r'^chapter/', include('gtphipsi.chapter.urls')),
     # other app-specific URLs here
 )
 

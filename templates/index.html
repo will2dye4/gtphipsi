@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load url from future %}
 
 {% block content %}
     <h1>Brotherhood</h1>
@@ -12,7 +13,7 @@
 	    Such men may differ in their origins, backgrounds, and beliefs, and even be set upon diverse
 	    purposes, interests and vocations. Yet as Brothers in Phi Kappa Psi, they are vitally united
 	    in their dedication to the highest standards of intellectual, emotional, and spiritual integrity.
-	    <a class="more" href="#" title="Continue reading about Brotherhood">Read More&#8230;</a></p>
+	    <a class="more" href="{% url 'gtphipsi.chapter.views.about' %}#idea" title="Continue reading about Brotherhood">Read More&#8230;</a></p>
 
 	<h1>History</h1>
 	<h3>learn how phi psi became what it is today</h3>
@@ -27,7 +28,7 @@
 	    throughout the country. Idealists all, these founders of Phi Kappa Psi taught a new fraternity - a
 	    Fraternity that would complement the work of the university by cultivating those humanities without
 	    which the educated man fails of his greatest usefulness.
-	    <a class="more" href="#" title="Continue reading about our history">Read More&#8230;</a></p>
+	    <a class="more" href="{% url 'gtphipsi.chapter.views.history' %}" title="Continue reading about our history">Read More&#8230;</a></p>
 
 	<h1>Alumni</h1>
 	<h3>reinvest yourself in the chapter</h3>

@@ -57,11 +57,11 @@
                                 <li><a href="{% url 'gtphipsi.rush.views.info_card' %}">Information Card</a></li>
                             </ul>
                         </li>
-                        <li><a href="#" {% ifequal menu_item 'chapter' %}class="selected"{% endifequal %}>The Chapter</a>
+                        <li><a href="{% url 'gtphipsi.chapter.views.about' %}" {% ifequal menu_item 'chapter' %}class="selected"{% endifequal %}>The Chapter</a>
                             <ul>
-                                <li><a href="#">About Georgia Beta</a></li>
-                                <li><a href="#">Chapter History</a></li>
-                                <li><a href="#">Phi Psi Creed</a></li>
+                                <li><a href="{% url 'gtphipsi.chapter.views.about' %}">About Georgia Beta</a></li>
+                                <li><a href="{% url 'gtphipsi.chapter.views.history' %}">Chapter History</a></li>
+                                <li><a href="{% url 'gtphipsi.chapter.views.creed' %}">Phi Psi Creed</a></li>
                                 <li><a href="#">The Brothers</a></li>
                             </ul>
                         </li>
