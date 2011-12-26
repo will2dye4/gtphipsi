@@ -1,4 +1,5 @@
 from django.db import models
+from django.forms import ModelForm
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import PhoneNumberField
 from datetime import datetime, timedelta
@@ -36,7 +37,7 @@ class Announcement(models.Model):
 class ContactRecord(models.Model):
     name = models.CharField(max_length=50)
     email = models.EmailField()
-    phone = PhoneNumberField(blank=True)
+    phone = PhoneNumberField(blank=True, help_text="XXX-XXX-XXXX")
     message = models.TextField(blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
 
@@ -50,8 +51,14 @@ class ContactRecord(models.Model):
 class InformationCard(ContactRecord):
     year = models.CharField(choices=YEAR_CHOICES, max_length=3)
     interests = models.CharField(max_length=150, blank=True)
-    relatives = models.CharField(max_length=150, blank=True)
-    subscribe = models.BooleanField()
+    relatives = models.CharField(max_length=150, blank=True, verbose_name="Phi Psi Relatives", help_text="If any, please include chapter and year.")
+    subscribe = models.BooleanField(default=False, help_text="Get updates on the chapter's activities.")
 
     def __unicode__(self):
         return 'Information Card from {0} on {1}'.format(self.name, self.created.strftime('%b %d, %Y'))
+
+    
+class InformationForm(ModelForm):
+    class Meta:
+        model = InformationCard
+        fields = ('name', 'year', 'email', 'phone', 'interests', 'relatives', 'subscribe')

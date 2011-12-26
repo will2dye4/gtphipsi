@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block title %}
+    Thanks! | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <meta http-equiv="Refresh" content="5;url={% url 'gtphipsi.views.home' %}">
+    <style type="text/css">
+        #sidebar {
+            display: none;
+        }
+
+        #content {
+            float: none;
+            width: auto;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>Thanks!</h1>
+    <p>Thank you for submitting your information to the chapter. You will be redirected
+    to the home page in five seconds.</p>
+{% endblock %}
