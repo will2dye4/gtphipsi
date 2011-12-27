@@ -1,8 +1,6 @@
 from django.shortcuts import render
 from django.template import RequestContext
-from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
-from chapter.models import InformationForm
 
 REFERRER = 'HTTP_REFERER'
 
@@ -17,6 +15,8 @@ def schedule(request):
     return render(request, 'rush/schedule.html', context_instance=RequestContext(request))
 
 def info_card(request):
+    from django.http import HttpResponseRedirect
+    from chapter.models import InformationForm, ContactRecord
     if request.method == 'POST':
         form = InformationForm(request.POST)
         if form.is_valid():
@@ -28,6 +28,7 @@ def info_card(request):
     return render(request, 'rush/infocard.html', {'form': form}, context_instance=RequestContext(request))
 
 def info_card_thanks(request):
+    from django.http import Http404
     if not (REFERRER in request.META and request.META[REFERRER].endswith(reverse('info_card'))):
         raise Http404
     else:

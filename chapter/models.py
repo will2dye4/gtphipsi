@@ -1,5 +1,6 @@
 from django.db import models
 from django.forms import ModelForm
+from django.core.validators import MaxLengthValidator
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import PhoneNumberField
 from datetime import datetime, timedelta
@@ -38,7 +39,7 @@ class ContactRecord(models.Model):
     name = models.CharField(max_length=50)
     email = models.EmailField()
     phone = PhoneNumberField(blank=True, help_text="XXX-XXX-XXXX")
-    message = models.TextField(blank=True)
+    message = models.TextField(default='--', validators=[MaxLengthValidator(500)])
     created = models.DateTimeField(auto_now_add=True, null=True)
 
     def __unicode__(self):
@@ -46,6 +47,12 @@ class ContactRecord(models.Model):
 
     class Meta:
         ordering = ['-created']
+
+
+class ContactForm(ModelForm):
+    class Meta:
+        model = ContactRecord
+        fields = ('name', 'email', 'message')
 
 
 class InformationCard(ContactRecord):
