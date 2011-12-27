@@ -6,6 +6,10 @@ from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import PhoneNumberField
 #from django.db.models.signals import post_save -- see comment at the bottom of the file
 
+STATUS_BITS = {
+    'LOCKED_OUT': 0x1,
+}
+
 # Possible suffixes for names.
 SUFFIX_CHOICES = (
     ('J', 'Jr.'),
@@ -95,7 +99,7 @@ class UserProfile(models.Model):
     graduation = models.DateField(blank=True, null=True, help_text='use the format MM/DD/YYYY')
     dob = models.DateField(blank=True, null=True, help_text='use the format MM/DD/YYYY')
     phone = PhoneNumberField(blank=True)
-    bits = models.IntegerField(blank=True, default=0) # currently unused
+    bits = models.IntegerField(blank=True, default=0) # (1 << 0): user is locked out
 
     def __unicode__(self):
         return self.common_name()

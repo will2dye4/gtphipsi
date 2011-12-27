@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Chapter Brothers | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <h1>The Brothers</h1>
+    <p>The chapter currently has {{ num_brothers }} undergraduate brothers.
+    The following is a list of the chapter's current active membership.</p>
+    <ul>
+    {% for brother in brothers.object_list %}
+        <li>{{ brother.first_name }} {{ brother.last_name }} ... {{ brother.get_profile.badge }}</li>
+    {% empty %}
+        <li>Nothing to display.</li>
+    {% endfor %}
+    </ul>
+    <div>
+    {% if brothers.has_previous %}
+        <a href="?page={{ brothers.previous_page_number }}">previous</a>
+    {% endif %}
+    Page {{ brothers.number }} of {{ brothers.paginator.num_pages }}
+    {% if brothers.has_next %}
+        <a href="?page={{ brothers.next_page_number }}">next</a>
+    {% endif %}
+    </div>
+{% endblock %}
