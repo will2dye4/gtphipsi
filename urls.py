@@ -5,14 +5,16 @@ from django.conf.urls.defaults import patterns, include, url
 
 urlpatterns = patterns('gtphipsi.views',
     url(r'^$', 'home', name='home'),
-    url(r'^login/$', 'login', name='login'),
-    url(r'^logout/$', 'logout', name='logout'),
-    url(r'^calendar/$', 'calendar', name='calendar')
+    url(r'^login/$', 'sign_in', name='sign_in'),
+    url(r'^logout/$', 'sign_out', name='sign_out'),
+    url(r'^calendar/$', 'calendar', name='calendar'),
+    url(r'^contact/$', 'contact', name='contact'),
+    url(r'^contact/thanks/$', 'contact_thanks', name='contact_thanks')
     # other global pages here
 )
 
 urlpatterns += patterns('',
-#    url(r'^brothers/', include('gtphipsi.brothers.urls')),
+     url(r'^brothers/', include('gtphipsi.brothers.urls')),
      url(r'^rush/', include('gtphipsi.rush.urls')),
      url(r'^chapter/', include('gtphipsi.chapter.urls')),
     # other app-specific URLs here

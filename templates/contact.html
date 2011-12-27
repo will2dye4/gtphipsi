@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block title %}
+    Contact Us | {{ block.super }}
+{% endblock %}
+
+{% block sidebar %}
+    {% include "_sidebar_addresses.html" %}
+{% endblock %}
+
+{% block content %}
+    <h1>Contact Us</h1>
+    <p>Please use this form to notify the chapter of your questions or comments.
+    All fields are required. The message may not exceed 500 characters.</p>
+    <form action="{% url 'gtphipsi.views.contact' %}" method="post">
+        {% include "_table_form.html" %}
+    </form>
+{% endblock %}
