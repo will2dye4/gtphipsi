@@ -3,7 +3,7 @@
     <tbody>
     {% for field in form %}
         <tr>
-            <td {% if field.errors %}class="error" style="font-weight: bold"{% endif %}>
+            <td {% if field.errors %}class="error {% if not field.help_text %}spaced{% endif %}" style="font-weight: bold"{% else %}{% if not field.help_text %}class="spaced"{% endif %}{% endif %}>
                 {{ field.label_tag }}
             </td>
             <td {% if not field.help_text %} class="spaced"{% endif %}>

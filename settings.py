@@ -206,3 +206,6 @@ LOGGING = {
 }
 
 AUTH_PROFILE_MODULE = 'brothers.UserProfile'
+
+### gtphipsi-specific settings ###
+MAX_LOGIN_ATTEMPTS = 3

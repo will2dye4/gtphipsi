@@ -8,7 +8,7 @@
 {% block sidebar %}
     {% if form.errors %}
         <h3 class="sidebar">Oops!</h3>
-        <p style="padding-top: 5px">There is a problem with the following field{{ form.errors|pluralize }}:
+        <p class="sidebar">There is a problem with the following field{{ form.errors|pluralize }}:
         {% for name, errors in form.errors.items %}
             {% if forloop.last %}
                 {{ name }}.
@@ -20,7 +20,7 @@
         </p>
     {% else %}
         <h3 class="sidebar">Note</h3>
-        <p style="padding-top: 5px">Only the name, year, and email fields are required.</p>
+        <p class="sidebar">Only the name, year, and email fields are required.</p>
     {% endif %}
 {% endblock %}
 

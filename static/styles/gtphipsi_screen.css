@@ -131,6 +131,10 @@ h3.sidebar {
     background: url('../images/menu_sub_sep.gif') bottom left repeat-x;
 }
 
+p.sidebar {
+    padding-top: 5px;
+}
+
 /* ---- [Main Menu] ---- */
 #menu ul {
 	height: 20px;
@@ -225,7 +229,7 @@ label {
 	text-align: left;
 }
 
-input, select {
+input, select, textarea {
 	padding: 5px;
 	width: 350px;
 	font: normal 1em "Lucida Sans Unicode", "Bitstream Vera Sans", "Trebuchet Unicode MS", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
@@ -242,7 +246,7 @@ input.submit {
     cursor: pointer;
 }
 
-input:focus, select:focus {
+input:focus, select:focus, textarea:focus {
 	border: 2px solid #d82240 !important;
 }
 

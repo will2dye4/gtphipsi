@@ -26,9 +26,9 @@
                 <div id="header-links" class="padded" style="display: table; position: absolute; right: 10%; top: 25px; z-index: 20;">
                     <div id="login" style="display: table-cell; vertical-align: middle; padding: 0 15px 0 0; font-size: 0.95em">
                         {% if user.is_authenticated %}
-                        <p>Welcome, {{ user.first_name }}! <a href="{% url 'gtphipsi.views.logout' %}">Sign out</a>.</p>
+                        <p>Welcome, {{ user.first_name }}! <a href="{% url 'gtphipsi.views.sign_out' %}">Sign out</a>.</p>
                         {% else %}
-                        <p>Are you a brother? <a href="{% url 'gtphipsi.views.login' %}">Sign in</a>.</p>
+                        <p>Are you a brother? <a href="{% url 'gtphipsi.views.sign_in' %}">Sign in</a>.</p>
                         {% endif %}
                     </div>
                     <div id="social" class="padded">
@@ -62,12 +62,12 @@
                                 <li><a href="{% url 'gtphipsi.chapter.views.about' %}">About Georgia Beta</a></li>
                                 <li><a href="{% url 'gtphipsi.chapter.views.history' %}">Chapter History</a></li>
                                 <li><a href="{% url 'gtphipsi.chapter.views.creed' %}">Phi Psi Creed</a></li>
-                                <li><a href="#">The Brothers</a></li>
+                                <li><a href="{% url 'gtphipsi.brothers.views.list' %}">The Brothers</a></li>
                             </ul>
                         </li>
                         <li><a href="{% url 'gtphipsi.views.calendar' %}" {% ifequal menu_item 'calendar' %}class="selected"{% endifequal %}>Calendar</a></li>
                         <li><a href="http://www.flickr.com/photos/georgiabeta/sets/" target="_blank">Media</a></li>
-                        <li><a href="#" {% ifequal menu_item 'contact' %}class="selected"{% endifequal %}>Contact Us</a></li>
+                        <li><a href="{% url 'gtphipsi.views.contact' %}" {% ifequal menu_item 'contact' %}class="selected"{% endifequal %}>Contact Us</a></li>
                     </ul>
                 </div>
             {% endblock %}
