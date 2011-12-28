@@ -1,0 +1,36 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Add Rush Event | {{ block.super }}
+{% endblock %}
+
+{% block sidebar %}
+    {% if form.errors %}
+        <h3 class="sidebar">Oops!</h3>
+        <p class="sidebar">There is a problem with the following field{{ form.errors|pluralize }}:
+        {% for name, errors in form.errors.items %}
+            {% if forloop.last %}
+                {{ name }}.
+            {% else %}
+                {{ name }},
+            {% endif %}
+        {% endfor %}
+        Please fix {{ form.errors|pluralize:"it,them" }} and click "Add Event" again.
+        </p>
+    {% else %}
+        <h3 class="sidebar">Note</h3>
+        <p class="sidebar">The title, date, start time and end time fields are required.</p>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <h1>Add Event to {{ rush }}</h1>
+    <p>Use this form to add a rush event. You are not required to include a description,
+    location, or food information, but you should include as much detail as possible.</p>
+    {% with rush.id as rush_id %}
+    <form action="{% url 'gtphipsi.rush.views.add_event' id=rush_id %}" method="post">
+        {% include "_table_form.html" with submit_text="Add Event" %}
+    </form>
+    {% endwith %}
+{% endblock %}

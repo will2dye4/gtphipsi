@@ -1,0 +1,18 @@
+{% extends "base_bros_only.html" %}
+
+{% block title %}
+    View Information Card | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <h1>{{ card }}</h1><br />
+    <p><strong>Name:</strong> {{ card.name }}<br />
+    <strong>Year:</strong> {{ card.get_year_display }}<br />
+    <strong>Email:</strong> {{ card.email }}<br />
+    {% if card.phone %}<strong>Phone:</strong> {{ card.phone }}<br />{% endif %}
+    {% if card.interests %}<strong>Interests:</strong> {{ card.interests }}<br />{% endif %}
+    {% if card.relatives %}<strong>Relatives:</strong> {{ card.relatives }}<br />{% endif %}
+    <strong>Subscribed: </strong> {{ card.subscribe|yesno:"Yes,No" }}<br />
+    <strong>Created: </strong> {{ card.created|date:"F j, Y f A" }}
+    </p>
+{% endblock %}

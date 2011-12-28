@@ -5,35 +5,15 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Rush Schedule</h1>
+    <h1>Schedule for {{ rush }}</h1>
     <br />
-    <h3>Monday, January 9, 2012 &mdash; National Championship Party</h3>
-    <p><strong>Location:</strong> 201 Hunnicutt St. NW<br />
-        <strong>Time:</strong> 7:00PM &ndash; 11:00PM<br />
-        <strong>Food:</strong> Wings, Burgers and Hot Dogs<br />
-        <strong>Description:</strong> Come watch the BCS National Championship with us and hang out with the brothers!</p>
-
-    <h3>Tuesday, January 10, 2012 &mdash; Bowling and Other Games</h3>
-    <p><strong>Location:</strong> Tech Rec (Student Center)<br />
-        <strong>Time:</strong> 7:00PM &ndash; 11:00PM<br />
-        <strong>Food:</strong> Pizza<br />
-        <strong>Description:</strong> Join us for bowling, table tennis, foosball and other games at Tech Rec!</p>
-
-    <h3>Wednesday, January 11, 2012 &mdash; Casino and Cigar Night</h3>
-    <p><strong>Location:</strong> 201 Hunnicutt St. NW<br />
-        <strong>Time:</strong> 7:00PM &ndash; 11:00 PM<br />
-        <strong>Food:</strong> Chick-fil-A<br />
-        <strong>Description:</strong> Come play poker and blackjack with us while smoking cigars (if you like to do that).</p>
-
-    <h3>Thursday, January 12, 2012 &mdash; Trivia Night</h3>
-    <p><strong>Location:</strong> TBA<br />
-        <strong>Time:</strong> TBA<br />
-        <strong>Food:</strong> TBA<br />
-        <strong>Description:</strong> Join us for trivia at one of Atlanta's many fine restaurants (location TBA).</p>
-
-    <h3>Friday, January 13, 2012 &mdash; Invite Only Dinner</h3>
-    <p><strong>Location:</strong> TBA<br />
-        <strong>Time:</strong> 6:00PM &ndash; 8:00PM<br />
-        <strong>Food:</strong> TBA<br />
-        <strong>Description:</strong> None</p>
+    {% for event in rush.events.all %}
+        <h3>{{ event.date|date:"l, F j" }} &mdash; {{ event.title }}</h3>
+        <p><strong>Location:</strong>{% if event.location %} {{ event.location }} {% else %} TBA {% endif %}<br />
+            <strong>Time:</strong> {{ event.start|time:"g:i A" }} &ndash; {{ event.end|time:"g:i A" }}<br />
+            {% if event.food %}<strong>Food:</strong> {{ event.food }}<br />{% endif %}
+            {% if event.description %}<strong>Description:</strong> {{ event.description }}</p>{% endif %}
+    {% empty %}
+        <p>There are currently no events to display. Check back soon!</p>
+    {% endfor %}
 {% endblock %}

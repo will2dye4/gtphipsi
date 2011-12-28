@@ -13,7 +13,8 @@ log = logging.getLogger('django.request')
 
 def home(request):
     log.info('Page viewed: Home')
-    return render(request, 'index.html', context_instance=RequestContext(request))
+    template = 'index.html' if request.user.is_anonymous() else 'index_bros_only.html'
+    return render(request, template, context_instance=RequestContext(request))
 
 
 def sign_in(request):

@@ -1,0 +1,19 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Rush List | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <h1>Rush List</h1>
+    <p>Here is a list of all rushes. Click on each one to see more information about it.</p>
+    <ul>
+    {% for rush in rushes %}
+        <li><a href="{{ rush.get_absolute_url }}">{{ rush.title }}</a></li>
+    {% empty %}
+        <li style="list-style-type: none">There are no rushes to display.</li>
+    {% endfor %}
+    </ul>
+    <p><a href="{% url 'gtphipsi.rush.views.add' %}">add new rush</a></p>
+{% endblock %}

@@ -20,13 +20,17 @@ class Announcement(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     date = models.DateField(blank=True, null=True)
     text = models.CharField(max_length=250, verbose_name='announcement')
+    public = models.BooleanField(default=True)
 
     @classmethod
-    def most_recent(cls):
+    def most_recent(cls, public=True):
         """Returns the five most recent announcements posted in the past six months."""
         six_months_ago = datetime.now() - timedelta(days=180)
-        queryset = cls.objects.filter(created__gte=six_months_ago.strftime('%Y-%m-%d'))[:5]
-        return queryset if len(queryset) > 0 else cls.objects.none()
+        if public:
+            queryset = cls.objects.exclude(public=False).filter(created__gte=six_months_ago.strftime('%Y-%m-%d'))[:5]
+        else:
+            queryset = cls.objects.filter(created__gte=six_months_ago.strftime('%Y-%m-%d'))[:5]
+        return queryset if queryset.count() > 0 else cls.objects.none()
 
     def __unicode__(self):
         return self.text
@@ -43,7 +47,7 @@ class ContactRecord(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
 
     def __unicode__(self):
-        return 'Contact Request from {0} on {1}'.format(self.name, self.created.strftime('%b %d, %Y'))
+        return 'Contact Request from %s on %s' % (self.name, self.created.strftime('%b %d, %Y'))
 
     class Meta:
         ordering = ['-created']
@@ -62,7 +66,10 @@ class InformationCard(ContactRecord):
     subscribe = models.BooleanField(default=False, help_text="Get updates on the chapter's activities.")
 
     def __unicode__(self):
-        return 'Information Card from {0} on {1}'.format(self.name, self.created.strftime('%b %d, %Y'))
+        return 'Information Card from %s on %s' % (self.name, self.created.strftime('%b %d, %Y'))
+
+    class Meta:
+        ordering = ['-created']
 
     
 class InformationForm(ModelForm):

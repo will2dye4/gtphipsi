@@ -209,3 +209,25 @@ AUTH_PROFILE_MODULE = 'brothers.UserProfile'
 
 ### gtphipsi-specific settings ###
 MAX_LOGIN_ATTEMPTS = 3
+
+# Accepted formats:
+# '1852-[0]2-19', '[0]2-19-1852', '[0]2-19-52', '[0]2/19/1852', '[0]2/19/52',
+# 'Feb 19 1852', 'Feb 19, 1852', 'Feb 19 52', 'Feb 19, 52',
+# '19 Feb 1852', '19 Feb, 1852', '19 Feb 52', '19 Feb, 52',
+# 'February 19 1852', 'February 19, 1852', 'February 19 52', 'February 19, 52',
+# '19 February 1852', '19 February, 1852', '19 February 52', '19 February, 52'
+DATE_INPUT_FORMATS = [
+    '%Y-%m-%d', '%m-%d-%Y', '%m-%d-%y', '%m/%d/%Y', '%m/%d/%y',
+    '%b %d %Y', '%b %d, %Y', '%b %d %y', '%b %d, %y',
+    '%d %b %Y', '%d %b, %Y', '%d %b %y', '%d %b, %y',
+    '%B %d %Y', '%B %d, %Y', '%B %d %y', '%B %d, %y',
+    '%d %B %Y', '%d %B, %Y', '%d %B %y', '%d %B, %y'
+]
+
+# Accepted formats:
+# '14:30:59', '14:30',
+# '2:30 PM', '2 PM'
+TIME_INPUT_FORMATS = [
+    '%H:%M:%S', '%H:%M',
+    '%I:%M %p', '%I %p'
+]

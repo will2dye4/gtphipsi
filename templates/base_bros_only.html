@@ -1,7 +1,35 @@
 {% extends "base.html" %}
+{% load url from future %}
 
 {% block head_extras %}
     {# <link href="{% static "bros_only.css" %}" rel="stylesheet" type="text/css" media="screen" /> #}
+{% endblock %}
+
+{% block menu %}
+    <div id="menu">
+        <ul>
+            <li><a href="{% url 'gtphipsi.views.home' %}" {% ifequal menu_item 'home' %}class="selected"{% endifequal %}>Home</a></li>
+            <li><a href="{% url 'gtphipsi.rush.views.current' %}" {% ifequal menu_item 'rush' %}class="selected"{% endifequal %}>Rush</a>
+                <ul>
+                    <li><a href="{% url 'gtphipsi.rush.views.list' %}">All Rushes</a></li>
+                    <li><a href="{% url 'gtphipsi.rush.views.current' %}">Current Rush</a></li>
+                    <li><a href="{% url 'gtphipsi.rush.views.add' %}">Add New Rush</a></li>
+                    <li><a href="{% url 'gtphipsi.rush.views.info_card_list' %}">Information Cards</a></li>
+                </ul>
+            </li>
+            <li><a href="{% url 'gtphipsi.chapter.views.about' %}" {% ifequal menu_item 'chapter' %}class="selected"{% endifequal %}>The Chapter</a>
+                <ul>
+                    <li><a href="{% url 'gtphipsi.chapter.views.about' %}">About Georgia Beta</a></li>
+                    <li><a href="{% url 'gtphipsi.chapter.views.history' %}">Chapter History</a></li>
+                    <li><a href="{% url 'gtphipsi.chapter.views.creed' %}">Phi Psi Creed</a></li>
+                    <li><a href="{% url 'gtphipsi.brothers.views.list' %}">The Brothers</a></li>
+                </ul>
+            </li>
+            <li><a href="{% url 'gtphipsi.views.calendar' %}" {% ifequal menu_item 'calendar' %}class="selected"{% endifequal %}>Calendar</a></li>
+            <li><a href="http://www.flickr.com/photos/georgiabeta/sets/" target="_blank">Media</a></li>
+            <li><a href="{% url 'gtphipsi.views.contact' %}" {% ifequal menu_item 'contact' %}class="selected"{% endifequal %}>Contact Us</a></li>
+        </ul>
+    </div>
 {% endblock %}
 
 {% block content %}

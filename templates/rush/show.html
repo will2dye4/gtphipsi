@@ -1,0 +1,28 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Rush Info | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <div style="float: right; padding: 15px"><a href="{% url 'gtphipsi.rush.views.list' %}">back to list</a></div>
+    <h1>{{ rush.title }}</h1>
+    <h2>{{ rush.start_date|date:"l, F j" }} &ndash; {{ rush.end_date|date:"l, F j" }}</h2>
+    {% with rush.id as rush_id %}
+    <p><a href="{% url 'gtphipsi.rush.views.edit' id=rush_id %}">edit</a></p><br />
+    <p><strong>Visible:</strong> {{ rush.visible|yesno:"Yes,No" }} {% if not rush.visible %}<span style="padding-left: 15px"><a href="{% url 'gtphipsi.rush.views.reveal' id=rush_id %}">make visible</a></span>{% endif %}<br />
+    <strong>Pledges:</strong> {{ rush.pledges }} <span style="padding-left: 15px"><a href="{% url 'gtphipsi.rush.views.add_pledge' id=rush_id %}">+</a></span></p>
+    <h3>Events</h3>
+    <ul>
+    {% for event in rush.events.all %}
+        {% with event.id as event_id %}
+        <li>{{ event.date|date:"M j" }}, {{ event.start|time:"f" }} &ndash; {{ event.end|time:"f" }}: {{ event.title }}<span style="padding-left: 25px"><a href="{% url 'gtphipsi.rush.views.edit_event' id=event_id %}">edit</a></span></li>
+        {% endwith %}
+    {% empty %}
+        <li style="list-style-type: none">This rush has no events.</li>
+    {% endfor %}
+    </ul>
+    <p><a href="{% url 'gtphipsi.rush.views.add_event' id=rush_id %}">add event</a></p>
+    {% endwith %}
+{% endblock %}

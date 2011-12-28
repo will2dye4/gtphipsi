@@ -1,0 +1,26 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Edit Rush | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <script type="text/javascript">
+        function confirm_delete () {
+            var result = confirm("Are you sure you want to delete this rush? All associated rush events will also be deleted.");
+            if (result == true) {
+                window.location.href = "{% url 'gtphipsi.rush.views.delete' id=rush_id %}";
+            }
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h1>Edit Rush Details</h1>
+    <p>Use the form below to edit the details of a rush. Click "Save" when you are finished.</p>
+    <form action="{% url 'gtphipsi.rush.views.edit' id=rush_id %}" method="post">
+        {% include "_table_form.html" with submit_text="Save" %}
+        <div style="float: right"><a href="#" onclick="confirm_delete()">delete</a></div>
+    </form>
+{% endblock %}

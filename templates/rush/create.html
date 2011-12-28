@@ -1,0 +1,14 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    New Rush | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <h1>Add a New Rush</h1>
+    <p>Use this form to add a new rush. If you do not want this rush to be public yet, uncheck the "Visible" box.</p>
+    <form action="{% url 'gtphipsi.rush.views.add' %}" method="post">
+        {% include "_table_form.html" with submit_text="Add" %}
+    </form>
+{% endblock %}

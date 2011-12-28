@@ -28,6 +28,6 @@
     <h1>Information Card</h1>
     <p>If you are interested in finding out more information about Phi Psi or would like to be contacted about our events, please fill out this form.</p>
     <form action="{% url 'gtphipsi.rush.views.info_card' %}" method="post">
-        {% include "_table_form.html" %}
+        {% include "_table_form.html" with submit_text="Submit" %}
     </form>
 {% endblock %}

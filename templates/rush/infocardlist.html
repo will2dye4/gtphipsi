@@ -1,0 +1,21 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Information Cards | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <h1>Information Cards</h1>
+    <p>Here is a list of all information cards that have been submitted to the chapter,
+    listed from newest to oldest. Click on a card to see more information about it.</p>
+    <ul>
+    {% for card in cards %}
+        {% with card.id as card_id %}
+        <li><a href="{% url 'gtphipsi.rush.views.info_card_show' id=card_id %}">{{ card }}</a></li>
+        {% endwith %}
+    {% empty %}
+        <li style="list-style-type: none">There are no information cards to display.</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

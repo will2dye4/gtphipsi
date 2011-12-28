@@ -2,7 +2,7 @@ from chapter.models import Announcement
 
 # Makes a list of the most recent announcements accessible to all requests.
 def announcements_processor(request):
-    return {'recent_news': Announcement.most_recent()}
+    return {'recent_news': Announcement.most_recent(public=request.user.is_anonymous())}
 
 def menu_item_processor(request):
     path = request.path
@@ -10,7 +10,8 @@ def menu_item_processor(request):
     if path == '/':
         menu_item = 'home'
     elif request.user.is_authenticated():
-        pass # TODO
+        if path.startswith('/rush'):
+            menu_item = 'rush'
     else:
         if path.startswith('/rush'):
             menu_item = 'rush'
