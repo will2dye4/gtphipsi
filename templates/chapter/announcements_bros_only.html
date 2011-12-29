@@ -1,0 +1,37 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Announcement List | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <style type="text/css">
+        ul li {
+            list-style-type: none;
+        }
+    </style>
+{% endblock %}
+
+{% block sidebar %}
+    <h3 class="sidebar">Note</h3>
+    <p class="sidebar">You can switch between all announcements and just private announcements
+    using the links in the right-hand corner.</p>
+{% endblock %}
+
+{% block content %}
+    <div style="float: right; padding: 15px">{% if private %}<a href="{% url 'gtphipsi.chapter.views.announcements' %}">{% endif %}all{% if private %}</a>{% endif %} | {% if not private %}<a href="{% url 'gtphipsi.chapter.views.announcements' %}?bros_only=true">{% endif %}only private{% if not private %}</a>{% endif %}</div>
+    <h1>Announcement List</h1>
+    <p>These are all the {% if private %}private{% endif %} announcements posted by the chapter.</p>
+    <ul>
+    {% for announcement in announcements.object_list %}
+        {% with announcement.id as id %}
+        <li>{% if announcement.date %}<strong>{{ announcement.date|date:"D, M j" }}:</strong>{% endif %} {{ announcement.text }} 
+            <span style="padding-left: 10px; font-style: italic; font-size: 0.8em; color: #999999">Posted by {{ announcement.user.get_full_name }} on {{ announcement.created|date:"M j" }} at {{ announcement.created|date:"g:i A" }}</span><span style="padding-left: 10px; font-size: 0.8em"><a href="{% url 'gtphipsi.chapter.views.edit_announcement' id=id %}">edit</a></span></li>
+        {% endwith %}
+    {% empty %}
+        <li>There are no announcements to display.</li>
+    {% endfor %}
+    </ul>
+    <p><a href="{% url 'gtphipsi.chapter.views.add_announcement' %}">add announcement</a></p>
+{% endblock %}

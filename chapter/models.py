@@ -20,7 +20,7 @@ class Announcement(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     date = models.DateField(blank=True, null=True)
     text = models.CharField(max_length=250, verbose_name='announcement')
-    public = models.BooleanField(default=True)
+    public = models.BooleanField(default=True, help_text='Deselect to make this announcement only visible to brothers.')
 
     @classmethod
     def most_recent(cls, public=True):
@@ -37,6 +37,12 @@ class Announcement(models.Model):
 
     class Meta:
         ordering = ['-created', '-date', 'text']
+
+
+class AnnouncementForm(ModelForm):
+    class Meta:
+        model = Announcement
+        fields = ('text', 'date', 'public')
 
 
 class ContactRecord(models.Model):

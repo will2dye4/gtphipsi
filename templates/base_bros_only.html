@@ -17,17 +17,15 @@
                     <li><a href="{% url 'gtphipsi.rush.views.info_card_list' %}">Information Cards</a></li>
                 </ul>
             </li>
-            <li><a href="{% url 'gtphipsi.chapter.views.about' %}" {% ifequal menu_item 'chapter' %}class="selected"{% endifequal %}>The Chapter</a>
+            <li><a href="{% url 'gtphipsi.chapter.views.announcements' %}" {% ifequal menu_item 'announcements' %}class="selected"{% endifequal %}>Announcements</a>
                 <ul>
-                    <li><a href="{% url 'gtphipsi.chapter.views.about' %}">About Georgia Beta</a></li>
-                    <li><a href="{% url 'gtphipsi.chapter.views.history' %}">Chapter History</a></li>
-                    <li><a href="{% url 'gtphipsi.chapter.views.creed' %}">Phi Psi Creed</a></li>
-                    <li><a href="{% url 'gtphipsi.brothers.views.list' %}">The Brothers</a></li>
+                    <li><a href="{% url 'gtphipsi.chapter.views.announcements' %}">All Announcements</a></li>
+                    <li><a href="{% url 'gtphipsi.chapter.views.add_announcement' %}">Add Announcement</a></li>
                 </ul>
             </li>
+            <li><a href="#" {% ifequal menu_item 'admin' %}class="selected"{% endifequal %}>Admin</a></li>
+            {% comment %}<li><a href="{% url 'gtphipsi.chapter.views.word' %}" {% ifequal menu_item 'word' %}class="selected"{% endifequal %}>WORD</a></li>{% endcomment %}
             <li><a href="{% url 'gtphipsi.views.calendar' %}" {% ifequal menu_item 'calendar' %}class="selected"{% endifequal %}>Calendar</a></li>
-            <li><a href="http://www.flickr.com/photos/georgiabeta/sets/" target="_blank">Media</a></li>
-            <li><a href="{% url 'gtphipsi.views.contact' %}" {% ifequal menu_item 'contact' %}class="selected"{% endifequal %}>Contact Us</a></li>
         </ul>
     </div>
 {% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block title %}
+    Announcement List | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <style type="text/css">
+        ul li {
+            list-style-type: none;
+        }        
+    </style>
+{% endblock %}
+
+{% block sidebar %}
+    <h3 class="sidebar">Note</h3>
+    <p class="sidebar">If you have questions about any of the information
+    in these announcements or elsewhere on the site, please don't hesitate
+    to <a href="{% url 'gtphipsi.views.contact' %}">let us know</a>.</p>
+{% endblock %}
+
+{% block content %}
+    <h1>Announcement List</h1>
+    <p>These are all the announcements posted by the chapter.</p>
+    <ul>
+    {% for announcement in announcements.object_list %}
+        <li>{% if announcement.date %}<strong>{{ announcement.date|date:"D, M j" }}:</strong>{% endif %} {{ announcement.text }} <span style="padding-left: 10px; font-style: italic; color: #999999">Posted on {{ announcement.created|date:"M j" }} at {{ announcement.created|date:"g:i A" }}</span></li>
+    {% empty %}
+        <li>There are no announcements to display.</li>
+    {% endfor %}
+    </ul>
+{% endblock %}
