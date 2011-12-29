@@ -83,20 +83,20 @@ def add(request):
 
 
 @login_required
-def edit(request, id=0, reveal=False, new_pledge=False, delete=False):
+def edit(request, id=0):
     rush = Rush.objects.get(pk=id)
     if rush is None:
         raise Http404
     else:
-        if reveal:
+        if 'visible' in request.GET and request.GET['visible'] == 'true':
             rush.visible = True
             rush.save()
             return HttpResponseRedirect(reverse('view_rush', kwargs={'id': rush.id}))
-        elif new_pledge:
-            rush.pledges += 1
+        elif 'new_pledges' in request.GET:
+            rush.pledges += int(request.GET['new_pledges'])
             rush.save()
             return HttpResponseRedirect(reverse('view_rush', kwargs={'id': rush.id}))
-        elif delete:
+        elif 'delete' in request.GET and request.GET['delete'] == 'true':
             rush.delete()
             return HttpResponseRedirect(reverse('rush_list'))
         else:
@@ -108,21 +108,6 @@ def edit(request, id=0, reveal=False, new_pledge=False, delete=False):
             else:
                 form = RushForm(instance=rush)
     return render(request, 'rush/edit.html', {'rush_id': rush.id, 'form': form}, context_instance=RequestContext(request))
-
-
-@login_required
-def reveal(request, id=0):
-    return edit(request, id, reveal=True)
-
-
-@login_required
-def delete(request, id=0):
-    return edit(request, id, delete=True)
-
-
-@login_required
-def add_pledge(request, id=0):
-    return edit(request, id, new_pledge=True)
 
 
 @login_required
@@ -144,12 +129,12 @@ def add_event(request, id=0):
 
 
 @login_required
-def edit_event(request, id=0, delete=False):
+def edit_event(request, id=0):
     event = RushEvent.objects.get(pk=id)
     if event is None:
         raise Http404
     else:
-        if delete:
+        if 'delete' in request.GET and request.GET['delete'] == 'true':
             event.delete()
             return HttpResponseRedirect(reverse('view_rush', kwargs={'id': event.rush.id}))
         else:
@@ -161,11 +146,6 @@ def edit_event(request, id=0, delete=False):
             else:
                 form = RushEventForm(instance=event)
     return render(request, 'rush/editevent.html', {'event_id': event.id, 'form': form}, context_instance=RequestContext(request))
-
-
-@login_required
-def delete_event(request, id=0):
-    return edit_event(request, id, delete=True)
 
 
 @login_required

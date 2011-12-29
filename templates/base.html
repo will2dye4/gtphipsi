@@ -75,15 +75,18 @@
         <div id="sidebar" class="rounded" style="padding: 5px 10px 5px 10px; font-size: 0.9em">
             {% block sidebar %}
                 <h3 class="sidebar">Recent News</h3>
-                <ul>
+                <ul style="padding-left: 20px">
                 {% for announcement in recent_news %}
-                    <li>{{ announcement }}</li>
+                    <li>{% if announcement.date %}<strong>{{ announcement.date|date:"D, M j" }}:</strong> {% endif %}{{ announcement }}</li>
                 {% empty %}
                     </ul>
                     <p>There are no announcements to display.</p>
                     <ul>
                 {% endfor %}
                 </ul>
+                {% if recent_news %}
+                    <div style="float: right"><a href="{% url 'gtphipsi.chapter.views.announcements' %}">see all</a></div>
+                {% endif %}
             {% endblock %}
         </div>
         <div id="content" class="rounded padded">

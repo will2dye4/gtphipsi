@@ -97,8 +97,8 @@ span.more {
     height: 35px;
     min-height: 35px;
     border: none 0;
-    width: 100%;
-	margin: 0 15% 0 15%;
+    width: 40em;
+	margin: 0 auto;
 	padding: 0;
 	font-weight: bold;
 }

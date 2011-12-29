@@ -11,8 +11,11 @@
     <h2>{{ rush.start_date|date:"l, F j" }} &ndash; {{ rush.end_date|date:"l, F j" }}</h2>
     {% with rush.id as rush_id %}
     <p><a href="{% url 'gtphipsi.rush.views.edit' id=rush_id %}">edit</a></p><br />
-    <p><strong>Visible:</strong> {{ rush.visible|yesno:"Yes,No" }} {% if not rush.visible %}<span style="padding-left: 15px"><a href="{% url 'gtphipsi.rush.views.reveal' id=rush_id %}">make visible</a></span>{% endif %}<br />
-    <strong>Pledges:</strong> {{ rush.pledges }} <span style="padding-left: 15px"><a href="{% url 'gtphipsi.rush.views.add_pledge' id=rush_id %}">+</a></span></p>
+    {% if rush.is_current %}
+        <p>This is the current rush, meaning that this rush's schedule is displayed on the main site.</p><br />
+    {% endif %}
+    <p><strong>Visible:</strong> {{ rush.visible|yesno:"Yes,No" }} {% if not rush.visible %}<span style="padding-left: 15px"><a href="{% url 'gtphipsi.rush.views.edit' id=rush_id %}?visible=true">make visible</a></span>{% endif %}<br />
+    <strong>Pledges:</strong> {{ rush.pledges }} {% if rush.is_current %}<span style="padding-left: 15px"><a href="{% url 'gtphipsi.rush.views.edit' id=rush_id %}?new_pledges=1">+</a>/<a href="{% url 'gtphipsi.rush.views.edit' id=rush_id %}?new_pledges=-1">-</a></span>{% endif %}</p>
     <h3>Events</h3>
     <ul>
     {% for event in rush.events.all %}

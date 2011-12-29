@@ -12,12 +12,8 @@ urlpatterns = patterns('gtphipsi.rush.views',
     url(r'^view/(?P<id>\d+)/$', 'show', name='view_rush'),
     url(r'^add/$', 'add', name='add_rush'),
     url(r'^edit/(?P<id>\d+)/$', 'edit', name='edit_rush'),
-    url(r'^edit/(?P<id>\d+)/reveal/$', 'reveal', name='reveal_rush'),
-    url(r'^edit/(?P<id>\d+)/new-pledge/$', 'add_pledge', name='add_pledge'),
-    url(r'^edit/(?P<id>\d+)/delete/$', 'delete', name='delete_rush'),
     url(r'^add-event/(?P<id>\d+)/$', 'add_event', name='add_rush_event'),
     url(r'^edit-event/(?P<id>\d+)/$', 'edit_event', name='edit_rush_event'),
-    url(r'^edit-event/(?P<id>\d+)/delete/$', 'delete_event', name='delete_rush_event'),
     url(r'^infocards/$', 'info_card_list', name='info_card_list'),
     url(r'^infocards/(?P<id>\d+)/$', 'info_card_show', name='info_card_view')
 )

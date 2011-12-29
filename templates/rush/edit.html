@@ -10,7 +10,7 @@
         function confirm_delete () {
             var result = confirm("Are you sure you want to delete this rush? All associated rush events will also be deleted.");
             if (result == true) {
-                window.location.href = "{% url 'gtphipsi.rush.views.delete' id=rush_id %}";
+                window.location.href = "{% url 'gtphipsi.rush.views.edit' id=rush_id %}?delete=true";
             }
         }
     </script>

@@ -31,6 +31,9 @@ class Rush(models.Model):
         """Returns the title of this rush, in the format '<Season> Rush <Year>'."""
         return '%s Rush %d' % (self.get_season_display(), self.start_date.year)
 
+    def is_current(self):
+        return Rush.current() == self
+
     def get_absolute_url(self):
         return reverse('view_rush', kwargs={'id': self.id})
 
