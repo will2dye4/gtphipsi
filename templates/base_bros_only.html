@@ -23,7 +23,15 @@
                     <li><a href="{% url 'gtphipsi.chapter.views.add_announcement' %}">Add Announcement</a></li>
                 </ul>
             </li>
-            <li><a href="#" {% ifequal menu_item 'admin' %}class="selected"{% endifequal %}>Admin</a></li>
+            <li><a href="{% url 'gtphipsi.brothers.views.manage' %}" {% ifequal menu_item 'admin' %}class="selected"{% endifequal %}>Admin</a>
+                <ul>
+                    <li><a href="{% url 'gtphipsi.brothers.views.manage' %}">Manage Users</a></li>
+                    {% if user.get_profile.is_admin %}
+                        <li><a href="{% url 'gtphipsi.brothers.views.add' %}">Add New User</a></li>
+                        <li><a href="{% url 'gtphipsi.brothers.views.manage_groups' %}">Manage User Groups</a></li>
+                    {% endif %}
+                </ul>
+            </li>
             {% comment %}<li><a href="{% url 'gtphipsi.chapter.views.word' %}" {% ifequal menu_item 'word' %}class="selected"{% endifequal %}>WORD</a></li>{% endcomment %}
             <li><a href="{% url 'gtphipsi.views.calendar' %}" {% ifequal menu_item 'calendar' %}class="selected"{% endifequal %}>Calendar</a></li>
         </ul>

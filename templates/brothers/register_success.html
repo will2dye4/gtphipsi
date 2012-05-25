@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block title %}
+    Success! | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <h1>Success!</h1>
+    <p>Your account was created successfully. Click <a href="{% url 'gtphipsi.views.sign_in' %}">here</a> to sign in.</p>
+{% endblock %}

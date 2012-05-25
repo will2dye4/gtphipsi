@@ -1,0 +1,33 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Edit {{ type|capfirst }} Privacy Settings | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <h1>Edit {{ type|capfirst }} Privacy Settings</h1>
+    <p>Use this form to change what information is visible on your {{ type }} profile. {{ message }}</p>
+    <form action="{% ifequal type 'public' %}{% url 'gtphipsi.brothers.views.edit_public_visibility' %}{% else %}{% url 'gtphipsi.brothers.views.edit_chapter_visibility' %}{% endifequal %}" method="post">
+        {% csrf_token %}
+        <table class="form">
+            <tbody>
+            {% for field in form %}
+                <tr>
+                    <td class="spaced">
+                        {{ field.label_tag }}
+                    </td>
+                    <td class="spaced">
+                        {{ field }}
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="3">
+                    <input class="submit" type="submit" value="Save" />
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+{% endblock %}

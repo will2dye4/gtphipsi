@@ -10,7 +10,7 @@
     <meta name="robots" content="all" />
     <meta name="keywords" content="Georgia Beta, Phi Kappa Psi, Georgia Tech, Fraternity, Chapter" />
     <meta name="author" content="William Dye" />
-    <meta name="Copyright" content="Copyright (c) 2011 Phi Kappa Psi Fraternity, Georgia Beta Chapter" />
+    <meta name="Copyright" content="Copyright (c) 2012 Phi Kappa Psi Fraternity, Georgia Beta Chapter" />
 
     <link href="{% get_static_prefix %}styles/gtphipsi_screen.css" rel="stylesheet" type="text/css" media="screen" />
     <link href="{% get_static_prefix %}images/favicon.ico" rel="shortcut icon" />
@@ -26,9 +26,9 @@
                 <div id="header-links" class="padded" style="display: table; position: absolute; right: 10%; top: 25px; z-index: 20;">
                     <div id="login" style="display: table-cell; vertical-align: middle; padding: 0 15px 0 0; font-size: 0.95em">
                         {% if user.is_authenticated %}
-                        <p>Welcome, {{ user.first_name }}! <a href="{% url 'gtphipsi.views.sign_out' %}">Sign out</a>.</p>
+                        <p>Welcome, {{ user.get_profile.preferred_name }}! <a href="{% url 'gtphipsi.views.sign_out' %}">Sign out</a>.</p>
                         {% else %}
-                        <p>Are you a brother? <a href="{% url 'gtphipsi.views.sign_in' %}">Sign in</a>.</p>
+                        <p>Are you a brother? <a href="{% url 'gtphipsi.views.sign_in' %}">Sign in</a> or <a href="{% url 'gtphipsi.views.register' %}">register</a>.</p>
                         {% endif %}
                     </div>
                     <div id="social" class="padded">

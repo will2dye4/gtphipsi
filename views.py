@@ -3,10 +3,10 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
 from django.conf import settings
 from rush.views import REFERRER
-from brothers.models import UserProfile, STATUS_BITS
+from brothers.models import UserProfile, UserForm, VisibilitySettings, STATUS_BITS
 import logging
 
 log = logging.getLogger('django.request')
@@ -68,6 +68,48 @@ def sign_out(request):
     return HttpResponseRedirect(reverse('home'))
 
 
+def register(request):
+    if request.method == 'POST':
+        form = UserForm(request.POST)
+        if form.is_valid():
+            first, last, username, password, email = form.cleaned_data['first_name'], form.cleaned_data['last_name'], form.cleaned_data['username'], form.cleaned_data['password'], form.cleaned_data['email']
+            user = User.objects.create_user(username, email, password)
+            user.first_name = first
+            user.last_name = last
+            admin = form.cleaned_data['make_admin']
+            if admin or form.cleaned_data['status'] == 'U':
+                group, created = Group.objects.get_or_create(name='Undergraduates')
+                if created:
+                    group.permissions = [Permission.objects.get(codename=code) for code in settings.UNDERGRADUATE_PERMISSIONS]
+                    group.save()
+                user.groups.add(group)
+            if admin:
+                group, created = Group.objects.get_or_create(name='Administrators')
+                if created:
+                    group.permissions = [Permission.objects.get(codename=code) for code in settings.ADMINISTRATOR_PERMISSIONS]
+                    group.save()
+                user.groups.add(group)
+            user.save()
+            middle, suffix, nickname = form.cleaned_data['middle_name'], form.cleaned_data['suffix'], form.cleaned_data['nickname']
+            badge, status, big = form.cleaned_data['badge'], form.cleaned_data['status'], form.cleaned_data['big_brother']
+            major, hometown, current_city, phone = form.cleaned_data['major'], form.cleaned_data['hometown'], form.cleaned_data['current_city'], form.cleaned_data['phone']
+            initiation, graduation, dob = form.cleaned_data['initiation'], form.cleaned_data['graduation'], form.cleaned_data['dob']
+            public_visibility = VisibilitySettings(full_name=False, big_brother=False, major=False, hometown=False, current_city=False, initiation=False, graduation=False, dob=False, phone=False, email=False)
+            public_visibility.save()
+            chapter_visibility = VisibilitySettings(full_name=True, big_brother=True, major=True, hometown=True, current_city=True, initiation=True, graduation=True, dob=True, phone=True, email=True)
+            chapter_visibility.save()
+            profile = UserProfile(user=user, middle_name=middle, suffix=suffix, nickname=nickname, badge=badge, status=status, big_brother=big, major=major, hometown=hometown, current_city=current_city, phone=phone, initiation=initiation, graduation=graduation, dob=dob, public_visibility=public_visibility, chapter_visibility=chapter_visibility)
+            profile.save()
+            return HttpResponseRedirect(reverse('register_success'))
+    else:
+        form = UserForm()
+    return render(request, 'brothers/register.html', {'form': form}, context_instance=RequestContext(request))
+
+
+def register_success(request):
+    return render(request, 'brothers/register_success.html', context_instance=RequestContext(request))
+
+
 def calendar(request):
     return render(request, 'calendar.html', context_instance=RequestContext(request))
 
@@ -91,3 +133,7 @@ def contact_thanks(request):
         raise Http404
     else:
         return render(request, 'contactthanks.html', context_instance=RequestContext(request))
+
+
+def forbidden(request):
+    return render(request, 'forbidden.html', context_instance=RequestContext(request))

@@ -231,3 +231,36 @@ TIME_INPUT_FORMATS = [
     '%H:%M:%S', '%H:%M',
     '%I:%M %p', '%I %p'
 ]
+
+# Used to prevent just anyone from creating an account.
+SECRET_KEY = 'LetterMore1852'
+
+# Password to give to administrator users.
+ADMIN_KEY = 'GAbeta219_&^+'
+
+# Permissions to grant all undergraduate users when their accounts are created.
+UNDERGRADUATE_PERMISSIONS = [
+    'add_rush',
+    'change_rush',
+    'delete_rush',
+    'add_rushevent',
+    'change_rushevent',
+    'delete_rushevent',
+    'add_announcement',
+    'change_announcement',
+    'delete_announcement'
+]
+
+# Permissions to grant administrator users.
+# Consists of all permissions not granted to undergrads;
+# not all permissions are used at this time.
+ADMINISTRATOR_PERMISSIONS = [
+    'add_permission', 'change_permission', 'delete_permission',
+    'add_group', 'change_group', 'delete_group',
+    'add_user', 'change_user', 'delete_user',
+    'add_message', 'change_message', 'delete_message',
+    'add_contenttype', 'change_contenttype', 'delete_contenttype',
+    'add_session', 'change_session', 'delete_session',
+    'add_site', 'change_site', 'delete_site',
+    'add_userprofile', 'change_userprofile', 'delete_userprofile'
+]

@@ -1,0 +1,39 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Add New Brother | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <h1>Add New Brother</h1>
+    <p>Use this form to add a new brother. Fields in bold are required.</p>
+    <form action="{% url 'gtphipsi.brothers.views.add' %}" method="post">
+        {% csrf_token %}
+        <table class="form">
+            <tbody>
+                {% include "_registration_form.html" %}
+                <tr>
+                    <td class="spaced"></td>
+                    <td class="spaced" style="padding-top: 10px">
+                        {{ form.make_admin }} Make this user an administrator.
+                    </td>
+                    <td class="error small">
+                        <ul>
+                            {% for error in form.make_admin.errors %}
+                                <li>{{ error|escape }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <input class="submit" type="submit" value="Add" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    <input type="hidden" id="id_secret_key" name="secret_key" value="{{ secret_key }}" />
+    <input type="hidden" id="id_admin_password" name="admin_password" value="{{ admin_password }}" />
+    </form>
+{% endblock %}

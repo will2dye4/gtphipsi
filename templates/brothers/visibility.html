@@ -1,0 +1,40 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block head_extras %}
+    <style type="text/css">
+        table.form tbody tr td {
+            padding-right: 50px;
+        }
+    </style>
+{% endblock %}
+
+{% block title %}
+    Privacy Settings | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <h1>Privacy Settings</h1>
+    {% ifequal fields|length 0 %}
+    <p>You currently have not provided any personal information.
+        Use this page to control what information is visible on your public and chapter profiles after you have provided some information about yourself.</p>
+    {% else %}
+    <p>This page shows your current privacy settings. Click on the links below to change your settings.</p>
+    <table class="form">
+        <tbody>
+        <tr style="font-weight: bold">
+            <td class="spaced"></td>
+            <td class="spaced">public</td>
+            <td class="spaced">chapter</td>
+        </tr>
+        {% if 'full_name' in fields %}
+        <tr>
+            <td class="spaced">Full name</td>
+            <td class="spaced">{% if public.full_name %}visible{% else %}hidden{% endif %}</td>
+            <td class="spaced">{% if chapter.full_name %}visible{% else %}hidden{% endif %}</td>
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+    {% endifequal %}
+{% endblock %}

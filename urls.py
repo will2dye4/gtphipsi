@@ -7,9 +7,12 @@ urlpatterns = patterns('gtphipsi.views',
     url(r'^$', 'home', name='home'),
     url(r'^login/$', 'sign_in', name='sign_in'),
     url(r'^logout/$', 'sign_out', name='sign_out'),
+    url(r'^register/$', 'register', name='register'),
+    url(r'^register/success/$', 'register_success', name='register_success'),
     url(r'^calendar/$', 'calendar', name='calendar'),
     url(r'^contact/$', 'contact', name='contact'),
-    url(r'^contact/thanks/$', 'contact_thanks', name='contact_thanks')
+    url(r'^contact/thanks/$', 'contact_thanks', name='contact_thanks'),
+    url(r'^forbidden/$', 'forbidden', name='forbidden')
     # other global pages here
 )
 

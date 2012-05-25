@@ -1,0 +1,322 @@
+<tr>
+    <td colspan="3" style="font-weight: bold; font-size: 1.1em; border-bottom: 2px solid black; margin-bottom: 15px">Name</td>
+</tr>
+<tr>
+    <td {% if form.first_name.errors %}class="error spaced"{% else %}class="spaced"{% endif %} style="font-weight: bold">
+        {{ form.first_name.label_tag }}
+    </td>
+    <td class="spaced" style="padding-top: 10px">
+        {{ form.first_name }}
+    </td>
+    <td class="error small">
+        <ul>
+            {% for error in form.first_name.errors %}
+                <li>{{ error|escape }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+<tr>
+    <td {% if form.middle_name.errors %}class="error spaced" style="font-weight: bold"{% else %}class="spaced"{% endif %}>
+        {{ form.middle_name.label_tag }}
+    </td>
+    <td class="spaced">
+        {{ form.middle_name }}
+    </td>
+    <td class="error small">
+        <ul>
+            {% for error in form.middle_name.errors %}
+                <li>{{ error|escape }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+<tr>
+    <td {% if form.last_name.errors %}class="error spaced"{% else %}class="spaced"{% endif %} style="font-weight: bold">
+        {{ form.last_name.label_tag }}
+    </td>
+    <td class="spaced">
+        {{ form.last_name }}
+    </td>
+    <td class="error small">
+        <ul>
+            {% for error in form.last_name.errors %}
+                <li>{{ error|escape }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+<tr>
+    <td {% if form.suffix.errors %}class="error spaced" style="font-weight: bold"{% else %}class="spaced"{% endif %}>
+        {{ form.suffix.label_tag }}
+    </td>
+    <td class="spaced">
+        {{ form.suffix }}
+    </td>
+    <td class="error small">
+        <ul>
+            {% for error in form.suffix.errors %}
+                <li>{{ error|escape }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+<tr>
+    <td {% if form.nickname.errors %}class="error" style="font-weight: bold"{% endif %}>
+        {{ form.nickname.label_tag }}
+    </td>
+    <td>
+        {{ form.nickname }}
+    </td>
+    <td class="error small">
+        <ul>
+            {% for error in form.nickname.errors %}
+                <li>{{ error|escape }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+<tr>
+    <td></td>
+    <td class="help-text small">
+        {{ form.nickname.help_text }}
+    </td>
+    <td></td>
+</tr>
+<tr>
+    <td colspan="3" style="font-weight: bold; font-size: 1.1em; border-bottom: 2px solid black; margin-bottom: 15px">Account and Chapter Information</td>
+</tr>
+<tr>
+    <td {% if form.username.errors %}class="error spaced"{% else %}class="spaced"{% endif %} style="font-weight: bold">
+        {{ form.username.label_tag }}
+    </td>
+    <td class="spaced" style="padding-top: 10px">
+        {{ form.username }}
+    </td>
+    <td class="error small">
+        <ul>
+            {% for error in form.username.errors %}
+                <li>{{ error|escape }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+<tr>
+    <td {% if form.password.errors %}class="error"{% endif %} style="font-weight: bold">
+        {{ form.password.label_tag }}
+    </td>
+    <td>
+        {{ form.password }}
+    </td>
+    <td class="error small">
+        <ul>
+            {% for error in form.password.errors %}
+                <li>{{ error|escape }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+<tr>
+    <td></td>
+    <td class="help-text small">
+        {{ form.password.help_text }}
+    </td>
+    <td></td>
+</tr>
+<tr>
+    <td {% if form.confirm.errors %}class="error spaced"{% else %}class="spaced"{% endif %} style="font-weight: bold">
+        {{ form.confirm.label_tag }}
+    </td>
+    <td class="spaced">
+        {{ form.confirm }}
+    </td>
+    <td class="error small">
+        <ul>
+            {% for error in form.confirm.errors %}
+                <li>{{ error|escape }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+<tr>
+    <td {% if form.badge.errors %}class="error spaced"{% else %}class="spaced"{% endif %} style="font-weight: bold">
+        {{ form.badge.label_tag }}
+    </td>
+    <td id="badge" class="spaced">
+        {{ form.badge }}
+    </td>
+    <td class="error small">
+        <ul>
+            {% for error in form.badge.errors %}
+                <li>{{ error|escape }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+<tr>
+    <td {% if form.status.errors %}class="error spaced"{% else %}class="spaced"{% endif %} style="font-weight: bold">
+        {{ form.status.label_tag }}
+    </td>
+    <td class="spaced">
+        {{ form.status }}
+    </td>
+    <td class="error small">
+        <ul>
+            {% for error in form.status.errors %}
+                <li>{{ error|escape }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+<tr>
+    <td {% if form.big_brother.errors %}class="error" style="font-weight: bold"{% endif %}>
+        {{ form.big_brother.label_tag }}
+    </td>
+    <td>
+        {{ form.big_brother }}
+    </td>
+    <td class="error small">
+        <ul>
+            {% for error in form.big_brother.errors %}
+                <li>{{ error|escape }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+<tr>
+    <td></td>
+    <td class="help-text small">
+        {{ form.big_brother.help_text }}
+    </td>
+    <td></td>
+</tr>
+<tr>
+    <td colspan="3" style="font-weight: bold; font-size: 1.1em; border-bottom: 2px solid black; margin-bottom: 15px">Personal Information</td>
+</tr>
+<tr>
+    <td {% if form.email.errors %}class="error spaced" style="font-weight: bold"{% else %}class="spaced"{% endif %}>
+        {{ form.email.label_tag }}
+    </td>
+    <td class="spaced" style="padding-top: 10px">
+        {{ form.email }}
+    </td>
+    <td class="error small">
+        <ul>
+            {% for error in form.email.errors %}
+                <li>{{ error|escape }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+<tr>
+    <td {% if form.phone.errors %}class="error" style="font-weight: bold"{% endif %}>
+        {{ form.phone.label_tag }}
+    </td>
+    <td>
+        {{ form.phone }}
+    </td>
+    <td class="error small">
+        <ul>
+            {% for error in form.phone.errors %}
+                <li>{{ error|escape }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+<tr>
+    <td></td>
+    <td class="help-text small">
+        {{ form.phone.help_text }}
+    </td>
+    <td></td>
+</tr>
+<tr>
+    <td {% if form.major.errors %}class="error spaced" style="font-weight: bold"{% else %}class="spaced"{% endif %}>
+        {{ form.major.label_tag }}
+    </td>
+    <td class="spaced">
+        {{ form.major }}
+    </td>
+    <td class="error small">
+        <ul>
+            {% for error in form.major.errors %}
+                <li>{{ error|escape }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+<tr>
+    <td {% if form.hometown.errors %}class="error spaced" style="font-weight: bold"{% else %}class="spaced"{% endif %}>
+        {{ form.hometown.label_tag }}
+    </td>
+    <td class="spaced">
+        {{ form.hometown }}
+    </td>
+    <td class="error small">
+        <ul>
+            {% for error in form.hometown.errors %}
+                <li>{{ error|escape }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+<tr>
+    <td {% if form.current_city.errors %}class="error spaced" style="font-weight: bold"{% else %}class="spaced"{% endif %}>
+        {{ form.current_city.label_tag }}
+    </td>
+    <td class="spaced">
+        {{ form.current_city }}
+    </td>
+    <td class="error small">
+        <ul>
+            {% for error in form.current_city.errors %}
+                <li>{{ error|escape }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+<tr>
+    <td {% if form.initiation.errors %}class="error spaced" style="font-weight: bold"{% else %}class="spaced"{% endif %}>
+        {{ form.initiation.label_tag }}
+    </td>
+    <td class="spaced">
+        {{ form.initiation }}
+    </td>
+    <td class="error small">
+        <ul>
+            {% for error in form.initiation.errors %}
+                <li>{{ error|escape }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+<tr>
+    <td {% if form.graduation.errors %}class="error spaced" style="font-weight: bold"{% else %}class="spaced"{% endif %}>
+        {{ form.graduation.label_tag }}
+    </td>
+    <td class="spaced">
+        {{ form.graduation }}
+    </td>
+    <td class="error small">
+        <ul>
+            {% for error in form.graduation.errors %}
+                <li>{{ error|escape }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+<tr>
+    <td {% if form.dob.errors %}class="error spaced" style="font-weight: bold"{% else %}class="spaced"{% endif %}>
+        {{ form.dob.label_tag }}
+    </td>
+    <td class="spaced">
+        {{ form.dob }}
+    </td>
+    <td class="error small">
+        <ul>
+            {% for error in form.dob.errors %}
+                <li>{{ error|escape }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>

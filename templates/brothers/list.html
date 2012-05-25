@@ -10,7 +10,7 @@
     The following is a list of the chapter's current active membership.</p>
     <ul>
     {% for brother in brothers.object_list %}
-        <li>{{ brother.first_name }} {{ brother.last_name }} ... {{ brother.get_profile.badge }}</li>
+        <li>{{ brother.get_profile.preferred_name }} {{ brother.last_name }} ... {{ brother.get_profile.badge }}</li>
     {% empty %}
         <li>Nothing to display.</li>
     {% endfor %}

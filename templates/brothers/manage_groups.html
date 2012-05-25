@@ -1,0 +1,39 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Manage User Groups | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <style type="text/css">
+        #content ul li {
+            list-style-type: none;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>Manage Groups</h1>
+    <p>{% comment %} TODO {% endcomment %}</p>
+    <h3>Undergraduates</h3>
+    <ul>
+    {% for brother in undergrads %}
+        {% with brother.id as id %}
+        <li>{{ brother.get_profile.common_name }} {% if brother in locked_out_undergrads %}<span style="padding-left: 15px"><a href="{% url 'gtphipsi.brothers.views.edit' id=id %}?unlock=true">unlock</a></span>{% endif %}</li>
+        {% endwith %}
+    {% empty %}
+        <li>There are no brothers to display.</li>
+    {% endfor %}
+    </ul>
+    <h3>Alumni</h3>
+    <ul>
+    {% for alumnus in alumni %}
+        {% with alumnus.id as id %}
+        <li>{{ alumnus.get_full_name }} {% if alumnus in locked_out_alumni %}<span style="padding-left: 15px"><a href="{% url 'gtphipsi.brothers.views.edit' id=id %}?unlock=true">unlock</a></span>{% endif %}</li>
+        {% endwith %}
+    {% empty %}
+        <li>There are no alumni to display.</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

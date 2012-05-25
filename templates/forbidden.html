@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block title %}
+    Forbidden | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <h1>Forbidden</h1>
+    <p>You do not have permission to perform this action. Please contact the webmaster to have the appropriate permissions granted.</p>
+{% endblock %}

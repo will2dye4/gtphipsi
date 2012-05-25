@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block title %}
+    Create an Account | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <style type="text/css">
+        #admin_password {
+            display: none;
+        }
+        #badge input {
+            width: 50px;
+            max-width: 50px;
+        }
+    </style>
+    <script type="text/javascript">
+        function toggleAdminPassword() {
+            var pwInput = document.getElementById('admin_password');
+            if (pwInput.style.display != 'table-row') {
+                pwInput.style.display = 'table-row';
+            } else {
+                pwInput.style.display = 'none';
+            }
+            return !document.getElementById("admin_password").checked;
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h1>Create an Account</h1>
+    <p>Use this form to create an account. Fields in bold are required.</p>
+    <form action="{% url 'gtphipsi.views.register' %}" method="post">
+        {% csrf_token %}
+        <table class="form">
+            <tbody>
+                {% include "_registration_form.html" %}
+                <tr>
+                    <td colspan="3" style="font-weight: bold; font-size: 1.1em; border-bottom: 2px solid black; margin-bottom: 15px">Proof of Membership</td>
+                </tr>
+                <tr>
+                    <td {% if form.secret_key.errors %}class="error"{% endif %} style="font-weight: bold">
+                        {{ form.secret_key.label_tag }}
+                    </td>
+                    <td style="padding-top: 10px">
+                        {{ form.secret_key }}
+                    </td>
+                    <td class="error small">
+                        <ul>
+                            {% for error in form.secret_key.errors %}
+                                <li>{{ error|escape }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td class="help-text small">
+                        {{ form.secret_key.help_text }}
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <input type="checkbox" id="id_make_admin" name="make_admin" onclick="return toggleAdminPassword();" /> Make me an administrator.
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td class="help-text small">
+                        {{ form.make_admin.help_text }}
+                    </td>
+                    <td></td>
+                </tr>
+                <tr id="admin_password">
+                    <td {% if form.admin_password.errors %}class="error spaced"{% else %}class="spaced"{% endif %}><label for="id_admin_password">Admin password</label></td>
+                    <td class="spaced"><input type="password" id="id_admin_password" name="admin_password" /></td>
+                    <td class="error small">
+                        <ul>
+                            {% for error in form.admin_password.errors %}
+                                <li>{{ error|escape }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <input class="submit" type="submit" value="Register" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+{% endblock %}
