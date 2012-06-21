@@ -8,8 +8,13 @@ from django.contrib.auth.models import User, Permission, Group
 from django.http import Http404, HttpResponseRedirect
 from gtphipsi.messages import get_message
 from brothers.models import UserProfile, UserForm, EditProfileForm, EditAccountForm, VisibilitySettings, PublicVisibilityForm, ChapterVisibilityForm, STATUS_BITS
+import logging
 
 
+log = logging.getLogger('django')
+
+
+# visible to all users
 def list(request):
     profile_list = UserProfile.objects.filter(status='U')
     brothers_list = User.objects.filter(pk__in=[profile.user.id for profile in profile_list])
@@ -24,6 +29,7 @@ def list(request):
     return render(request, 'brothers/list.html', {'brothers': brothers, 'num_brothers': brothers_list.count()}, context_instance=RequestContext(request))
 
 
+# visible to all users
 def show(request, id=0):
     user = User.objects.get(pk=id)
     if user is None: # TODO catch User.DoestNotExist ??
@@ -40,6 +46,7 @@ def my_profile(request):
 
 
 @login_required
+@user_passes_test(lambda u: u.get_profile().is_admin() if u else False, login_url='/forbidden/')
 def manage(request):
     undergrad_profiles = UserProfile.objects.filter(status='U')
     undergrads = User.objects.filter(pk__in=[profile.user.id for profile in undergrad_profiles])
@@ -75,6 +82,7 @@ def add(request):
             public, chapter = create_visibility_settings()
             profile = UserProfile(user=user, middle_name=middle, suffix=suffix, nickname=nickname, badge=badge, status=status, big_brother=big, major=major, hometown=hometown, current_city=current_city, phone=phone, initiation=initiation, graduation=graduation, dob=dob, public_visibility=public, chapter_visibility=chapter)
             profile.save()
+            log.info('Admin %s (badge %d) created new user %s (%s %s)', request.user.get_full_name(), request.user.get_profile().badge, username, first, last)
             return HttpResponseRedirect(reverse('manage_users'))
     else:
         form = UserForm()
@@ -83,14 +91,17 @@ def add(request):
 
 @login_required
 def edit(request, id=0):
-    user = User.objects.get(pk=id)
-    if user is None: # TODO need to catch User.DoesNotExist here instead of check for None?
+    try:
+        user = User.objects.get(pk=id)
+    except User.DoesNotExist:
         raise Http404
+    if user != request.user:
+        return HttpResponseRedirect(reverse('forbidden'))
     elif request.method == 'POST':
         form = EditProfileForm(request.POST, instance=user.get_profile())
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse('home')) # TODO fix
+            return HttpResponseRedirect(reverse('view_profile', args=[id]))
     else:
         if 'unlock' in request.GET and request.GET['unlock'] == 'true' and user.get_profile().has_bit(STATUS_BITS['LOCKED_OUT']):
             profile = user.get_profile()
@@ -105,10 +116,13 @@ def edit(request, id=0):
 
 @login_required
 def edit_account(request, id=0):
-    user = User.objects.get(pk=id)
-    own_account = (user == request.user)
-    if user is None: # TODO fix?
+    try:
+        user = User.objects.get(pk=id)
+    except User.DoesNotExist:
         raise Http404
+    own_account = (user == request.user)
+    if not (own_account or request.user.get_profile().is_admin()):
+        return HttpResponseRedirect(reverse('forbidden'))
     elif request.method == 'POST':
         profile = user.get_profile()
         form = EditAccountForm(request.POST)
@@ -135,6 +149,8 @@ def edit_account(request, id=0):
             profile.save()
             if save_user:
                 user.save()
+            if not own_account:
+                log.info('Admin %s (badge %d) edited account details of %s (%s %s)', request.user.get_full_name(), request.user.get_profile().badge, user.username, first, last)
             return HttpResponseRedirect(reverse('view_profile', args=[id]))
     else:
         profile = user.get_profile()
@@ -192,6 +208,8 @@ def edit_public_visibility(request):
 def edit_chapter_visibility(request):
     return edit_visibility(request, False)
 
+
+# ============= Private Functions ============= #
 
 def add_user_to_groups(user, undergrad, admin):
     if undergrad or admin:

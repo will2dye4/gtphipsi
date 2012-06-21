@@ -5,17 +5,25 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from models import Rush, RushForm, RushEvent, RushEventForm
 from chapter.models import InformationCard
+import logging
 
-REFERRER = 'HTTP_REFERER' # typo in 'referer' intentional
 
+log = logging.getLogger('django')
+
+REFERRER = 'HTTP_REFERER' # typo in 'referrer' intentional
+
+
+# visible to anyone
 def rush(request):
     return render(request, 'rush/rush.html', context_instance=RequestContext(request))
 
 
+# visible to anyone
 def rushphipsi(request):
     return render(request, 'rush/phipsi.html', context_instance=RequestContext(request))
 
 
+# visible to anyone
 def schedule(request):
     current_rush = Rush.current()
     if current_rush is None:
@@ -24,6 +32,7 @@ def schedule(request):
         return render(request, 'rush/schedule.html', {'rush': current_rush}, context_instance=RequestContext(request))
 
 
+# visible to anyone
 def info_card(request):
     from chapter.models import InformationForm, ContactRecord
     if request.method == 'POST':
@@ -37,6 +46,7 @@ def info_card(request):
     return render(request, 'rush/infocard.html', {'form': form}, context_instance=RequestContext(request))
 
 
+# visible to anyone
 def info_card_thanks(request):
     from django.http import Http404
     if not (REFERRER in request.META and request.META[REFERRER].endswith(reverse('info_card'))):
@@ -97,7 +107,9 @@ def edit(request, id=0):
             rush.save()
             return HttpResponseRedirect(reverse('view_rush', kwargs={'id': rush.id}))
         elif 'delete' in request.GET and request.GET['delete'] == 'true':
+            name = rush.title()
             rush.delete()
+            log.info('User %s (badge %d) deleted %s', request.user.get_full_name(), request.user.get_profile().badge, name)
             return HttpResponseRedirect(reverse('rush_list'))
         else:
             if request.method == 'POST':

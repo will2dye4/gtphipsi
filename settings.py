@@ -135,6 +135,8 @@ INSTALLED_APPS = (
     'chapter',
 )
 
+TIME_LOGGING_FORMAT = '%d/%b/%Y %H:%M:%S'
+
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
 LOGGING = {
@@ -145,7 +147,8 @@ LOGGING = {
             'format': '[%(levelname)s] %(module)s (%(asctime)s, %(process)d, %(thread)d) : %(message)s'
         },
         'simple': {
-            'format': '[%(levelname)s] %(message)s'
+            'format': '[%(asctime)s - %(levelname)s] %(message)s',
+            'datefmt': TIME_LOGGING_FORMAT
         },
         'default': {
             'format': '[%(levelname)s] %(asctime)s %(module)s.%(funcName)s (%(lineno)d) : %(message)s'
@@ -200,7 +203,7 @@ LOGGING = {
         'django.db.backends': {
             'handlers': ['query_log'],
             'level': 'DEBUG',
-            'propagate': True
+            'propagate': False
         }
     }
 }
