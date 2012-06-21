@@ -4,11 +4,25 @@
     <list id="4a8fc2bc-f942-42bf-b208-15210f0d1e48" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources.ids" afterPath="$PROJECT_DIR$/.idea/dataSources.ids" />
     </list>
-    <list id="9ae8105f-4f3b-4b3d-ad1a-9ca4335f9e9c" name="IDEA Files" comment="">
+    <list default="true" id="905b2d30-5267-498d-b2da-1a3ec58903a7" name="Templates" comment="Miscellaneous final changes made before switching to iMac.">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/messages.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/brothers/edit_account.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/brothers/show.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources.xml" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/gtphipsi.iml" afterPath="$PROJECT_DIR$/.idea/gtphipsi.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/brothers/models.py" afterPath="$PROJECT_DIR$/brothers/models.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/brothers/urls.py" afterPath="$PROJECT_DIR$/brothers/urls.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/brothers/views.py" afterPath="$PROJECT_DIR$/brothers/views.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/settings.py" afterPath="$PROJECT_DIR$/settings.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/styles/gtphipsi_screen.css" afterPath="$PROJECT_DIR$/static/styles/gtphipsi_screen.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/_registration_form.html" afterPath="$PROJECT_DIR$/templates/_registration_form.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/brothers/edit.html" afterPath="$PROJECT_DIR$/templates/brothers/edit.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/brothers/edit_visibility.html" afterPath="$PROJECT_DIR$/templates/brothers/edit_visibility.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/brothers/visibility.html" afterPath="$PROJECT_DIR$/templates/brothers/visibility.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views.py" afterPath="$PROJECT_DIR$/views.py" />
     </list>
-    <list default="true" id="905b2d30-5267-498d-b2da-1a3ec58903a7" name="Templates" comment="Miscellaneous final changes made before switching to iMac." />
     <ignored path="gtphipsi.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path="log/" />
@@ -21,7 +35,6 @@
   <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
-    <option name="REVERSE_PATCH" value="false" />
   </component>
   <component name="DaemonCodeAnalyzer">
     <disable_hints />
@@ -35,19 +48,48 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="urls.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/brothers/urls.py">
+      <file leaf-file-name="views.py" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/brothers/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="10" column="63" selection-start="576" selection-end="576" vertical-scroll-proportion="0.0">
+            <state line="115" column="41" selection-start="6058" selection-end="6058" vertical-scroll-proportion="1.6908753">
+              <folding>
+                <element signature="e#0#35#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="edit_account.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/brothers/edit_account.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="36" column="26" selection-start="1508" selection-end="1508" vertical-scroll-proportion="-9.375">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="views.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/brothers/views.py">
+      <file leaf-file-name="urls.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/brothers/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="112" column="34" selection-start="6307" selection-end="6307" vertical-scroll-proportion="0.0">
+            <state line="9" column="77" selection-start="488" selection-end="488" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="edit.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/brothers/edit.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="10" column="172" selection-start="456" selection-end="456" vertical-scroll-proportion="-6.25">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="show.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/brothers/show.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="33" column="15" selection-start="1367" selection-end="1367" vertical-scroll-proportion="-20.625">
               <folding />
             </state>
           </provider>
@@ -56,44 +98,46 @@
       <file leaf-file-name="models.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/brothers/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="114" column="76" selection-start="3712" selection-end="3712" vertical-scroll-proportion="0.0">
+            <state line="32" column="17" selection-start="858" selection-end="858" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="edit_visibility.html" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/brothers/edit_visibility.html">
+      <file leaf-file-name="register.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/brothers/register.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="10" column="189" selection-start="533" selection-end="533" vertical-scroll-proportion="0.0">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="9.375">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="manage_groups.html" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/brothers/manage_groups.html">
+      <file leaf-file-name="_registration_form.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/_registration_form.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="14" selection-start="139" selection-end="139" vertical-scroll-proportion="0.0">
+            <state line="1" column="116" selection-start="25" selection-end="121" vertical-scroll-proportion="-0.625">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="manage.html" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/brothers/manage.html">
+      <file leaf-file-name="settings.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="24" column="46" selection-start="793" selection-end="793" vertical-scroll-proportion="0.0">
+            <state line="238" column="0" selection-start="7792" selection-end="7792" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="visibility.html" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/templates/brothers/visibility.html">
+      <file leaf-file-name="views.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="33" column="96" selection-start="1234" selection-end="1234" vertical-scroll-proportion="2.9640718">
-              <folding />
+            <state line="79" column="23" selection-start="3173" selection-end="3173" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="e#0#35#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -109,27 +153,36 @@
     <option name="CHECKOUT_INCLUDE_TAGS" value="false" />
     <option name="UPDATE_CHANGES_POLICY" value="STASH" />
   </component>
+  <component name="GitLogSettings">
+    <option name="myStructureFilterPaths" />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/settings.py" />
-        <option value="$PROJECT_DIR$/templates/login.html" />
-        <option value="$PROJECT_DIR$/templates/brothers/register.html" />
-        <option value="$PROJECT_DIR$/templates/brothers/add.html" />
-        <option value="$PROJECT_DIR$/templates/_registration_form.html" />
-        <option value="$PROJECT_DIR$/templates/brothers/manage_groups.html" />
-        <option value="$PROJECT_DIR$/templates/base_bros_only.html" />
-        <option value="$PROJECT_DIR$/views.py" />
-        <option value="$PROJECT_DIR$/templates/brothers/edit_chapter_visibility.html" />
         <option value="$PROJECT_DIR$/templates/base.html" />
         <option value="$PROJECT_DIR$/templates/brothers/edit_public_visibility.html" />
-        <option value="$PROJECT_DIR$/brothers/urls.py" />
-        <option value="$PROJECT_DIR$/templates/brothers/visibility.html" />
-        <option value="$PROJECT_DIR$/brothers/models.py" />
-        <option value="$PROJECT_DIR$/brothers/views.py" />
         <option value="$PROJECT_DIR$/templates/brothers/list.html" />
+        <option value="$PROJECT_DIR$/templates/brothers/visibility.html" />
+        <option value="$PROJECT_DIR$/templates/brothers/edit_visibility.html" />
+        <option value="$PROJECT_DIR$/messages.py" />
+        <option value="$PROJECT_DIR$/settings.py" />
+        <option value="$PROJECT_DIR$/templates/brothers/show.html" />
+        <option value="$PROJECT_DIR$/brothers/urls.py" />
+        <option value="$PROJECT_DIR$/templates/brothers/edit.html" />
+        <option value="$PROJECT_DIR$/templates/_registration_form.html" />
+        <option value="$PROJECT_DIR$/views.py" />
+        <option value="$PROJECT_DIR$/brothers/models.py" />
+        <option value="$PROJECT_DIR$/static/styles/gtphipsi_screen.css" />
+        <option value="$PROJECT_DIR$/templates/brothers/edit_account.html" />
+        <option value="$PROJECT_DIR$/brothers/views.py" />
       </list>
     </option>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="62" />
+    <option name="y" value="22" />
+    <option name="width" value="1584" />
+    <option name="height" value="992" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -141,7 +194,7 @@
         </expanded-state>
         <selected-state>
           <State>
-            <id>SQL Inspections</id>
+            <id>Buildout</id>
           </State>
         </selected-state>
       </profile-state>
@@ -174,7 +227,6 @@
     </navigator>
     <panes>
       <pane id="Scope" />
-      <pane id="Favorites" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -217,30 +269,13 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="templates" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="brothers" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gtphipsi" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gtphipsi" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="brothers" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+      <pane id="Favorites" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -248,12 +283,20 @@
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="recentsLimit" value="5" />
-    <property name="options.lastSelected" value="com.jetbrains.python.buildout.BuildoutConfigurable" />
+    <property name="options.lastSelected" value="preferences.general" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/chapter" />
     <property name="DefaultHtmlFileTemplate" value="Html" />
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
     <property name="dynamic.classpath" value="false" />
+  </component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <PyConsoleSettings />
+    </option>
+    <option name="myDjangoConsoleState">
+      <PyConsoleSettings />
+    </option>
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -261,7 +304,7 @@
       <recent name="$PROJECT_DIR$/templates" />
     </key>
   </component>
-  <component name="RunManager" selected="Query Language Console.Default">
+  <component name="RunManager" selected="Django server.gtphipsi">
     <configuration default="false" name="Default" type="com.intellij.persistence.run.ConsoleRunConfigurationType" factoryName="Query Language Console" temporary="true">
       <option name="VM_PARAMETERS" value="" />
       <option name="USER_CFG_CLASS" />
@@ -278,25 +321,9 @@
       <option name="WORKING_DIRECTORY" value="" />
       <option name="IS_MODULE_SDK" value="false" />
       <module name="gtphipsi" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
       <option name="TARGET" value="" />
       <option name="SETTINGS_FILE" value="" />
-      <method />
-    </configuration>
-    <configuration default="true" type="PythonUnitTestConfigurationType" factoryName="Python's unittest">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <module name="gtphipsi" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="CLASS_NAME" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="FOLDER_NAME" value="" />
-      <option name="TEST_TYPE" value="TEST_SCRIPT" />
-      <option name="PATTERN" value="" />
-      <option name="PUREUNITTEST" value="true" />
       <method />
     </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
@@ -309,8 +336,29 @@
       <option name="WORKING_DIRECTORY" value="" />
       <option name="IS_MODULE_SDK" value="false" />
       <module name="gtphipsi" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="" />
       <option name="PARAMETERS" value="" />
+      <option name="MULTIPROCESS" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Unittests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <module name="gtphipsi" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PUREUNITTEST" value="true" />
       <method />
     </configuration>
     <configuration default="true" type="Python.DjangoServer" factoryName="Django server">
@@ -331,6 +379,7 @@
       <option name="runNoReload" value="false" />
       <option name="useCustomRunCommand" value="false" />
       <option name="customRunCommand" value="" />
+      <option name="launchJavascriptDebuger" value="false" />
       <method />
     </configuration>
     <configuration default="true" type="PyRemoteDebugConfigurationType" factoryName="Python Remote Debug">
@@ -344,7 +393,7 @@
       <option name="SUSPEND_AFTER_CONNECT" value="true" />
       <method />
     </configuration>
-    <configuration default="true" type="PythonDocTestRunConfigurationType" factoryName="Python's doctests">
+    <configuration default="true" type="tests" factoryName="Doctests">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs />
@@ -352,12 +401,21 @@
       <option name="WORKING_DIRECTORY" value="" />
       <option name="IS_MODULE_SDK" value="false" />
       <module name="gtphipsi" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="" />
       <option name="CLASS_NAME" value="" />
       <option name="METHOD_NAME" value="" />
       <option name="FOLDER_NAME" value="" />
       <option name="TEST_TYPE" value="TEST_SCRIPT" />
       <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugSession" factoryName="Local">
+      <JSDebuggerConfigurationSettings>
+        <option name="engineId" />
+        <option name="fileUrl" />
+      </JSDebuggerConfigurationSettings>
       <method />
     </configuration>
     <configuration default="true" type="com.intellij.persistence.run.ConsoleRunConfigurationType" factoryName="Query Language Console">
@@ -370,12 +428,12 @@
       <option name="INTERPRETER_OPTIONS" value="manage.py runserver" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
-        <env name="PYTHONPATH" value="$USER_HOME$/Django-1.3.1/build/lib/django:/Users/William/Git/gtphipsi" />
+        <env name="PYTHONPATH" value="$USER_HOME$/Django-1.3.1/build/lib/django:/Users/William/dev/git/gtphipsi" />
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="/System/Library/Frameworks/Python.framework/Versions/2.7/bin/python" />
+      <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="false" />
+      <option name="IS_MODULE_SDK" value="true" />
       <module name="gtphipsi" />
       <option name="port" value="8000" />
       <option name="host" value="127.0.0.1" />
@@ -385,6 +443,7 @@
       <option name="runNoReload" value="false" />
       <option name="useCustomRunCommand" value="false" />
       <option name="customRunCommand" value="" />
+      <option name="launchJavascriptDebuger" value="false" />
       <RunnerSettings RunnerId="PyDebugRunner" />
       <RunnerSettings RunnerId="PythonRunner" />
       <ConfigurationWrapper RunnerId="PyDebugRunner" />
@@ -417,7 +476,6 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="9ae8105f-4f3b-4b3d-ad1a-9ca4335f9e9c" name="IDEA Files" comment="" />
       <changelist id="905b2d30-5267-498d-b2da-1a3ec58903a7" name="Templates" comment="" />
       <changelist id="4a8fc2bc-f942-42bf-b208-15210f0d1e48" name="Default" comment="" />
       <created>1322942806808</created>
@@ -427,28 +485,33 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="1440" height="874" extended-state="0" />
+    <frame x="62" y="22" width="1584" height="992" extended-state="0" />
     <editor active="false" />
     <layout>
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32993445" sideWeight="0.6711052" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.6917989" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.31386024" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.22451317" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18979152" sideWeight="0.30820104" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.677763" sideWeight="0.0" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3288948" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16276042" sideWeight="0.68613976" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.36998853" sideWeight="0.0" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.35430038" sideWeight="0.49788135" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3161512" sideWeight="0.9967448" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32936507" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3288948" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.22486773" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="OFFER_MOVE_TO_ANOTHER_CHANGELIST_ON_PARTIAL_COMMIT" value="true" />
@@ -474,8 +537,14 @@
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="true" />
     <option name="CHECK_COMMIT_MESSAGE_SPELLING" value="true" />
     <option name="DEFAULT_PATCH_EXTENSION" value="patch" />
+    <option name="SHORT_DIFF_HORISONTALLY" value="true" />
+    <option name="SHORT_DIFF_EXTRA_LINES" value="2" />
+    <option name="SOFT_WRAPS_IN_SHORT_DIFF" value="true" />
+    <option name="INCLUDE_TEXT_INTO_PATCH" value="false" />
+    <option name="INCLUDE_TEXT_INTO_SHELF" value="false" />
+    <option name="CREATE_PATCH_EXPAND_DETAILS_DEFAULT" value="true" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Miscellaneous final changes made before switching to iMac." />
+    <option name="LAST_COMMIT_MESSAGE" value="IDEA Files" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -509,94 +578,130 @@
     <MESSAGE value="New announcements bros-only pages and supporting changes." />
     <MESSAGE value="Minor improvements to bros-only rush pages and the base template." />
     <MESSAGE value="Miscellaneous final changes made before switching to iMac." />
+    <MESSAGE value="IDEA Files" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/templates/contact.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="11" selection-start="551" selection-end="551" vertical-scroll-proportion="0.33464566" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="52" column="23" selection-start="1964" selection-end="1964" vertical-scroll-proportion="-0.45397225" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/_table_form.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="27" selection-start="444" selection-end="444" vertical-scroll-proportion="0.18024032" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/base.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="54" selection-start="809" selection-end="809" vertical-scroll-proportion="0.23407023" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/base_bros_only.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="33" column="17" selection-start="2021" selection-end="2021" vertical-scroll-proportion="-20.625" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/chapter/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-0.48555708" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/brothers/edit.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/brothers/add.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="3" column="17" selection-start="81" selection-end="81" vertical-scroll-proportion="0.06401138" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/brothers/list.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="49" selection-start="404" selection-end="404" vertical-scroll-proportion="0.25604552" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/brothers/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="63" selection-start="576" selection-end="576" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/brothers/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="112" column="34" selection-start="6307" selection-end="6307" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/brothers/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="114" column="76" selection-start="3712" selection-end="3712" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/brothers/edit_visibility.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="189" selection-start="533" selection-end="533" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/brothers/manage_groups.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="14" selection-start="139" selection-end="139" vertical-scroll-proportion="0.0">
-          <folding />
+        <state line="15" column="19" selection-start="311" selection-end="311" vertical-scroll-proportion="-9.375">
+          <folding>
+            <marker date="1331277721000" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1331277721000" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1331277721000" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1331277721000" expanded="true" signature="-1:-1" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/brothers/manage.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="46" selection-start="793" selection-end="793" vertical-scroll-proportion="0.0">
+        <state line="24" column="46" selection-start="793" selection-end="793" vertical-scroll-proportion="-15.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/brothers/visibility.html">
+    <entry file="file://$PROJECT_DIR$/templates/base.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="33" column="96" selection-start="1234" selection-end="1234" vertical-scroll-proportion="2.9640718">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-0.32327586">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/_table_form.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="30" column="24" selection-start="1011" selection-end="1011" vertical-scroll-proportion="-18.75">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/brothers/show.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="33" column="15" selection-start="1367" selection-end="1367" vertical-scroll-proportion="-20.625">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/brothers/edit.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="10" column="172" selection-start="456" selection-end="456" vertical-scroll-proportion="-6.25">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="79" column="23" selection-start="3173" selection-end="3173" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="238" column="0" selection-start="7792" selection-end="7792" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/brothers/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="32" column="17" selection-start="858" selection-end="858" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/_registration_form.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1" column="116" selection-start="25" selection-end="121" vertical-scroll-proportion="-0.625">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/brothers/register.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="9.375">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/styles/gtphipsi_screen.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="269" column="0" selection-start="4259" selection-end="4259" vertical-scroll-proportion="0.38106796">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/brothers/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="77" selection-start="488" selection-end="488" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/brothers/edit_account.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="36" column="26" selection-start="1508" selection-end="1508" vertical-scroll-proportion="-9.375">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/brothers/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="115" column="41" selection-start="6058" selection-end="6058" vertical-scroll-proportion="1.6908753">
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

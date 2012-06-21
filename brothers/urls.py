@@ -1,10 +1,13 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 
 urlpatterns = patterns('gtphipsi.brothers.views',
     url(r'^$', 'list', name='brothers_list'),
+    url(r'^(?P<id>\d+)/$', 'show', name='view_profile'),
+    url(r'^profile/$', 'my_profile', name='my_profile'),
     url(r'^manage/$', 'manage', name='manage_users'),
     url(r'^add/$', 'add', name='add_user'),
     url(r'^edit/(?P<id>\d+)/$', 'edit', name='edit_user'),
+    url(r'^edit/account/(?P<id>\d+)/$', 'edit_account', name='edit_account'),
     url(r'^groups/$', 'manage_groups', name='manage_groups'),
     url(r'^privacy/$', 'visibility', name='visibility'),
     url(r'^privacy/public/$', 'edit_public_visibility', name='edit_public_visibility'),

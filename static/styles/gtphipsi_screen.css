@@ -289,3 +289,10 @@ table.form tr td.help-text {
 table.form tr td.spaced {
     padding-bottom: 10px;
 }
+
+table.form tbody tr td.subheading {
+    font-weight: bold;
+    font-size: 1.1em;
+    border-bottom: 2px solid black;
+    padding-bottom: 15px
+}

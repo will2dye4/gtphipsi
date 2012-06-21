@@ -15,6 +15,7 @@ STATUS_BITS = {
 # Possible suffixes for names.
 SUFFIX_CHOICES = (
     ('', '---------'),
+    ('S', 'Sr.'),
     ('J', 'Jr.'),
     ('2', 'II'),
     ('3', 'III'),
@@ -30,7 +31,6 @@ STATUS_CHOICES = (
 
 # This list was last updated on 12/3/2011.
 MAJOR_CHOICES = (
-    ('', '---------'),
     ('College of Architecture', (
             ('AR', 'Architecture'),
             ('BC', 'Building Construction'),
@@ -129,9 +129,9 @@ class UserProfile(models.Model):
     major = models.CharField(choices=MAJOR_CHOICES, max_length=50, blank=True)
     hometown = models.CharField(max_length=50, blank=True)
     current_city = models.CharField(max_length=50, blank=True)
-    initiation = models.DateField(blank=True, null=True, help_text='use the format MM/DD/YYYY')
-    graduation = models.DateField(blank=True, null=True, help_text='use the format MM/DD/YYYY')
-    dob = models.DateField(blank=True, null=True, help_text='use the format MM/DD/YYYY')
+    initiation = models.DateField(blank=True, null=True)
+    graduation = models.DateField(blank=True, null=True)
+    dob = models.DateField(blank=True, null=True)
     phone = PhoneNumberField(blank=True)
     bits = models.IntegerField(blank=True, default=0) # (1 << 0): user is locked out
 
@@ -148,9 +148,9 @@ class UserProfile(models.Model):
                 ' ' if self.middle_name else '',
                 self.middle_name,
                 self.user.last_name,
-                ',' if suffix and self.suffix == 'J' else '',
+                ',' if suffix and (self.suffix in ['J', 'S']) else '',
                 ' ' if suffix else '',
-                self.get_suffix_display()
+                self.get_suffix_display() if suffix else ''
         )
         return '%s%s%s %s%s%s%s' % values
 
@@ -195,14 +195,14 @@ class UserForm(forms.Form):
     confirm = forms.CharField(min_length=6, widget=forms.PasswordInput, label='Confirm password')
     badge = forms.IntegerField(min_value=1)
     status = forms.ChoiceField(choices=STATUS_CHOICES, initial='U')
-    big_brother = UserField(queryset=User.objects.all(), required=False, help_text='Your big brother will only be listed if he has an account')
+    big_brother = UserField(queryset=User.objects.exclude(userprofile__isnull=True).exclude(id=models.F('id')), required=False, help_text='Your big brother will only be listed if he has an account')
     major = forms.ChoiceField(choices=MAJOR_CHOICES, required=False)
     hometown = forms.CharField(max_length=50, required=False)
     current_city = forms.CharField(max_length=50, required=False)
     initiation = forms.DateField(input_formats=settings.DATE_INPUT_FORMATS, required=False)
     graduation = forms.DateField(input_formats=settings.DATE_INPUT_FORMATS, required=False)
     dob = forms.DateField(input_formats=settings.DATE_INPUT_FORMATS, required=False, label='Date of birth')
-    email = forms.EmailField(required=False)
+    email = forms.EmailField(required=True)
     phone = forms.RegexField(regex=r'^\d{3}-\d{3}-\d{4}$', min_length=12, max_length=12, required=False, help_text='XXX-XXX-XXXX')
     secret_key = forms.CharField(widget=forms.PasswordInput, help_text='Given to brothers by the webmaster')
     make_admin = forms.BooleanField(required=False, help_text='Check this box if you were given a separate admin password')
@@ -245,7 +245,51 @@ class UserForm(forms.Form):
             self._errors['admin_password'] = self.error_class(['Wrong.'])
             del self.cleaned_data['admin_password']
         return self.cleaned_data['admin_password'] if 'admin_password' in self.cleaned_data else None
-    
+
+
+class EditProfileForm(forms.ModelForm):
+    big_brother = UserField(queryset=User.objects.exclude(userprofile__isnull=True).exclude(id=models.F('id')), required=False, help_text='Your big brother will only be listed if he has an account')
+    initiation = forms.DateField(input_formats=settings.DATE_INPUT_FORMATS, widget=forms.DateInput(format='%B %d, %Y'), required=False)
+    graduation = forms.DateField(input_formats=settings.DATE_INPUT_FORMATS, widget=forms.DateInput(format='%B %d, %Y'), required=False)
+    dob = forms.DateField(input_formats=settings.DATE_INPUT_FORMATS, widget=forms.DateInput(format='%B %d, %Y'), required=False, label='Date of birth')
+    phone = forms.RegexField(regex=r'^\d{3}-\d{3}-\d{4}$', min_length=12, max_length=12, required=False, help_text='XXX-XXX-XXXX')
+
+    class Meta:
+        model = UserProfile
+        fields = ('big_brother', 'major', 'hometown', 'current_city', 'initiation', 'graduation', 'dob', 'phone')
+
+
+class EditAccountForm(forms.Form):
+    first_name = forms.CharField(max_length=30)
+    middle_name = forms.CharField(max_length=30, required=False)
+    last_name = forms.CharField(max_length=30)
+    suffix = forms.ChoiceField(choices=SUFFIX_CHOICES, required=False)
+    nickname = forms.CharField(max_length=30, required=False, help_text='The name you prefer to be called (if different from your first name)')
+    email = forms.EmailField(required=True)
+    status = forms.ChoiceField(choices=STATUS_CHOICES, widget=forms.Select(attrs={'onchange': 'updateStatusSelect();'}))
+
+
+class ChangePasswordForm(forms.Form):
+    old_pass = forms.CharField(widget=forms.PasswordInput)
+    password = forms.CharField(min_length=6, widget=forms.PasswordInput, help_text='Must be at least six characters long')
+    confirm = forms.CharField(min_length=6, widget=forms.PasswordInput, label='Confirm password')
+    user = None
+
+    def clean_old_pass(self):
+        old_pass = self.cleaned_data.get('old_pass')
+        if old_pass is not None and self.user is not None and old_pass != self.user.password:
+            self._errors['old_pass'] = self.error_class(['That\'s not right!'])
+            del self.cleaned_data['old_pass']
+        return self.cleaned_data['old_pass'] if 'old_pass' in self.cleaned_data else None
+
+    def clean_confirm(self):
+        password = self.cleaned_data.get('password')
+        confirm = self.cleaned_data.get('confirm')
+        if password is not None and confirm is not None and password != confirm:
+            self._errors['confirm'] = self.error_class(['The passwords you typed do not match.'])
+            del self.cleaned_data['confirm']
+        return self.cleaned_data['confirm'] if 'confirm' in self.cleaned_data else None
+
 
 # The code below should be used here, but due to the fact that `badge` and `status` must be provided
 # but are not known at the time the User instance is created, it is omitted. This should be fixed.

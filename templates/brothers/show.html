@@ -1,0 +1,38 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    View Profile | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <h1>{% if vis.full_name %}{{ profile.full_name }}{% else %}{{ account.get_full_name }}{% endif %} ... {{ profile.badge }}</h1>
+    <h3 style="margin-bottom: 30px">{{ profile.get_status_display }}</h3>
+    {% if vis.big_brother and 'Big brother' in fields %}
+        <p><b>Big brother:</b> {{ profile.big_brother }}</p>
+    {% endif %}
+    {% if vis.major and 'Major' in fields %}
+        <p><b>Major:</b> {{ profile.get_major_display }}</p>
+    {% endif %}
+    {% if vis.hometown and 'Hometown' in fields %}
+        <p><b>Hometown:</b> {{ profile.hometown }}</p>
+    {% endif %}
+    {% if vis.current_city and 'Current city' in fields %}
+        <p><b>Current city:</b> {{ profile.current_city }}</p>
+    {% endif %}
+    {% if vis.initiation and 'Initiation' in fields %}
+        <p><b>Initiation:</b> {{ profile.initiation }}</p>
+    {% endif %}
+    {% if vis.graduation and 'Graduation' in fields %}
+        <p><b>Graduation:</b> {{ profile.graduation }}</p>
+    {% endif %}
+    {% if vis.dob and 'Date of birth' in fields %}
+        <p><b>Date of birth:</b> {{ profile.dob }}</p>
+    {% endif %}
+    {% if vis.phone and 'Phone' in fields %}
+        <p><b>Phone:</b> {{ profile.phone }}</p>
+    {% endif %}
+    {% if vis.email %}
+        <p><b>Email:</b> {{ account.email }}</p>
+    {% endif %}
+{% endblock %}

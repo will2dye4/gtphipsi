@@ -8,11 +8,15 @@
 {% block content %}
     <h1>Edit {{ type|capfirst }} Privacy Settings</h1>
     <p>Use this form to change what information is visible on your {{ type }} profile. {{ message }}</p>
+    {% ifequal type 'public' %}
+    <p><span style="font-weight: bold">Note:</span> {{ name_msg }}</p>
+    {% endifequal %}
     <form action="{% ifequal type 'public' %}{% url 'gtphipsi.brothers.views.edit_public_visibility' %}{% else %}{% url 'gtphipsi.brothers.views.edit_chapter_visibility' %}{% endifequal %}" method="post">
         {% csrf_token %}
         <table class="form">
             <tbody>
             {% for field in form %}
+                {% if field.label in fields %}
                 <tr>
                     <td class="spaced">
                         {{ field.label_tag }}
@@ -21,6 +25,7 @@
                         {{ field }}
                     </td>
                 </tr>
+                {% endif %}
             {% endfor %}
             <tr>
                 <td colspan="3">
