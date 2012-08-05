@@ -210,6 +210,14 @@ LOGGING = {
 
 AUTH_PROFILE_MODULE = 'brothers.UserProfile'
 
+LOGIN_URL = '/login/'
+
+# Invoke test SMTP server with 'python -m smtpd -n -c DebuggingServer localhost:1025'
+EMAIL_HOST = 'localhost'    # TODO change
+
+EMAIL_PORT = 1025           # TODO change
+
+
 ### gtphipsi-specific settings ###
 MAX_LOGIN_ATTEMPTS = 3
 
@@ -238,9 +246,11 @@ TIME_INPUT_FORMATS = [
 ]
 
 # Used to prevent just anyone from creating an account.
+# TODO store this as a hash instead
 SECRET_KEY = 'LetterMore1852'
 
 # Password to give to administrator users.
+# TODO store this as a hash instead
 ADMIN_KEY = 'GAbeta219_&^+'
 
 # Permissions to grant all undergraduate users when their accounts are created.

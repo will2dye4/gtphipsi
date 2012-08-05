@@ -77,6 +77,15 @@ span.more {
     font-style: italic;
 }
 
+span.small {
+    font-size: 0.7em;
+    font-style: italic;
+}
+
+span.error {
+    color: #d82240;
+}
+
 /* ---- [Common Elements] ---- */
 #header, #menu, #footer {
     min-width: 250px;
@@ -295,4 +304,19 @@ table.form tbody tr td.subheading {
     font-size: 1.1em;
     border-bottom: 2px solid black;
     padding-bottom: 15px
+}
+
+/* ---- [Info Box] ---- */
+div#infoBox {
+    float: right;
+    margin: 8px 8px 0 0;
+    padding: 5px;
+    border: 1px solid black;
+    background-color: #bbbbbb;
+    font-size: 0.9em;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    min-width: 75px;
+    max-width: 200px;
 }

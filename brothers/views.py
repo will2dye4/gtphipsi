@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User, Permission, Group
 from django.http import Http404, HttpResponseRedirect
 from gtphipsi.messages import get_message
-from brothers.models import UserProfile, UserForm, EditProfileForm, EditAccountForm, VisibilitySettings, PublicVisibilityForm, ChapterVisibilityForm, STATUS_BITS
+from brothers.models import UserProfile, UserForm, EditProfileForm, EditAccountForm, VisibilitySettings, PublicVisibilityForm, ChapterVisibilityForm, ChangePasswordForm, STATUS_BITS
 import logging
 
 
@@ -17,7 +17,7 @@ log = logging.getLogger('django')
 # visible to all users
 def list(request):
     profile_list = UserProfile.objects.filter(status='U')
-    brothers_list = User.objects.filter(pk__in=[profile.user.id for profile in profile_list])
+    brothers_list = User.objects.filter(pk__in=[profile.user.id for profile in profile_list])   # TODO why not just `[profile.user for profile in profile_list]` ??
     paginator = Paginator(brothers_list, 20)
     page = request.GET.get('page') if request.GET.get('page') else 1
     try:
@@ -30,19 +30,31 @@ def list(request):
 
 
 # visible to all users
-def show(request, id=0):
-    user = User.objects.get(pk=id)
-    if user is None: # TODO catch User.DoestNotExist ??
+def show(request, badge=0):
+    try:
+        profile = UserProfile.objects.get(badge=badge)
+        user = profile.user
+    except (UserProfile.DoesNotExist, User.DoesNotExist):
         raise Http404
-    profile = user.get_profile()
-    visibility = profile.public_visibility if request.user.is_anonymous() else profile.chapter_visibility
-    fields = get_fields_from_profile(profile)
-    return render(request, 'brothers/show.html', {'fields': fields, 'account': user, 'profile': profile, 'vis': visibility}, context_instance=RequestContext(request))
+    own_account = (user.id == request.user.id)
+    show_public = ('public' in request.GET and request.GET['public'] == 'true') or request.user.is_anonymous()
+    visibility = profile.public_visibility if show_public else profile.chapter_visibility
+    fields = get_fields_from_profile(profile, visibility)
+    chapter_fields, personal_fields, contact_fields = get_field_categories(fields)
+    return render(request, 'brothers/show.html', {'fields': fields,
+                                                  'account': user,
+                                                  'profile': profile,
+                                                  'public': show_public,
+                                                  'own_account': own_account,
+                                                  'chapter_fields': chapter_fields,
+                                                  'personal_fields': personal_fields,
+                                                  'contact_fields': contact_fields
+    }, context_instance=RequestContext(request))
 
 
 @login_required(login_url='/login/')
 def my_profile(request):
-    return show(request, request.user.id)
+    return show(request, request.user.get_profile().badge)
 
 
 @login_required
@@ -90,35 +102,41 @@ def add(request):
 
 
 @login_required
-def edit(request, id=0):
+def edit(request):
     try:
-        user = User.objects.get(pk=id)
+        user = User.objects.get(pk=request.user.id)
     except User.DoesNotExist:
         raise Http404
-    if user != request.user:
-        return HttpResponseRedirect(reverse('forbidden'))
-    elif request.method == 'POST':
+
+    if request.method == 'POST':
         form = EditProfileForm(request.POST, instance=user.get_profile())
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse('view_profile', args=[id]))
+            return HttpResponseRedirect(reverse('my_profile'))
     else:
-        if 'unlock' in request.GET and request.GET['unlock'] == 'true' and user.get_profile().has_bit(STATUS_BITS['LOCKED_OUT']):
-            profile = user.get_profile()
-            profile.bits &= ~STATUS_BITS['LOCKED_OUT']
-            profile.save()
-            return HttpResponseRedirect(reverse('manage_users'))
-        # elif <?>: ... future functionality
-        else:
-            form = EditProfileForm(instance=user.get_profile())
-    return render(request, 'brothers/edit.html', {'form': form, 'user_id': id}, context_instance=RequestContext(request))
+        form = EditProfileForm(instance=user.get_profile())
+    return render(request, 'brothers/edit.html', {'form': form}, context_instance=RequestContext(request))
 
 
 @login_required
-def edit_account(request, id=0):
+@user_passes_test(lambda u: u.get_profile().is_admin() if u else False, login_url='/forbidden/')
+def unlock(request, badge):
     try:
-        user = User.objects.get(pk=id)
-    except User.DoesNotExist:
+        profile = UserProfile.objects.get(badge=badge)
+    except UserProfile.DoesNotExist:
+        raise Http404
+
+    if profile.has_bit(STATUS_BITS['LOCKED_OUT']):
+        profile.clear_bit(STATUS_BITS['LOCKED_OUT'])
+        profile.save()
+    return HttpResponseRedirect(reverse('manage_users'))
+
+
+@login_required
+def edit_account(request, badge=0):
+    try:
+        user = UserProfile.objects.get(badge=badge).user if badge else request.user
+    except UserProfile.DoesNotExist:
         raise Http404
     own_account = (user == request.user)
     if not (own_account or request.user.get_profile().is_admin()):
@@ -149,9 +167,12 @@ def edit_account(request, id=0):
             profile.save()
             if save_user:
                 user.save()
-            if not own_account:
+            if own_account:
+                redirect = HttpResponseRedirect(reverse('my_profile'))
+            else:
                 log.info('Admin %s (badge %d) edited account details of %s (%s %s)', request.user.get_full_name(), request.user.get_profile().badge, user.username, first, last)
-            return HttpResponseRedirect(reverse('view_profile', args=[id]))
+                redirect = HttpResponseRedirect(reverse('view_profile', args=[user.get_profile().badge]))
+            return redirect
     else:
         profile = user.get_profile()
         form = EditAccountForm(initial={'first_name': user.first_name,
@@ -162,8 +183,44 @@ def edit_account(request, id=0):
                                         'email': user.email,
                                         'status': profile.status
         })
-    return render(request, 'brothers/edit_account.html', {'form': form, 'user_id': user.id, 'name': user.get_full_name()}, context_instance=RequestContext(request))
+    params = {'form': form, 'name': user.get_full_name(), 'own_account': own_account, 'badge': user.get_profile().badge if (badge and not own_account) else None}
+    return render(request, 'brothers/edit_account.html', params, context_instance=RequestContext(request))
 
+
+@login_required
+def change_password(request):
+    user = request.user
+    try:
+        profile = user.get_profile()
+    except UserProfile.DoesNotExist:
+        profile = None
+    reset = profile is not None and profile.has_bit(STATUS_BITS['PASSWORD_RESET'])
+
+    if request.method == 'POST':
+        form = ChangePasswordForm(request.POST)
+        form.user = user
+        if form.is_valid():
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            if reset:
+                profile.clear_bit(STATUS_BITS['PASSWORD_RESET'])
+                profile.save()
+            # TODO email user about password change ??
+            return HttpResponseRedirect(reverse('change_password_success'))
+    else:
+        form = ChangePasswordForm()
+        form.user = user
+
+    message = 'Your password was recently reset. ' \
+              'Please use the form below to change your password to something more memorable. ' \
+              'You will need the temporary password you were emailed.' if reset else None
+
+    return render(request, 'brothers/change_password.html', {'form': form, 'message': message}, context_instance=RequestContext(request))
+
+
+@login_required
+def change_password_success(request):
+    return render(request, 'brothers/change_password_success.html', context_instance=RequestContext(request))
 
 
 @login_required
@@ -236,25 +293,41 @@ def create_visibility_settings():
     return public_visibility, chapter_visibility
 
 
-def get_fields_from_profile(profile):
+def get_fields_from_profile(profile, vis=None):
     fields = []
-    if profile.middle_name or profile.nickname:
+    if (profile.middle_name or profile.nickname) and (vis is None or vis.full_name):
         fields.append('Full name')
-    if profile.big_brother is not None:
+
+    # chapter information
+    if profile.big_brother is not None and (vis is None or vis.big_brother):
         fields.append('Big brother')
-    if profile.major:
+    if profile.major and (vis is None or vis.major):
         fields.append('Major')
-    if profile.hometown:
-        fields.append('Hometown')
-    if profile.current_city:
-        fields.append('Current city')
-    if profile.initiation is not None:
+    if profile.initiation is not None and (vis is None or vis.initiation):
         fields.append('Initiation')
-    if profile.graduation is not None:
+    if profile.graduation is not None and (vis is None or vis.graduation):
         fields.append('Graduation')
-    if profile.dob is not None:
+
+    # personal information
+    if profile.hometown and (vis is None or vis.hometown):
+        fields.append('Hometown')
+    if profile.current_city and (vis is None or vis.current_city):
+        fields.append('Current city')
+    if profile.dob is not None and (vis is None or vis.dob):
         fields.append('Date of birth')
-    if profile.phone:
+
+    # contact information
+    if profile.phone and (vis is None or vis.phone):
         fields.append('Phone')
-    fields.append('Email') # email is required
+    if vis is None or vis.email:
+        fields.append('Email') # email is required
+
     return fields
+
+
+def get_field_categories(fields):
+    field_set = frozenset(fields)
+    chapter_set = frozenset(['Big brother', 'Major', 'Initiation', 'Graduation'])
+    personal_set = frozenset(['Hometown', 'Current city', 'Date of birth'])
+    contact_set = frozenset(['Phone', 'Email'])
+    return len(field_set.intersection(chapter_set)), len(field_set.intersection(personal_set)), len(field_set.intersection(contact_set))

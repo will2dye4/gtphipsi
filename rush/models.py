@@ -34,8 +34,11 @@ class Rush(models.Model):
     def is_current(self):
         return Rush.current() == self
 
+    def get_unique_name(self):
+        return '%s%d' % (self.season, self.start_date.year)
+
     def get_absolute_url(self):
-        return reverse('view_rush', kwargs={'id': self.id})
+        return reverse('view_rush', kwargs={'name': self.get_unique_name()})
 
     class Meta:
         ordering = ['-start_date']

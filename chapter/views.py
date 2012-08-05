@@ -11,15 +11,22 @@ import logging
 log = logging.getLogger('django')
 
 
+# visible to all users
 def about(request):
     return render(request, 'chapter/about.html', context_instance=RequestContext(request))
 
+
+# visible to all users
 def history(request):
     return render(request, 'chapter/history.html', context_instance=RequestContext(request))
 
+
+# visible to all users
 def creed(request):
     return render(request, 'chapter/creed.html', context_instance=RequestContext(request))
 
+
+# visible to all users
 def announcements(request):
     private = False
     if request.user.is_authenticated():

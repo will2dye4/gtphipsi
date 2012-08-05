@@ -16,6 +16,11 @@ def menu_item_processor(request):
     elif request.user.is_authenticated():
         if path.startswith('/chapter/announcements'):
             menu_item = 'announcements'
+        elif path.startswith('/brothers'):
+            if path in ['/brothers/profile/', '/brothers/edit/', '/brothers/account/'] or path.startswith('/brothers/privacy') or path.startswith('/brothers/password'):
+                menu_item = 'account'
+            else:
+                menu_item = 'admin'
     else:
         if path.startswith('/chapter') or path.startswith('/brothers'):
             menu_item = 'chapter'

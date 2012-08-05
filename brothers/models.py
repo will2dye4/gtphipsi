@@ -10,6 +10,7 @@ from django.contrib.localflavor.us.models import PhoneNumberField
 
 STATUS_BITS = {
     'LOCKED_OUT': 0x1,
+    'PASSWORD_RESET': 0x2,
 }
 
 # Possible suffixes for names.
@@ -87,6 +88,17 @@ MAJOR_CHOICES = (
 )
 
 
+#class SecurityQuestion(models.Model):
+#    question = models.CharField(max_length=256)
+#    answer = models.CharField(max_length=256)
+
+
+#class SecurityQuestionForm(forms.Form):
+
+#    class Meta:
+#        model = SecurityQuestion
+
+
 class VisibilitySettings(models.Model):
     full_name = models.BooleanField(blank=True)
     big_brother = models.BooleanField(blank=True)
@@ -138,6 +150,8 @@ class UserProfile(models.Model):
     public_visibility = models.ForeignKey(VisibilitySettings, blank=False, null=True, related_name='public_profiles')
     chapter_visibility = models.ForeignKey(VisibilitySettings, blank=False, null=True, related_name='chapter_profiles')
 
+#    security_question = models.ForeignKey(SecurityQuestion, blank=True, null=True)
+
     def __unicode__(self):
         return self.common_name()
 
@@ -173,6 +187,14 @@ class UserProfile(models.Model):
     def has_bit(self, bit):
         """Returns True if the brother has the specified bit set."""
         return self.bits & bit == bit
+
+    def set_bit(self, bit):
+        """Sets the specified bit."""
+        self.bits |= bit
+
+    def clear_bit(self, bit):
+        """Clears the specified bit."""
+        self.bits &= ~bit
 
     class Meta:
         ordering = ['badge']
@@ -270,17 +292,25 @@ class EditAccountForm(forms.Form):
 
 
 class ChangePasswordForm(forms.Form):
-    old_pass = forms.CharField(widget=forms.PasswordInput)
-    password = forms.CharField(min_length=6, widget=forms.PasswordInput, help_text='Must be at least six characters long')
-    confirm = forms.CharField(min_length=6, widget=forms.PasswordInput, label='Confirm password')
+    old_pass = forms.CharField(widget=forms.PasswordInput, label='Current password')
+    password = forms.CharField(min_length=6, widget=forms.PasswordInput, label='New password', help_text='Must be at least six characters long')
+    confirm = forms.CharField(min_length=6, widget=forms.PasswordInput, label='Confirm new password')
     user = None
 
     def clean_old_pass(self):
         old_pass = self.cleaned_data.get('old_pass')
-        if old_pass is not None and self.user is not None and old_pass != self.user.password:
+        if old_pass is not None and self.user is not None and not self.user.check_password(old_pass):
             self._errors['old_pass'] = self.error_class(['That\'s not right!'])
             del self.cleaned_data['old_pass']
         return self.cleaned_data['old_pass'] if 'old_pass' in self.cleaned_data else None
+
+    def clean_password(self):
+        old_pass = self.cleaned_data.get('old_pass')
+        password = self.cleaned_data.get('password')
+        if old_pass is not None and password is not None and old_pass == password:
+            self.errors['password'] = self.error_class(['Your new password may not be the same as your current password.'])
+            del self.cleaned_data['password']
+        return self.cleaned_data['password'] if 'password' in self.cleaned_data else None
 
     def clean_confirm(self):
         password = self.cleaned_data.get('password')

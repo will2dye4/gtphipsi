@@ -24,9 +24,9 @@
 
 {% block content %}
     <h1>Edit Account Details</h1>
-    <p>Use the form below to edit {% ifequal name user.get_full_name %}your{% else %}{{ name }}'s{% endifequal %} account details. Click "Save" when you are finished.</p>
-    {% ifequal name user.get_full_name %}<p>You may also want to <a href="{% url 'gtphipsi.brothers.views.edit' id=user_id %}">edit your user profile</a> or <a href="#">change your password</a>.</p>{% endifequal %}
-    <form action="{% url 'gtphipsi.brothers.views.edit_account' id=user_id %}" method="post">
+    <p>Use the form below to edit {% if own_account %}your{% else %}{{ name }}'s{% endif %} account details. Click "Save" when you are finished.</p>
+    {% if own_account %}<p>You may also want to <a href="{% url 'gtphipsi.brothers.views.edit' %}">edit your user profile</a> or <a href="{% url 'gtphipsi.brothers.views.change_password' %}">change your password</a>.</p>{% endif %}
+    <form action="{% if own_account %}{% url 'gtphipsi.brothers.views.edit_account' %}{% else %}{% url 'gtphipsi.brothers.views.edit_account' badge=badge %}{% endif %}" method="post">
         {% csrf_token %}
         <table class="form">
             <tbody>
