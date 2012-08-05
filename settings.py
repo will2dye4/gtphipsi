@@ -246,12 +246,10 @@ TIME_INPUT_FORMATS = [
 ]
 
 # Used to prevent just anyone from creating an account.
-# TODO store this as a hash instead
-SECRET_KEY = 'LetterMore1852'
+BROTHER_KEY = 'ba9fd881a99be6b644a43e73f52471f614a8c6115388b27836316672'
 
 # Password to give to administrator users.
-# TODO store this as a hash instead
-ADMIN_KEY = 'GAbeta219_&^+'
+ADMIN_KEY = '21ad61523fbd563a8fe87860b16c4730f7d58cb08e4394af81c7c81f'
 
 # Permissions to grant all undergraduate users when their accounts are created.
 UNDERGRADUATE_PERMISSIONS = [

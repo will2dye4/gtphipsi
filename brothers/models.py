@@ -6,6 +6,7 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import PhoneNumberField
+import hashlib
 #from django.db.models.signals import post_save -- see comment at the bottom of the file
 
 STATUS_BITS = {
@@ -254,7 +255,8 @@ class UserForm(forms.Form):
 
     def clean_secret_key(self):
         secret = self.cleaned_data.get('secret_key')
-        if secret is not None and secret != settings.SECRET_KEY:
+        hash = hashlib.sha224(secret).hexdigest() if secret is not None else None
+        if hash is not None and hash != settings.BROTHER_KEY:
             self._errors['secret_key'] = self.error_class(['Nope!'])
             del self.cleaned_data['secret_key']
         return self.cleaned_data['secret_key'] if 'secret_key' in self.cleaned_data else None
@@ -263,7 +265,8 @@ class UserForm(forms.Form):
         if not self.cleaned_data.get('make_admin'):
             return ''   # if admin box is unchecked, validate by default
         password = self.cleaned_data.get('admin_password')
-        if password is not None and password != settings.ADMIN_KEY:
+        hash = hashlib.sha224(password).hexdigest() if password is not None else None
+        if hash is not None and hash != settings.ADMIN_KEY:
             self._errors['admin_password'] = self.error_class(['Wrong.'])
             del self.cleaned_data['admin_password']
         return self.cleaned_data['admin_password'] if 'admin_password' in self.cleaned_data else None
