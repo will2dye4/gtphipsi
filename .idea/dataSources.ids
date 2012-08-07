@@ -12,5 +12,20 @@
         <url>jar://$USER_HOME$/Library/Preferences/PyCharm10/jdbc-drivers/mysql-connector-java-5.1.16-bin.jar!/</url>
       </library>
     </libraries>
+    <table name="auth_group" schema="" catalog="gtphipsi" type="TABLE">
+      <primary-key name="PRIMARY" columns="id" />
+    </table>
+    <table name="auth_group_permissions" schema="" catalog="gtphipsi" type="TABLE" />
+    <table name="auth_message" schema="" catalog="gtphipsi" type="TABLE" />
+    <table name="auth_permission" schema="" catalog="gtphipsi" type="TABLE" />
+    <table name="auth_user" schema="" catalog="gtphipsi" type="TABLE" />
+    <table name="auth_user_groups" schema="" catalog="gtphipsi" type="TABLE" />
+    <table name="auth_user_user_permissions" schema="" catalog="gtphipsi" type="TABLE" />
+    <table name="brothers_userprofile" schema="" catalog="gtphipsi" type="TABLE" />
+    <table name="django_content_type" schema="" catalog="gtphipsi" type="TABLE" />
+    <table name="django_session" schema="" catalog="gtphipsi" type="TABLE" />
+    <table name="django_site" schema="" catalog="gtphipsi" type="TABLE" />
+    <table name="rush_rush" schema="" catalog="gtphipsi" type="TABLE" />
+    <table name="rush_rushevent" schema="" catalog="gtphipsi" type="TABLE" />
   </data-source>
 </component>
