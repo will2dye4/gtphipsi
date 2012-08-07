@@ -5,16 +5,28 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404
 from models import Announcement, AnnouncementForm
+import logging
 
+
+log = logging.getLogger('django')
+
+
+# visible to all users
 def about(request):
     return render(request, 'chapter/about.html', context_instance=RequestContext(request))
 
+
+# visible to all users
 def history(request):
     return render(request, 'chapter/history.html', context_instance=RequestContext(request))
 
+
+# visible to all users
 def creed(request):
     return render(request, 'chapter/creed.html', context_instance=RequestContext(request))
 
+
+# visible to all users
 def announcements(request):
     private = False
     if request.user.is_authenticated():
@@ -61,7 +73,9 @@ def edit_announcement(request, id=0):
         raise Http404
     else:
         if 'delete' in request.GET and request.GET['delete'] == 'true':
+            text = announcement.text
             announcement.delete()
+            log.info('User %s (badge %d) deleted announcement "%s"', request.user.get_full_name(), request.user.get_profile().badge, text)
             return HttpResponseRedirect(reverse('announcements'))
         elif request.method == 'POST':
             form = AnnouncementForm(request.POST, instance=announcement)

@@ -9,10 +9,10 @@
     <div id="menu">
         <ul>
             <li><a href="{% url 'gtphipsi.views.home' %}" {% ifequal menu_item 'home' %}class="selected"{% endifequal %}>Home</a></li>
-            <li><a href="{% url 'gtphipsi.rush.views.current' %}" {% ifequal menu_item 'rush' %}class="selected"{% endifequal %}>Rush</a>
+            <li><a href="{% url 'gtphipsi.rush.views.show' %}" {% ifequal menu_item 'rush' %}class="selected"{% endifequal %}>Rush</a>
                 <ul>
                     <li><a href="{% url 'gtphipsi.rush.views.list' %}">All Rushes</a></li>
-                    <li><a href="{% url 'gtphipsi.rush.views.current' %}">Current Rush</a></li>
+                    <li><a href="{% url 'gtphipsi.rush.views.show' %}">Current Rush</a></li>
                     <li><a href="{% url 'gtphipsi.rush.views.add' %}">Add New Rush</a></li>
                     <li><a href="{% url 'gtphipsi.rush.views.info_card_list' %}">Information Cards</a></li>
                 </ul>
@@ -34,6 +34,15 @@
             </li>
             {% comment %}<li><a href="{% url 'gtphipsi.chapter.views.word' %}" {% ifequal menu_item 'word' %}class="selected"{% endifequal %}>WORD</a></li>{% endcomment %}
             <li><a href="{% url 'gtphipsi.views.calendar' %}" {% ifequal menu_item 'calendar' %}class="selected"{% endifequal %}>Calendar</a></li>
+            <li><a href="{% url 'gtphipsi.brothers.views.my_profile' %}" {% ifequal menu_item 'account' %}class="selected"{% endifequal %}>Account</a>
+                <ul>
+                    <li><a href="{% url 'gtphipsi.brothers.views.my_profile' %}">View Profile</a></li>
+                    <li><a href="{% url 'gtphipsi.brothers.views.edit' %}">Edit Profile</a></li>
+                    <li><a href="{% url 'gtphipsi.brothers.views.edit_account' %}">Edit Account Details</a></li>
+                    <li><a href="{% url 'gtphipsi.brothers.views.visibility' %}">Privacy Settings</a></li>
+                    <li><a href="{% url 'gtphipsi.brothers.views.change_password' %}">Change Password</a></li>
+                </ul>
+            </li>
         </ul>
     </div>
 {% endblock %}

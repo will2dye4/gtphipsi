@@ -5,14 +5,29 @@
     Edit {{ type|capfirst }} Privacy Settings | {{ block.super }}
 {% endblock %}
 
+{% block sidebar %}
+    {% ifequal type 'chapter' %}
+        <h3 class="sidebar">Note</h3>
+        <p style="padding-top: 10px">If you hide information from your chapter profile, not even you can see it when you view your profile.
+        So why provide that information if you're just going to hide it from everyone?</p>
+        <p>If you find that you have provided some information that you don't want anyone to see, simply edit your user profile and remove it.</p>
+    {% else %}
+        {{ block.super }}
+    {% endifequal %}
+{% endblock %}
+
 {% block content %}
     <h1>Edit {{ type|capfirst }} Privacy Settings</h1>
     <p>Use this form to change what information is visible on your {{ type }} profile. {{ message }}</p>
+    {% ifequal type 'public' %}
+    <p><span style="font-weight: bold">Note:</span> {{ name_msg }}</p>
+    {% endifequal %}
     <form action="{% ifequal type 'public' %}{% url 'gtphipsi.brothers.views.edit_public_visibility' %}{% else %}{% url 'gtphipsi.brothers.views.edit_chapter_visibility' %}{% endifequal %}" method="post">
         {% csrf_token %}
         <table class="form">
             <tbody>
             {% for field in form %}
+                {% if field.label in fields %}
                 <tr>
                     <td class="spaced">
                         {{ field.label_tag }}
@@ -21,6 +36,7 @@
                         {{ field }}
                     </td>
                 </tr>
+                {% endif %}
             {% endfor %}
             <tr>
                 <td colspan="3">

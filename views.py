@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
-from django.template import RequestContext, loader
+from django.http import HttpResponseRedirect, Http404
+from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User, Group, Permission
@@ -44,7 +44,12 @@ def sign_in(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return HttpResponseRedirect(reverse('home'))
+                    try:
+                        profile = user.get_profile()
+                    except UserProfile.DoesNotExist:
+                        profile = None
+                    redirect = get_redirect_destination(request.META['HTTP_REFERER'], profile)  # typo in 'REFERER' is intentional
+                    return HttpResponseRedirect(redirect)
                 else:
                     error = 'disabled'
             else:
@@ -54,7 +59,7 @@ def sign_in(request):
             error = 'locked'
             try:
                 profile = user.get_profile()
-                profile.bits |= locked_out_bit
+                profile.set_bit(locked_out_bit)
                 profile.save()
                 request.session['login_attempts'] = 1
             except UserProfile.DoesNotExist:
@@ -76,29 +81,14 @@ def register(request):
             user = User.objects.create_user(username, email, password)
             user.first_name = first
             user.last_name = last
-            admin = form.cleaned_data['make_admin']
-            if admin or form.cleaned_data['status'] == 'U':
-                group, created = Group.objects.get_or_create(name='Undergraduates')
-                if created:
-                    group.permissions = [Permission.objects.get(codename=code) for code in settings.UNDERGRADUATE_PERMISSIONS]
-                    group.save()
-                user.groups.add(group)
-            if admin:
-                group, created = Group.objects.get_or_create(name='Administrators')
-                if created:
-                    group.permissions = [Permission.objects.get(codename=code) for code in settings.ADMINISTRATOR_PERMISSIONS]
-                    group.save()
-                user.groups.add(group)
+            create_user_permissions(user, form.cleaned_data['status'] == 'U', form.cleaned_data['make_admin'])
             user.save()
             middle, suffix, nickname = form.cleaned_data['middle_name'], form.cleaned_data['suffix'], form.cleaned_data['nickname']
             badge, status, big = form.cleaned_data['badge'], form.cleaned_data['status'], form.cleaned_data['big_brother']
             major, hometown, current_city, phone = form.cleaned_data['major'], form.cleaned_data['hometown'], form.cleaned_data['current_city'], form.cleaned_data['phone']
             initiation, graduation, dob = form.cleaned_data['initiation'], form.cleaned_data['graduation'], form.cleaned_data['dob']
-            public_visibility = VisibilitySettings(full_name=False, big_brother=False, major=False, hometown=False, current_city=False, initiation=False, graduation=False, dob=False, phone=False, email=False)
-            public_visibility.save()
-            chapter_visibility = VisibilitySettings(full_name=True, big_brother=True, major=True, hometown=True, current_city=True, initiation=True, graduation=True, dob=True, phone=True, email=True)
-            chapter_visibility.save()
-            profile = UserProfile(user=user, middle_name=middle, suffix=suffix, nickname=nickname, badge=badge, status=status, big_brother=big, major=major, hometown=hometown, current_city=current_city, phone=phone, initiation=initiation, graduation=graduation, dob=dob, public_visibility=public_visibility, chapter_visibility=chapter_visibility)
+            public, chapter = create_visibility_settings()
+            profile = UserProfile(user=user, middle_name=middle, suffix=suffix, nickname=nickname, badge=badge, status=status, big_brother=big, major=major, hometown=hometown, current_city=current_city, phone=phone, initiation=initiation, graduation=graduation, dob=dob, public_visibility=public, chapter_visibility=chapter)
             profile.save()
             return HttpResponseRedirect(reverse('register_success'))
     else:
@@ -111,7 +101,8 @@ def register_success(request):
 
 
 def calendar(request):
-    return render(request, 'calendar.html', context_instance=RequestContext(request))
+    template_name = 'calendar.html' if request.user.is_anonymous() else 'calendar_bros_only.html'
+    return render(request, template_name, context_instance=RequestContext(request))
 
 
 def contact(request):
@@ -137,3 +128,109 @@ def contact_thanks(request):
 
 def forbidden(request):
     return render(request, 'forbidden.html', context_instance=RequestContext(request))
+
+
+def forgot_password(request):
+    error = None
+    if request.method == 'POST':
+        username = request.POST.get('username', '')
+        try:
+            user = User.objects.get(username=username)
+            return reset_password(request, user.id) #HttpResponseRedirect(reverse('reset_password', args=[user.id]))
+        except User.DoesNotExist:
+            error = 'That username is invalid.'
+    return render(request, 'forgot_password.html', {'error': error}, context_instance=RequestContext(request))
+
+
+def reset_password(request, id=0):
+    try:
+        user = User.objects.get(pk=id)
+    except User.DoesNotExist:
+        raise Http404
+
+    logged_in = request.user.is_authenticated()
+    own_account = not logged_in or user == request.user
+
+    if request.method == 'POST':
+        password = User.objects.make_random_password(length=8, allowed_chars='abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789%#@&_?')
+        user.set_password(password)
+        user.save()
+
+        profile = user.get_profile()
+        profile.set_bit(STATUS_BITS['PASSWORD_RESET'])
+        profile.save()
+
+        message = 'Dear {0},\n\n' \
+                    '{1}. The next time you sign in, please use the following temporary password.\n\n' \
+                    'Password: {2}\n\n' \
+                    'After signing in, you will be prompted to change your password to something more memorable.\n\n' \
+                    'Cheers,\n' \
+                    'gtphipsi Webmaster'.format(profile.preferred_name(),
+                                  ('Your password for gtphipsi.org has been reset successfully' if own_account else 'An administrator has just reset your password for gtphipsi.org'),
+                                  password)
+        user.email_user('Your password has been reset', message)
+
+        if own_account:
+            log.info('User %s reset his password. Email sent successfully to %s', user.get_full_name(), user.email)
+            redirect = reverse('reset_password_success')
+        else:
+            log.info('Admin %s (badge %d) reset password for user %s (%s). Email sent successfully to %s', request.user.get_full_name(), request.user.get_profile().badge, user.username, user.get_full_name(), user.email)
+            redirect = reverse('manage_users')
+        return HttpResponseRedirect(redirect)
+
+    else:
+        return render(request, 'reset_password.html', {'own_account': own_account, 'name': user.first_name, 'user_id': id}, context_instance=RequestContext(request))
+
+
+def reset_password_success(request):
+    return render(request, 'reset_password_success.html', context_instance=RequestContext(request))
+
+
+def get_redirect_destination(referrer, profile):
+    """Helper function to find and return the 'next' parameter from the HTTP Referrer header, if present."""
+    redirect = reverse('home')
+    if profile is not None and profile.has_bit(STATUS_BITS['PASSWORD_RESET']):
+        redirect = reverse('change_password')
+    elif referrer.find('?') > -1:
+        uri, delim, querystr = referrer.partition('?')
+        del uri, delim
+        args = querystr.split('&')
+        for arg in args:
+            key_val = arg.split('=')
+            if key_val[0] == 'next':
+                redirect = key_val[1]
+                break
+    return redirect
+
+
+# TODO refactor to use functions in brothers/views.py
+def create_user_permissions(user, undergrad, admin):
+    """Helper function to add a new user to the appropriate permissions group(s)."""
+    if undergrad or admin:
+        group, created = Group.objects.get_or_create(name='Undergraduates')
+        if created:
+            create_permissions()
+            group.permissions = [Permission.objects.get(codename=code) for code in settings.UNDERGRADUATE_PERMISSIONS]
+            group.save()
+        user.groups.add(group)
+    if admin:
+        group, created = Group.objects.get_or_create(name='Administrators')
+        if created:
+            group.permissions = [Permission.objects.get(codename=code) for code in settings.ADMINISTRATOR_PERMISSIONS]
+            group.save()
+        user.groups.add(group)
+
+
+def create_permissions():
+    """Helper function to create the necessary Permission objects the first time a user is created."""
+    if not Permission.objects.all().count():
+        permissions = settings.UNDERGRADUATE_PERMISSIONS + settings.ADMINISTRATOR_PERMISSIONS
+        Permission.objects.bulk_create([Permission(codename=code) for code in permissions])
+
+
+def create_visibility_settings():
+    public_visibility = VisibilitySettings(full_name=False, big_brother=False, major=False, hometown=False, current_city=False, initiation=False, graduation=False, dob=False, phone=False, email=False)
+    public_visibility.save()
+    chapter_visibility = VisibilitySettings(full_name=True, big_brother=True, major=True, hometown=True, current_city=True, initiation=True, graduation=True, dob=True, phone=True, email=True)
+    chapter_visibility.save()
+    return public_visibility, chapter_visibility

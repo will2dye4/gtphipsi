@@ -21,8 +21,8 @@
     <h3>Undergraduates</h3>
     <ul>
     {% for brother in undergrads %}
-        {% with brother.id as id %}
-        <li>{{ brother.get_profile.common_name }} {% if brother in locked_out_undergrads %}<span style="padding-left: 15px"><a href="{% url 'gtphipsi.brothers.views.edit' id=id %}?unlock=true">unlock</a></span>{% endif %}</li>
+        {% with brother.get_profile.badge as badge %}
+        <li>{{ brother.get_profile.common_name }} {% if brother in locked_out_undergrads %}<span style="padding-left: 15px"><a href="{% url 'gtphipsi.brothers.views.unlock' badge=badge %}">unlock</a></span>{% endif %}</li>
         {% endwith %}
     {% empty %}
         <li>There are no brothers to display.</li>
@@ -31,8 +31,8 @@
     <h3>Alumni</h3>
     <ul>
     {% for alumnus in alumni %}
-        {% with alumnus.id as id %}
-        <li>{{ alumnus.get_full_name }} {% if alumnus in locked_out_alumni %}<span style="padding-left: 15px"><a href="{% url 'gtphipsi.brothers.views.edit' id=id %}?unlock=true">unlock</a></span>{% endif %}</li>
+        {% with alumnus.get_profile.badge as badge %}
+        <li>{{ alumnus.get_full_name }} {% if alumnus in locked_out_alumni %}<span style="padding-left: 15px"><a href="{% url 'gtphipsi.brothers.views.unlock' badge=badge %}">unlock</a></span>{% endif %}</li>
         {% endwith %}
     {% empty %}
         <li>There are no alumni to display.</li>

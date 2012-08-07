@@ -1,7 +1,7 @@
 # Django settings for gtphipsi.
 # TODO: Set the global variable telling Django this is where this project's settings are.
 
-DEBUG = True
+DEBUG = True        # Change me!
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -12,10 +12,12 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'gtphipsi',
-        'USER': 'gtphipsi',
-        'PASSWORD': 'gt1852',
+#        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.sqlite3',
+#       'NAME': 'gtphipsi',
+        'NAME': '/Users/William/dev/sqlite/gtphipsi',
+#       'USER': 'gtphipsi',
+#       'PASSWORD': 'tester',
         'HOST': '127.0.0.1',
         'PORT': '',                      # Set to empty string for default.
     }
@@ -44,9 +46,12 @@ USE_I18N = True
 # calendars according to the current locale
 USE_L10N = True
 
+# The root directory for the project's source code.
+GTPHIPSI_APP_ROOT = '/Users/William/dev/git/gtphipsi'  # Change me!
+
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = '/Users/William/Git/gtphipsi/media/' # Change me!
+MEDIA_ROOT = GTPHIPSI_APP_ROOT + '/media/' # Change me!
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -57,20 +62,15 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = '/Users/William/Git/gtphipsi/media/static'
+STATIC_ROOT = GTPHIPSI_APP_ROOT + '/media/static'
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
 
-# URL prefix for admin static files -- CSS, JavaScript and images.
-# Make sure to use a trailing slash.
-# Examples: "http://foo.com/static/admin/", "/static/admin/".
-ADMIN_MEDIA_PREFIX = '/static/admin/'
-
 # Additional locations of static files
 STATICFILES_DIRS = (
-    '/Users/William/Git/gtphipsi/static',
+    GTPHIPSI_APP_ROOT + '/static',
     # Don't forget to use absolute paths, not relative paths.
 )
 
@@ -98,7 +98,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
     'django.core.context_processors.static',
-    #'django.core.context_processors.tz',
+#   'django.core.context_processors.tz',
     'django.contrib.messages.context_processors.messages',
     'gtphipsi.context_processors.announcements_processor',
     'gtphipsi.context_processors.menu_item_processor'
@@ -115,7 +115,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'gtphipsi.urls'
 
 TEMPLATE_DIRS = (
-    '/Users/William/Git/gtphipsi/templates',
+    GTPHIPSI_APP_ROOT + '/templates',
     # Don't forget to use absolute paths, not relative paths.
 )
 
@@ -135,6 +135,8 @@ INSTALLED_APPS = (
     'chapter',
 )
 
+TIME_LOGGING_FORMAT = '%d/%b/%Y %H:%M:%S'
+
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
 LOGGING = {
@@ -145,7 +147,8 @@ LOGGING = {
             'format': '[%(levelname)s] %(module)s (%(asctime)s, %(process)d, %(thread)d) : %(message)s'
         },
         'simple': {
-            'format': '[%(levelname)s] %(message)s'
+            'format': '[%(asctime)s - %(levelname)s] %(message)s',
+            'datefmt': TIME_LOGGING_FORMAT
         },
         'default': {
             'format': '[%(levelname)s] %(asctime)s %(module)s.%(funcName)s (%(lineno)d) : %(message)s'
@@ -161,25 +164,25 @@ LOGGING = {
             'level': 'INFO',
             'class': 'logging.FileHandler',
             'formatter': 'default',
-            'filename': '/Users/William/Git/gtphipsi/log/application.log'
+            'filename': GTPHIPSI_APP_ROOT + '/log/application.log'
         },
         'request_log': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'formatter': 'default',
-            'filename': '/Users/William/Git/gtphipsi/log/request.log'
+            'filename': GTPHIPSI_APP_ROOT + '/log/request.log'
         },
         'query_log': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'formatter': 'default',
-            'filename': '/Users/William/Git/gtphipsi/log/query.log'
+            'filename': GTPHIPSI_APP_ROOT + '/log/query.log'
         },
         'error_log': {
             'level': 'WARNING',
             'class': 'logging.FileHandler',
             'formatter': 'verbose',
-            'filename': '/Users/William/Git/gtphipsi/log/error.log'
+            'filename': GTPHIPSI_APP_ROOT + '/log/error.log'
         },
         'mail_admins': {
             'level': 'ERROR',
@@ -200,15 +203,25 @@ LOGGING = {
         'django.db.backends': {
             'handlers': ['query_log'],
             'level': 'DEBUG',
-            'propagate': True
+            'propagate': False
         }
     }
 }
 
 AUTH_PROFILE_MODULE = 'brothers.UserProfile'
 
+LOGIN_URL = '/login/'
+
+# Invoke test SMTP server with 'python -m smtpd -n -c DebuggingServer localhost:1025'
+EMAIL_HOST = 'localhost'    # TODO change
+
+EMAIL_PORT = 1025           # TODO change
+
+
 ### gtphipsi-specific settings ###
 MAX_LOGIN_ATTEMPTS = 3
+
+MIN_PASSWORD_LENGTH = 6
 
 # Accepted formats:
 # '1852-[0]2-19', '[0]2-19-1852', '[0]2-19-52', '[0]2/19/1852', '[0]2/19/52',
@@ -233,10 +246,10 @@ TIME_INPUT_FORMATS = [
 ]
 
 # Used to prevent just anyone from creating an account.
-SECRET_KEY = 'LetterMore1852'
+BROTHER_KEY = 'ba9fd881a99be6b644a43e73f52471f614a8c6115388b27836316672'
 
 # Password to give to administrator users.
-ADMIN_KEY = 'GAbeta219_&^+'
+ADMIN_KEY = '21ad61523fbd563a8fe87860b16c4730f7d58cb08e4394af81c7c81f'
 
 # Permissions to grant all undergraduate users when their accounts are created.
 UNDERGRADUATE_PERMISSIONS = [

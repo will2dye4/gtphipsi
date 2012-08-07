@@ -194,7 +194,7 @@
     <td colspan="3" style="font-weight: bold; font-size: 1.1em; border-bottom: 2px solid black; margin-bottom: 15px">Personal Information</td>
 </tr>
 <tr>
-    <td {% if form.email.errors %}class="error spaced" style="font-weight: bold"{% else %}class="spaced"{% endif %}>
+    <td {% if form.email.errors %}class="error spaced"{% else %}class="spaced"{% endif %} style="font-weight: bold">
         {{ form.email.label_tag }}
     </td>
     <td class="spaced" style="padding-top: 10px">

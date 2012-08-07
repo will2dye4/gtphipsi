@@ -10,7 +10,7 @@
         function confirm_delete () {
             var result = confirm("Are you sure you want to delete this rush? All associated rush events will also be deleted.");
             if (result == true) {
-                window.location.href = "{% url 'gtphipsi.rush.views.edit' id=rush_id %}?delete=true";
+                window.location.href = "{% url 'gtphipsi.rush.views.edit' name=rush_name %}?delete=true";
             }
         }
     </script>
@@ -19,7 +19,7 @@
 {% block content %}
     <h1>Edit Rush Details</h1>
     <p>Use the form below to edit the details of a rush. Click "Save" when you are finished.</p>
-    <form action="{% url 'gtphipsi.rush.views.edit' id=rush_id %}" method="post">
+    <form action="{% url 'gtphipsi.rush.views.edit' name=rush_name %}" method="post">
         {% include "_table_form.html" with submit_text="Save" %}
         <div style="float: right"><a href="#" onclick="confirm_delete()">delete</a></div>
     </form>

@@ -28,8 +28,8 @@
     <h1>Add Event to {{ rush }}</h1>
     <p>Use this form to add a rush event. You are not required to include a description,
     location, or food information, but you should include as much detail as possible.</p>
-    {% with rush.id as rush_id %}
-    <form action="{% url 'gtphipsi.rush.views.add_event' id=rush_id %}" method="post">
+    {% with rush.get_unique_name as rush_name %}
+    <form action="{% url 'gtphipsi.rush.views.add_event' name=rush_name %}" method="post">
         {% include "_table_form.html" with submit_text="Add Event" %}
     </form>
     {% endwith %}

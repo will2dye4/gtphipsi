@@ -6,6 +6,16 @@
         table.form tbody tr td {
             padding-right: 50px;
         }
+        span.gray {
+            color: #888;
+        }
+        span.bright {
+            color: #0b0;
+        }
+        span.header {
+            font-weight: bold;
+            text-decoration: underline;
+        }
     </style>
 {% endblock %}
 
@@ -22,18 +32,86 @@
     <p>This page shows your current privacy settings. Click on the links below to change your settings.</p>
     <table class="form">
         <tbody>
-        <tr style="font-weight: bold">
+        <tr>
             <td class="spaced"></td>
-            <td class="spaced">public</td>
-            <td class="spaced">chapter</td>
+            <td class="spaced"><span class="header">Public</span> <span class="small"><a href="{% url 'gtphipsi.brothers.views.edit_public_visibility' %}">edit</a></span></td>
+            <td class="spaced"><span class="header">Chapter</span> <span class="small"><a href="{% url 'gtphipsi.brothers.views.edit_chapter_visibility' %}">edit</a></span></td>
         </tr>
-        {% if 'full_name' in fields %}
+        {% if 'Full name' in fields %}
         <tr>
             <td class="spaced">Full name</td>
-            <td class="spaced">{% if public.full_name %}visible{% else %}hidden{% endif %}</td>
-            <td class="spaced">{% if chapter.full_name %}visible{% else %}hidden{% endif %}</td>
+            <td class="spaced">{% if public.full_name %}<span class="bright">visible</span>{% else %}hidden{% endif %}</td>
+            <td class="spaced"><span class="gray">visible</span></td>
         </tr>
         {% endif %}
+        {% if 'Big brother' in fields %}
+            <tr>
+                <td class="spaced">Big brother</td>
+                <td class="spaced">{% if public.big_brother %}<span class="bright">visible</span>{% else %}hidden{% endif %}</td>
+                <td class="spaced"><span class="gray">visible</span></td>
+            </tr>
+        {% endif %}
+        {% if 'Major' in fields %}
+            <tr>
+                <td class="spaced">Major</td>
+                <td class="spaced">{% if public.major %}<span class="bright">visible</span>{% else %}hidden{% endif %}</td>
+                <td class="spaced"><span class="gray">visible</span></td>
+            </tr>
+        {% endif %}
+        {% if 'Hometown' in fields %}
+            <tr>
+                <td class="spaced">Hometown</td>
+                <td class="spaced">{% if public.hometown %}<span class="bright">visible</span>{% else %}hidden{% endif %}</td>
+                <td class="spaced"><span class="gray">visible</span></td>
+            </tr>
+        {% endif %}
+        {% if 'Current city' in fields %}
+            <tr>
+                <td class="spaced">Current city</td>
+                <td class="spaced">{% if public.current_city %}<span class="bright">visible</span>{% else %}hidden{% endif %}</td>
+                <td class="spaced">{% if chapter.current_city %}<span class="bright">visible</span>{% else %}hidden{% endif %}</td>
+            </tr>
+        {% endif %}
+        {% if 'Initiation' in fields %}
+            <tr>
+                <td class="spaced">Initiation</td>
+                <td class="spaced">{% if public.initiation %}<span class="bright">visible</span>{% else %}hidden{% endif %}</td>
+                <td class="spaced">{% if chapter.initiation %}<span class="bright">visible</span>{% else %}hidden{% endif %}</td>
+            </tr>
+        {% endif %}
+        {% if 'Graduation' in fields %}
+            <tr>
+                <td class="spaced">Graduation</td>
+                <td class="spaced">{% if public.graduation %}<span class="bright">visible</span>{% else %}hidden{% endif %}</td>
+                <td class="spaced">{% if chapter.graduation %}<span class="bright">visible</span>{% else %}hidden{% endif %}</td>
+            </tr>
+        {% endif %}
+        {% if 'Date of birth' in fields %}
+            <tr>
+                <td class="spaced">Date of birth</td>
+                <td class="spaced">{% if public.dob %}<span class="bright">visible</span>{% else %}hidden{% endif %}</td>
+                <td class="spaced">{% if chapter.dob %}<span class="bright">visible</span>{% else %}hidden{% endif %}</td>
+            </tr>
+        {% endif %}
+        {% if 'Phone' in fields %}
+            <tr>
+                <td class="spaced">Phone</td>
+                <td class="spaced">{% if public.phone %}<span class="bright">visible</span>{% else %}hidden{% endif %}</td>
+                <td class="spaced">{% if chapter.phone %}<span class="bright">visible</span>{% else %}hidden{% endif %}</td>
+            </tr>
+        {% endif %}
+        {% if 'Email' in fields %}
+            <tr>
+                <td class="spaced">Email</td>
+                <td class="spaced">{% if public.email %}<span class="bright">visible</span>{% else %}hidden{% endif %}</td>
+                <td class="spaced"><span class="gray">visible</span></td>
+            </tr>
+        {% endif %}
+        <tr>
+            <td class="spaced"></td>
+            <td class="spaced"></td>
+            <td class="spaced"></td>
+        </tr>
         </tbody>
     </table>
     {% endifequal %}
