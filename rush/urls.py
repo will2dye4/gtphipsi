@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls.defaults import *
 
 urlpatterns = patterns('gtphipsi.rush.views',
     url(r'^$', 'rush', name='rush'),

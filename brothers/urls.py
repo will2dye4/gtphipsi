@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url
+from django.conf.urls.defaults import *
 
 urlpatterns = patterns('gtphipsi.brothers.views',
     url(r'^$', 'list', name='brothers_list'),
