@@ -1,3 +1,5 @@
+import logging
+
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, Http404
 from django.template import RequestContext
@@ -5,9 +7,11 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User, Group, Permission
 from django.conf import settings
+
 from rush.views import REFERRER
-from brothers.models import UserProfile, UserForm, VisibilitySettings, STATUS_BITS
-import logging
+from brothers.models import UserProfile, VisibilitySettings, STATUS_BITS
+from brothers.forms import UserForm
+
 
 log = logging.getLogger('django.request')
 
@@ -106,7 +110,7 @@ def calendar(request):
 
 
 def contact(request):
-    from chapter.models import ContactForm
+    from chapter.forms import ContactForm
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():

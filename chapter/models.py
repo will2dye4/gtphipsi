@@ -1,9 +1,12 @@
+# Models related to the chapter's activities and to contacting the chapter.
+
+from datetime import datetime, timedelta
+
 from django.db import models
-from django.forms import ModelForm
 from django.core.validators import MaxLengthValidator
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import PhoneNumberField
-from datetime import datetime, timedelta
+
 
 YEAR_CHOICES = (
     ('IF', 'Incoming Freshman'),
@@ -39,12 +42,6 @@ class Announcement(models.Model):
         ordering = ['-created', '-date', 'text']
 
 
-class AnnouncementForm(ModelForm):
-    class Meta:
-        model = Announcement
-        fields = ('text', 'date', 'public')
-
-
 class ContactRecord(models.Model):
     name = models.CharField(max_length=50)
     email = models.EmailField()
@@ -59,12 +56,6 @@ class ContactRecord(models.Model):
         ordering = ['-created']
 
 
-class ContactForm(ModelForm):
-    class Meta:
-        model = ContactRecord
-        fields = ('name', 'email', 'message')
-
-
 class InformationCard(ContactRecord):
     year = models.CharField(choices=YEAR_CHOICES, max_length=3)
     interests = models.CharField(max_length=150, blank=True)
@@ -76,9 +67,3 @@ class InformationCard(ContactRecord):
 
     class Meta:
         ordering = ['-created']
-
-    
-class InformationForm(ModelForm):
-    class Meta:
-        model = InformationCard
-        fields = ('name', 'year', 'email', 'phone', 'interests', 'relatives', 'subscribe')

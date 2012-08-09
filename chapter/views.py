@@ -1,11 +1,14 @@
+import logging
+
 from django.shortcuts import render
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404
-from models import Announcement, AnnouncementForm
-import logging
+
+from chapter.models import Announcement
+from chapter.forms import AnnouncementForm
 
 
 log = logging.getLogger('django')

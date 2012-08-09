@@ -1,3 +1,5 @@
+import logging
+
 from django.shortcuts import render
 from django.template import RequestContext
 from django.conf import settings
@@ -6,9 +8,10 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User, Permission, Group
 from django.http import Http404, HttpResponseRedirect
+
 from gtphipsi.messages import get_message
-from brothers.models import UserProfile, UserForm, EditProfileForm, EditAccountForm, VisibilitySettings, PublicVisibilityForm, ChapterVisibilityForm, ChangePasswordForm, STATUS_BITS
-import logging
+from brothers.models import UserProfile, VisibilitySettings, STATUS_BITS
+from brothers.forms import UserForm, EditProfileForm, EditAccountForm, PublicVisibilityForm, ChapterVisibilityForm, ChangePasswordForm
 
 
 log = logging.getLogger('django')

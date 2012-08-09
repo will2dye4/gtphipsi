@@ -1,11 +1,14 @@
+import logging
+
 from django.shortcuts import render
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
-from models import Rush, RushForm, RushEvent, RushEventForm
+
+from rush.models import Rush, RushEvent
+from rush.forms import RushForm, RushEventForm
 from chapter.models import InformationCard
-import logging
 
 
 log = logging.getLogger('django')
@@ -34,7 +37,7 @@ def schedule(request):
 
 # visible to anyone
 def info_card(request):
-    from chapter.models import InformationForm, ContactRecord
+    from chapter.forms import InformationForm
     if request.method == 'POST':
         form = InformationForm(request.POST)
         if form.is_valid():
