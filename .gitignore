@@ -2,7 +2,7 @@
 *.pyc
 
 # PyCharm Config Files #
-.idea
+.idea/
 
 # App Log Files #
 log/
