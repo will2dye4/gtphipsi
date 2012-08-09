@@ -1,0 +1,8 @@
+# Compiled Python Source #
+*.pyc
+
+# PyCharm Config Files #
+.idea
+
+# App Log Files #
+log/
