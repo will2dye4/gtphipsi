@@ -210,10 +210,9 @@ def get_redirect_destination(referrer, profile):
 # TODO refactor to use functions in brothers/views.py
 def create_user_permissions(user, undergrad, admin):
     """Helper function to add a new user to the appropriate permissions group(s)."""
-    if undergrad or admin:
+    if undergrad:
         group, created = Group.objects.get_or_create(name='Undergraduates')
         if created:
-            create_permissions()
             group.permissions = [Permission.objects.get(codename=code) for code in settings.UNDERGRADUATE_PERMISSIONS]
             group.save()
         user.groups.add(group)
@@ -229,7 +228,8 @@ def create_permissions():
     """Helper function to create the necessary Permission objects the first time a user is created."""
     if not Permission.objects.all().count():
         permissions = settings.UNDERGRADUATE_PERMISSIONS + settings.ADMINISTRATOR_PERMISSIONS
-        Permission.objects.bulk_create([Permission(codename=code) for code in permissions])
+        for code in permissions:
+            Permission.objects.create(codename=code)
 
 
 def create_visibility_settings():

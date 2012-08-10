@@ -5,9 +5,10 @@ from django.template import RequestContext
 from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User, Permission, Group
 from django.http import Http404, HttpResponseRedirect
+from django.forms.widgets import SelectMultiple
 
 from gtphipsi.messages import get_message
 from brothers.models import UserProfile, VisibilitySettings, STATUS_BITS
@@ -55,13 +56,13 @@ def show(request, badge=0):
     }, context_instance=RequestContext(request))
 
 
-@login_required(login_url='/login/')
+@login_required
 def my_profile(request):
     return show(request, request.user.get_profile().badge)
 
 
 @login_required
-@user_passes_test(lambda u: u.get_profile().is_admin() if u else False, login_url='/forbidden/')
+@permission_required('brothers.change_userprofile', login_url=settings.FORBIDDEN_URL)
 def manage(request):
     undergrad_profiles = UserProfile.objects.filter(status='U')
     undergrads = User.objects.filter(pk__in=[profile.user.id for profile in undergrad_profiles])
@@ -79,7 +80,7 @@ def manage(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.get_profile().is_admin() if u else False, login_url='/forbidden/')
+@permission_required('brothers.add_userprofile', login_url=settings.FORBIDDEN_URL)
 def add(request):
     if request.method == 'POST':
         form = UserForm(request.POST)
@@ -122,7 +123,7 @@ def edit(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.get_profile().is_admin() if u else False, login_url='/forbidden/')
+@permission_required('brothers.change_userprofile', login_url=settings.FORBIDDEN_URL)
 def unlock(request, badge):
     try:
         profile = UserProfile.objects.get(badge=badge)
@@ -227,10 +228,59 @@ def change_password_success(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.get_profile().is_admin() if u else False, login_url='/forbidden/')
+@permission_required('auth.change_group', login_url=settings.FORBIDDEN_URL)
 def manage_groups(request):
-    # TODO
-    pass
+    if request.GET.get('view', '') == 'members':
+        groups = Group.objects.all()
+        map = {}
+        for group in groups:
+            map[group.name] = User.objects.filter(groups__id__exact=group.id)
+        context = {'map': map, 'show_perms': False}
+    else:
+        groups = Group.objects.all()
+        context = {'groups': groups, 'show_perms': True}
+    return render(request, 'brothers/manage_groups.html', context, context_instance=RequestContext(request))
+
+
+@login_required
+@permission_required('auth.change_group', login_url=settings.FORBIDDEN_URL)
+def edit_group_perms(request, name):
+    try:
+        group = Group.objects.get(name=name)
+    except Group.DoesNotExist:
+        raise Http404
+    if request.method == 'POST':
+        ids = []
+        for name, value in request.POST.items():
+            if name.find('perm_') > -1:
+                ids.append(int(value))
+        new_perms = Permission.objects.filter(id__in=ids)
+        group.permissions = [perm for perm in new_perms]
+        group.save()
+        return HttpResponseRedirect(reverse('manage_groups'))
+    else:
+        perms = Permission.objects.exclude(codename__contains='site') \
+                .exclude(codename__contains='session').exclude(codename__contains='message').exclude(codename__contains='contenttype') \
+                .exclude(codename__contains='visibilitysettings').exclude(codename__contains='contactrecord').exclude(codename__contains='informationcard').order_by('id')
+        group_perms = group.permissions.all()
+        choices = []
+        initial = []
+        for perm in perms:
+            choices.append([perm.id, perm.name])
+            if perm in group_perms:
+                initial.append(perm.id)
+    return render(request, 'brothers/edit_group_perms.html', {'group_name': group.name, 'perms': choices, 'initial': initial}, context_instance=RequestContext(request))
+
+
+@login_required
+@permission_required('auth.change_group', login_url=settings.FORBIDDEN_URL)
+def show_group(request, name):
+    try:
+        group = Group.objects.get(name=name)
+    except Group.DoesNotExist:
+        raise Http404
+    users = User.objects.filter(groups__id__exact=group.id)
+    return render(request, 'brothers/show_group.html', {'group': group, 'users': users}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -272,11 +322,9 @@ def edit_chapter_visibility(request):
 # ============= Private Functions ============= #
 
 def add_user_to_groups(user, undergrad, admin):
-    if undergrad or admin:
+    if undergrad:
         group, created = Group.objects.get_or_create(name='Undergraduates')
         if created:
-            if not Permission.objects.count():
-                Permission.objects.bulk_create([Permission(codename=code) for code in (settings.UNDERGRADUATE_PERMISSIONS + settings.ADMINISTRATOR_PERMISSIONS)])
             group.permissions = [Permission.objects.get(codename=code) for code in settings.UNDERGRADUATE_PERMISSIONS]
             group.save()
         user.groups.add(group)

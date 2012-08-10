@@ -48,7 +48,7 @@
     {% if own_account %}
         <div id="infoBox">
             viewing your {% if public %}public{% else %}chapter{% endif %} profile
-            <span class="small">{% if public %}<a href="{% url 'gtphipsi.brothers.views.my_profile' %}">show chapter profile</a>{% else %}<a href="{% url 'gtphipsi.brothers.views.my_profile' %}?public=true">show public profile</a>{% endif %}</span>
+            <span class="small">{% if public %}<a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.my_profile' %}">show chapter profile</a>{% else %}<a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.my_profile' %}?public=true">show public profile</a>{% endif %}</span>
         </div>
     {% endif %}
     <h1>{% if 'Full name' in fields %}{{ profile.full_name }}{% else %}{{ account.get_full_name }}{% endif %} ... {{ profile.badge }}</h1>

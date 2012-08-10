@@ -3,8 +3,9 @@ import logging
 from django.shortcuts import render
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, Http404
+from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 
 from rush.models import Rush, RushEvent
 from rush.forms import RushForm, RushEventForm
@@ -79,6 +80,7 @@ def show(request, name=''):
 
 
 @login_required
+@permission_required('rush.add_rush', login_url=settings.FORBIDDEN_URL)
 def add(request):
     if request.method == 'POST':
         form = RushForm(request.POST)
@@ -92,6 +94,7 @@ def add(request):
 
 
 @login_required
+@permission_required('rush.change_rush', login_url=settings.FORBIDDEN_URL)
 def edit(request, name):
     try:
         rush = Rush.objects.get(season=name[0], start_date__year=int(name[1:]))
@@ -122,6 +125,7 @@ def edit(request, name):
 
 
 @login_required
+@permission_required('rush.add_rushevent', login_url=settings.FORBIDDEN_URL)
 def add_event(request, name):
     try:
         rush = Rush.objects.get(season=name[0], start_date__year=int(name[1:]))
@@ -140,6 +144,7 @@ def add_event(request, name):
 
 
 @login_required
+@permission_required('rush.change_rushevent', login_url=settings.FORBIDDEN_URL)
 def edit_event(request, id=0):
     try:
         event = RushEvent.objects.get(pk=id)
