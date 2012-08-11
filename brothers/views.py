@@ -162,8 +162,9 @@ def edit_account(request, badge=0):
             profile.nickname = nickname
             profile.suffix = suffix
             if status != profile.status:
-                # TODO process status update (permissions)
+                old_status = profile.status
                 profile.status = status
+                save_user = process_status_change(user, old_status, status) or save_user
             if email != user.email:
                 # TODO process email change
                 user.email = email
@@ -474,3 +475,22 @@ def get_available_permissions():
     return Permission.objects.exclude(codename__contains='site').exclude(codename__contains='session').exclude(codename__contains='message') \
             .exclude(codename__contains='contenttype').exclude(codename__contains='visibilitysettings').exclude(codename__contains='contactrecord') \
             .exclude(codename__contains='informationcard').order_by('id')
+
+
+def process_status_change(user, old_status, new_status):
+    """Handles adding a user to or removing a user from the 'Undergraduates' group when his chapter status changes.
+       Returns True if a change was made, False otherwise."""
+    result = False
+    try:
+        undergrads = Group.objects.get(name='Undergraduates')
+    except Group.DoesNotExist:
+        # this should never happen
+        log.warn("Failed to find user group 'Undergraduates' while processing status change for user '%s' (badge %d)" % (user.get_full_name(), user.get_profile().badge))
+    else:
+        if old_status != 'U' and new_status == 'U':
+            user.groups.add(undergrads)
+            result = True
+        elif old_status == 'U':
+            user.groups.remove(undergrads)
+            result = True
+    return result
