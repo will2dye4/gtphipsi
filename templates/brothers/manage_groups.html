@@ -11,9 +11,9 @@
             list-style-type: none;
             padding-bottom: 5px;
         }
-    #content ul li ul li {
-        padding-bottom: 0;
-    }
+        #content ul li ul li {
+            padding-bottom: 0;
+        }
     </style>
 
     <script type="text/javascript">
@@ -37,7 +37,7 @@
 {% endblock %}
 
 {% block content %}
-    <div style="float: right; padding: 15px">Show: {% if show_perms %}<a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.manage_groups' %}?view=members">{% endif %}members{% if show_perms %}</a>{% endif %} | {% if not show_perms %}<a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.manage_groups' %}">{% endif %}permissions{% if not show_perms %}</a>{% endif %}</div>
+    <div style="float: right; padding: 15px">Show: {% if not show_perms %}<a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.manage_groups' %}">{% endif %}permissions{% if not show_perms %}</a>{% endif %} | {% if show_perms %}<a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.manage_groups' %}?view=members">{% endif %}members{% if show_perms %}</a>{% endif %}</div>
     <h1 style="padding-bottom: 15px">Manage User Groups</h1>
     <p>
     {% if show_perms %}
@@ -69,7 +69,7 @@
             <a href="#" id="{{ name }}_toggle" class="hovercolor" onclick="togglePermissionDisplay('{{ name }}', false)">+</a> <b><a class="hovercolor" href="{% url 'gtphipsi.brothers.views.show_group' name=name %}">{{ name }}</a></b>
             <ul id="{{ name }}_members" style="display: none">
             {% for member in members %}
-                <li>{{ member.get_full_name }} ... {{ member.get_profile.badge }}</li>
+                <li>{{ member }}</li>
             {% empty %}
                 <li>There are no members to display.</li>
             {% endfor %}
@@ -80,4 +80,5 @@
     {% endfor %}
     {% endif %}
     </ul>
+    <p><a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.add_group' %}">add user group</a></p>
 {% endblock %}

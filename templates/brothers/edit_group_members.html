@@ -1,0 +1,28 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Edit Group Members | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <style type="text/css">
+        #content form ul li {
+            list-style-type: none;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>Edit Members of Group "{{ group_name }}"</h1>
+    <p>Use the checkboxes below to change the members associated with the user group <b>{{ group_name }}</b>. Click "Save" when you are finished.</p>
+    <form action="{% url 'gtphipsi.brothers.views.edit_group_members' name=group_name %}" method="post">
+        {% csrf_token %}
+        <ul id="members_list">
+        {% for id, name in choices %}
+            <li><input type="checkbox" name="user_{{ id }}" value="{{ id }}" {% if id in initial %}checked{% endif %}/> {{ name }}</li>
+        {% endfor %}
+        </ul>
+        <input class="submit" type="submit" value="Save" />
+    </form>
+{% endblock %}
