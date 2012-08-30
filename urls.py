@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 
 # from django.contrib import admin
 # admin.autodiscover()
@@ -24,6 +24,11 @@ urlpatterns += patterns('',
      url(r'^rush/', include('gtphipsi.rush.urls')),
      url(r'^chapter/', include('gtphipsi.chapter.urls')),
     # other app-specific URLs here
+)
+
+# Hack - to continue to support the old rush schedule URI.
+urlpatterns += patterns('gtphipsi.rush.views',
+    url(r'^rushschedule\.php$', 'old_schedule', name='old_rush_schedule'),
 )
 
 # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

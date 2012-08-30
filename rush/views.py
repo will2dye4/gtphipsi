@@ -36,6 +36,12 @@ def schedule(request):
 
 
 # visible to anyone
+# Hack - to continue to support the old rush schedule URI.
+def old_schedule(request):
+    return HttpResponseRedirect(reverse('rush_schedule'))
+
+
+# visible to anyone
 def info_card(request):
     from chapter.forms import InformationForm
     if request.method == 'POST':

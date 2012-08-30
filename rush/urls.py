@@ -1,9 +1,9 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 
 urlpatterns = patterns('gtphipsi.rush.views',
     url(r'^$', 'rush', name='rush'),
     url(r'^phipsi/$', 'rushphipsi', name='rushphipsi'),
-    url(r'^schedule/$', 'schedule', name='schedule'),
+    url(r'^schedule/$', 'schedule', name='rush_schedule'),
     url(r'^infocard/$', 'info_card', name='info_card'),
     url(r'^infocard/thanks/$', 'info_card_thanks', name='info_card_thanks'),
     ### authenticated pages ###
