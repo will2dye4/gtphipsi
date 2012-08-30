@@ -1,11 +1,12 @@
 import logging
+from re import match
 
 from django.shortcuts import render
 from django.template import RequestContext
 from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User, Permission, Group
 from django.http import Http404, HttpResponseRedirect
 
@@ -55,13 +56,13 @@ def show(request, badge=0):
     }, context_instance=RequestContext(request))
 
 
-@login_required(login_url='/login/')
+@login_required
 def my_profile(request):
     return show(request, request.user.get_profile().badge)
 
 
 @login_required
-@user_passes_test(lambda u: u.get_profile().is_admin() if u else False, login_url='/forbidden/')
+@permission_required('brothers.change_userprofile', login_url=settings.FORBIDDEN_URL)
 def manage(request):
     undergrad_profiles = UserProfile.objects.filter(status='U')
     undergrads = User.objects.filter(pk__in=[profile.user.id for profile in undergrad_profiles])
@@ -79,7 +80,7 @@ def manage(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.get_profile().is_admin() if u else False, login_url='/forbidden/')
+@permission_required('brothers.add_userprofile', login_url=settings.FORBIDDEN_URL)
 def add(request):
     if request.method == 'POST':
         form = UserForm(request.POST)
@@ -101,7 +102,7 @@ def add(request):
             return HttpResponseRedirect(reverse('manage_users'))
     else:
         form = UserForm()
-    return render(request, 'brothers/add.html', {'form': form, 'secret_key': settings.SECRET_KEY, 'admin_password': settings.ADMIN_KEY}, context_instance=RequestContext(request))
+    return render(request, 'brothers/add.html', {'form': form, 'secret_key': settings.BROTHER_KEY, 'admin_password': settings.ADMIN_KEY}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -122,7 +123,7 @@ def edit(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.get_profile().is_admin() if u else False, login_url='/forbidden/')
+@permission_required('brothers.change_userprofile', login_url=settings.FORBIDDEN_URL)
 def unlock(request, badge):
     try:
         profile = UserProfile.objects.get(badge=badge)
@@ -161,8 +162,9 @@ def edit_account(request, badge=0):
             profile.nickname = nickname
             profile.suffix = suffix
             if status != profile.status:
-                # TODO process status update (permissions)
+                old_status = profile.status
                 profile.status = status
+                save_user = process_status_change(user, old_status, status) or save_user
             if email != user.email:
                 # TODO process email change
                 user.email = email
@@ -227,10 +229,142 @@ def change_password_success(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.get_profile().is_admin() if u else False, login_url='/forbidden/')
+@permission_required('auth.change_group', login_url=settings.FORBIDDEN_URL)
 def manage_groups(request):
-    # TODO
-    pass
+    if request.GET.get('view', '') == 'members':
+        groups = Group.objects.all()
+        map = {}
+        for group in groups:
+            user_ids = [user.id for user in User.objects.filter(groups__id__exact=group.id)]
+            names = ['%s ... %d' % (profile.common_name(), profile.badge) for profile in UserProfile.objects.filter(user__id__in=user_ids).order_by('badge')]
+            map[group.name] = names
+        context = {'map': map, 'show_perms': False}
+    else:
+        groups = Group.objects.all()
+        context = {'groups': groups, 'show_perms': True}
+    return render(request, 'brothers/manage_groups.html', context, context_instance=RequestContext(request))
+
+
+@login_required
+@permission_required('auth.add_group', login_url=settings.FORBIDDEN_URL)
+def add_group(request):
+    error = ''
+    initial_name = ''
+    if request.method == 'POST':
+        ids = []
+        group_name = None
+        for name, value in request.POST.items():
+            if name.find('perm_') > -1:
+                ids.append(int(value))
+            elif name == 'group_name':
+                initial_name = value
+                if match(r'^[a-zA-Z0-9_]+[a-zA-Z0-9_ ]*[a-zA-Z0-9]+$', value) is None:
+                    error = 'The group name you entered is invalid. Please enter a different name.'
+                elif Group.objects.filter(name=value).count() > 0:
+                    error = 'A group with that name already exists. Please enter a different name.'
+                else:
+                    group_name = value
+        if not len(ids) and not error:
+            error = 'You must select at least one permission for this group.'
+        if group_name is None and not error:
+            error = 'You must enter a name for this group.'
+        if not error:
+            group = Group.objects.create(name=group_name)
+            group.permissions = Permission.objects.filter(id__in=ids)
+            group.save()
+            return HttpResponseRedirect(reverse('view_group', kwargs={'name': group.name}))
+    perms = get_available_permissions()
+    choices = [[perm.id, perm.name] for perm in perms]
+    return render(request, 'brothers/add_group.html', {'error': error, 'name': initial_name, 'perms': choices}, context_instance=RequestContext(request))
+
+
+
+@login_required
+@permission_required('auth.change_group', login_url=settings.FORBIDDEN_URL)
+def edit_group_perms(request, name):
+    try:
+        group = Group.objects.get(name=name)
+    except Group.DoesNotExist:
+        raise Http404
+    if request.method == 'POST':
+        ids = []
+        for name, value in request.POST.items():
+            if name.find('perm_') > -1:
+                ids.append(int(value))
+        new_perms = Permission.objects.filter(id__in=ids)
+        group.permissions = [perm for perm in new_perms]
+        group.save()
+        return HttpResponseRedirect(reverse('view_group', kwargs={'name': group.name}))
+    else:
+        perms = get_available_permissions()
+        group_perms = group.permissions.all()
+        choices = []
+        initial = []
+        for perm in perms:
+            choices.append([perm.id, perm.name])
+            if perm in group_perms:
+                initial.append(perm.id)
+    return render(request, 'brothers/edit_group_perms.html', {'group_name': group.name, 'perms': choices, 'initial': initial}, context_instance=RequestContext(request))
+
+
+@login_required
+@permission_required('auth.change_group', login_url=settings.FORBIDDEN_URL)
+def edit_group_members(request, name):
+    try:
+        group = Group.objects.get(name=name)
+    except Group.DoesNotExist:
+        raise Http404
+
+    users = User.objects.all()
+    if request.method == 'POST':
+        ids = []
+        for name, value in request.POST.items():
+            if name.find('user_') > -1:
+                ids.append(int(value))
+        new_users = User.objects.filter(id__in=ids)
+        for user in users:
+            if user in new_users and group not in user.groups.all():
+                user.groups.add(group)
+                user.save()
+            elif user not in new_users and group in user.groups.all():
+                user.groups.remove(group)
+                user.save()
+        return HttpResponseRedirect(reverse('view_group', kwargs={'name': group.name}))
+    else:
+        group_members = User.objects.filter(groups__id__exact=group.id)
+        choices = []
+        initial = []
+        for user in users:
+            choices.append([user.id, '%s ... %d' % (user.get_full_name(), user.get_profile().badge)])
+            if user in group_members:
+                initial.append(user.id)
+    return render(request, 'brothers/edit_group_members.html', {'group_name': group.name, 'choices': choices, 'initial': initial}, context_instance=RequestContext(request))
+
+
+@login_required
+@permission_required('auth.delete_group', login_url=settings.FORBIDDEN_URL)
+def delete_group(request, name):
+    try:
+        group = Group.objects.get(name=name)
+    except Group.DoesNotExist:
+        raise Http404
+    for user in group.user_set.all():
+        user.groups.remove(group)
+        user.save()
+    group.delete()
+    return HttpResponseRedirect(reverse('manage_groups'))
+
+
+@login_required
+@permission_required('auth.change_group', login_url=settings.FORBIDDEN_URL)
+def show_group(request, name):
+    try:
+        group = Group.objects.get(name=name)
+    except Group.DoesNotExist:
+        raise Http404
+    user_ids = [user.id for user in User.objects.filter(groups__id__exact=group.id)]
+    names = ['%s ... %d' % (profile.common_name(), profile.badge) for profile in UserProfile.objects.filter(user__id__in=user_ids).order_by('badge')]
+    return render(request, 'brothers/show_group.html', {'group': group, 'users': names}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -272,11 +406,9 @@ def edit_chapter_visibility(request):
 # ============= Private Functions ============= #
 
 def add_user_to_groups(user, undergrad, admin):
-    if undergrad or admin:
+    if undergrad:
         group, created = Group.objects.get_or_create(name='Undergraduates')
         if created:
-            if not Permission.objects.count():
-                Permission.objects.bulk_create([Permission(codename=code) for code in (settings.UNDERGRADUATE_PERMISSIONS + settings.ADMINISTRATOR_PERMISSIONS)])
             group.permissions = [Permission.objects.get(codename=code) for code in settings.UNDERGRADUATE_PERMISSIONS]
             group.save()
         user.groups.add(group)
@@ -334,3 +466,31 @@ def get_field_categories(fields):
     personal_set = frozenset(['Hometown', 'Current city', 'Date of birth'])
     contact_set = frozenset(['Phone', 'Email'])
     return len(field_set.intersection(chapter_set)), len(field_set.intersection(personal_set)), len(field_set.intersection(contact_set))
+
+
+def get_available_permissions():
+    """Returns a query set containing all available permissions. Excluded permissions are those relating to unused Django admin model objects
+       (site, session, message, content type), those which are implicitly granted to all users (visibility settings), and those which are
+       implicitly granted to all visitors of the site (contact record, information card)."""
+    return Permission.objects.exclude(codename__contains='site').exclude(codename__contains='session').exclude(codename__contains='message') \
+            .exclude(codename__contains='contenttype').exclude(codename__contains='visibilitysettings').exclude(codename__contains='contactrecord') \
+            .exclude(codename__contains='informationcard').order_by('id')
+
+
+def process_status_change(user, old_status, new_status):
+    """Handles adding a user to or removing a user from the 'Undergraduates' group when his chapter status changes.
+       Returns True if a change was made, False otherwise."""
+    result = False
+    try:
+        undergrads = Group.objects.get(name='Undergraduates')
+    except Group.DoesNotExist:
+        # this should never happen
+        log.warn("Failed to find user group 'Undergraduates' while processing status change for user '%s' (badge %d)" % (user.get_full_name(), user.get_profile().badge))
+    else:
+        if old_status != 'U' and new_status == 'U':
+            user.groups.add(undergrads)
+            result = True
+        elif old_status == 'U':
+            user.groups.remove(undergrads)
+            result = True
+    return result

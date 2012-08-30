@@ -20,7 +20,7 @@
 {% endblock %}
 
 {% block content %}
-    <div style="float: right; padding: 15px">{% if private %}<a href="{% url 'gtphipsi.chapter.views.announcements' %}">{% endif %}all{% if private %}</a>{% endif %} | {% if not private %}<a href="{% url 'gtphipsi.chapter.views.announcements' %}?bros_only=true">{% endif %}only private{% if not private %}</a>{% endif %}</div>
+    <div style="float: right; padding: 15px">{% if private %}<a class="alwaysgreen" href="{% url 'gtphipsi.chapter.views.announcements' %}">{% endif %}all{% if private %}</a>{% endif %} | {% if not private %}<a class="alwaysgreen" href="{% url 'gtphipsi.chapter.views.announcements' %}?bros_only=true">{% endif %}only private{% if not private %}</a>{% endif %}</div>
     <h1>Announcement List</h1>
     <p>These are all the {% if private %}private{% endif %} announcements posted by the chapter.</p>
     <ul>
@@ -33,5 +33,5 @@
         <li>There are no announcements to display.</li>
     {% endfor %}
     </ul>
-    <p><a href="{% url 'gtphipsi.chapter.views.add_announcement' %}">add announcement</a></p>
+    <p><a class="alwaysgreen" href="{% url 'gtphipsi.chapter.views.add_announcement' %}">add announcement</a></p>
 {% endblock %}

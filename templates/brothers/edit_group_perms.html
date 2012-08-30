@@ -1,0 +1,41 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Edit Group Permissions | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <style type="text/css">
+        #content form ul li {
+            list-style-type: none;
+        }
+    </style>
+
+    <!--<script type="text/javascript">
+        function updateSelectedIds() {
+            var items = document.getElementById('perms_list').childNodes;
+            var result = '';
+            for (var i = 0; i < items.length; i++) {
+                result += (result ? ',' : '') + items[i].value;
+            }
+            var selected = document.getElementById('selectedIds');
+            selected.value = result;
+            return true;
+        }
+    </script>-->
+{% endblock %}
+
+{% block content %}
+    <h1>Edit Permissions for Group "{{ group_name }}"</h1>
+    <p>Use the checkboxes below to change the permissions associated with the user group <b>{{ group_name }}</b>. Click "Save" when you are finished.</p>
+    <form action="{% url 'gtphipsi.brothers.views.edit_group_perms' name=group_name %}" method="post">
+        {% csrf_token %}
+        <ul id="perms_list">
+        {% for id, name in perms %}
+            <li><input type="checkbox" name="perm_{{ id }}" value="{{ id }}" {% if id in initial %}checked{% endif %}/> {{ name }}</li>
+        {% endfor %}
+        </ul>
+        <input class="submit" type="submit" value="Save" />
+    </form>
+{% endblock %}

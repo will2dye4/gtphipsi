@@ -54,6 +54,22 @@ a.selected {
     font-weight: bold !important;
 }
 
+a.hovercolor,
+a.hovercolor:active,
+a.hovercolor:visited
+{
+    color: #282828;
+}
+
+a.hovercolor:hover {
+    color: #006b3f;
+    text-decoration: none;
+}
+
+a.alwaysgreen:visited {
+    color: #006b3f;
+}
+
 img.content-left {
 	float: left;
 	margin: 5px 5px 0 0;

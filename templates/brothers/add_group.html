@@ -1,0 +1,38 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Add User Group | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <style type="text/css">
+        #content form {
+            padding-left: 10px;
+        }
+        #content form ul li {
+            list-style-type: none;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>Add New User Group</h1>
+    <p>Use the form below to create a new user group. After the group has been created, you may add members to it. Click "Add" when you are finished.</p>
+    {% if error %}
+    <p><span class="error">{{ error }}</span></p>
+    {% endif %}
+    <br />
+    <form action="{% url 'gtphipsi.brothers.views.add_group' %}" method="post">
+        {% csrf_token %}
+        <label for="id_group_name"><b>Group Name</b></label>
+        <input id="id_group_name" name="group_name" type="text" value="{{ name }}" />
+        <p style="margin-top: 15px"><b>Permissions</b></p>
+        <ul id="perms_list">
+        {% for id, name in perms %}
+            <li><input type="checkbox" name="perm_{{ id }}" value="{{ id }}"/> {{ name }}</li>
+        {% endfor %}
+        </ul>
+        <input class="submit" type="submit" value="Add" />
+    </form>
+{% endblock %}

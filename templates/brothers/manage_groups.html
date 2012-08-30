@@ -9,31 +9,76 @@
     <style type="text/css">
         #content ul li {
             list-style-type: none;
+            padding-bottom: 5px;
+        }
+        #content ul li ul li {
+            padding-bottom: 0;
         }
     </style>
+
+    <script type="text/javascript">
+        function togglePermissionDisplay(groupName, permissions) {
+            var list = document.getElementById(groupName + (permissions ? '_permissions' : '_members'));
+            var link = document.getElementById(groupName + '_toggle');
+            if (list.style.display == 'none') {
+                list.style.display = 'block';
+                link.innerHTML = '-';
+            } else {
+                list.style.display = 'none';
+                link.innerHTML = '+';
+            }
+        }
+    </script>
+{% endblock %}
+
+{% block sidebar %}
+    <h3 class="sidebar">Note</h3>
+    <p class="sidebar">You can switch between viewing a group's permissions and its members using the links in the right-hand corner.</p>
 {% endblock %}
 
 {% block content %}
-    <h1>Manage Groups</h1>
-    <p>{% comment %} TODO {% endcomment %}</p>
-    <h3>Undergraduates</h3>
+    <div style="float: right; padding: 15px">Show: {% if not show_perms %}<a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.manage_groups' %}">{% endif %}permissions{% if not show_perms %}</a>{% endif %} | {% if show_perms %}<a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.manage_groups' %}?view=members">{% endif %}members{% if show_perms %}</a>{% endif %}</div>
+    <h1 style="padding-bottom: 15px">Manage User Groups</h1>
+    <p>
+    {% if show_perms %}
+        This page shows a list of all user groups and the permissions granted to each group. Click the '+' next to a group's name to view the permissions for that group.
+    {% else %}
+        This page shows a list of all user groups and the members of each group. Click the '+' next to a group's name to view the members of that group.
+    {% endif %}
+    </p>
+    <h2>User Groups</h2>
     <ul>
-    {% for brother in undergrads %}
-        {% with brother.id as id %}
-        <li>{{ brother.get_profile.common_name }} {% if brother in locked_out_undergrads %}<span style="padding-left: 15px"><a href="{% url 'gtphipsi.brothers.views.edit' id=id %}?unlock=true">unlock</a></span>{% endif %}</li>
-        {% endwith %}
+    {% if show_perms %}
+    {% for group in groups %}
+    {% with group.name as group_name %}
+        <li>
+            <a href="#" id="{{ group_name }}_toggle" class="hovercolor" onclick="togglePermissionDisplay('{{ group_name }}', true)">+</a> <b><a class="hovercolor" href="{% url 'gtphipsi.brothers.views.show_group' name=group_name %}">{{ group_name }}</a></b>
+            <ul id="{{ group_name }}_permissions" style="display: none">
+            {% for permission in group.permissions.all %}
+                <li>{{ permission.name }}</li>
+            {% endfor %}
+            </ul>
+        </li>
+    {% endwith %}
     {% empty %}
-        <li>There are no brothers to display.</li>
+        <li>There are no groups to display.</li>
     {% endfor %}
-    </ul>
-    <h3>Alumni</h3>
-    <ul>
-    {% for alumnus in alumni %}
-        {% with alumnus.id as id %}
-        <li>{{ alumnus.get_full_name }} {% if alumnus in locked_out_alumni %}<span style="padding-left: 15px"><a href="{% url 'gtphipsi.brothers.views.edit' id=id %}?unlock=true">unlock</a></span>{% endif %}</li>
-        {% endwith %}
+    {% else %}
+    {% for name, members in map.items %}
+        <li>
+            <a href="#" id="{{ name }}_toggle" class="hovercolor" onclick="togglePermissionDisplay('{{ name }}', false)">+</a> <b><a class="hovercolor" href="{% url 'gtphipsi.brothers.views.show_group' name=name %}">{{ name }}</a></b>
+            <ul id="{{ name }}_members" style="display: none">
+            {% for member in members %}
+                <li>{{ member }}</li>
+            {% empty %}
+                <li>There are no members to display.</li>
+            {% endfor %}
+            </ul>
+        </li>
     {% empty %}
-        <li>There are no alumni to display.</li>
+        <li>There are no groups to display.</li>
     {% endfor %}
+    {% endif %}
     </ul>
+    <p><a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.add_group' %}">add user group</a></p>
 {% endblock %}
