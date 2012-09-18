@@ -119,7 +119,7 @@ class UserProfile(models.Model):
 
     badge = models.PositiveIntegerField(unique=True, blank=False)
     status = models.CharField(choices=STATUS_CHOICES, max_length=15, blank=False, default='U')
-    big_brother = models.ForeignKey(User, blank=True, null=True, related_name='little_brothers')
+    big_brother = models.PositiveIntegerField(blank=True, default=0)
 
     major = models.CharField(choices=MAJOR_CHOICES, max_length=50, blank=True)
     hometown = models.CharField(max_length=50, blank=True)
@@ -166,6 +166,10 @@ class UserProfile(models.Model):
     def is_admin(self):
         """Returns True if the brother is an administrator user (i.e., a member of the Administrators group)."""
         return self.user.groups.filter(name='Administrators').count() > 0
+
+    def get_little_brothers(self):
+        """Returns the set of UserProfile objects having this profile's badge as their big_brother."""
+        return self.objects.filter(big_brother=self.badge)
 
     def has_bit(self, bit):
         """Returns True if the brother has the specified bit set."""

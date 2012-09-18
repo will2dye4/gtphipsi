@@ -3,11 +3,12 @@
 import hashlib
 
 from django import forms
-from django.db import models
+from django.forms.widgets import Select
 from django.conf import settings
 from django.contrib.auth.models import User
 
 from brothers.models import VisibilitySettings, UserProfile, SUFFIX_CHOICES, STATUS_CHOICES, MAJOR_CHOICES
+from gtphipsi.common import get_all_big_bro_choices
 
 
 class PublicVisibilityForm(forms.ModelForm):
@@ -24,9 +25,14 @@ class ChapterVisibilityForm(forms.ModelForm):
         model = VisibilitySettings
         exclude = ('full_name', 'big_brother', 'major', 'hometown', 'email')
 
-class UserField(forms.ModelChoiceField):
-    def label_from_instance(self, obj):
-        return obj.get_full_name()
+
+class BrotherSelect(Select):
+    def render_option(self, selected_choices, option_value, option_label):
+        new_label = ('%s ... %d' % (option_label, option_value) if option_value > 0 else option_label)
+        return Select.render_option(self, selected_choices, option_value, new_label)
+
+    def render_options(self, choices, selected_choices):
+        return Select.render_options(self, choices, selected_choices)
 
 
 class UserForm(forms.Form):
@@ -40,7 +46,7 @@ class UserForm(forms.Form):
     confirm = forms.CharField(min_length=6, widget=forms.PasswordInput, label='Confirm password')
     badge = forms.IntegerField(min_value=1)
     status = forms.ChoiceField(choices=STATUS_CHOICES, initial='U')
-    big_brother = UserField(queryset=User.objects.exclude(userprofile__isnull=True).exclude(id=models.F('id')), required=False, help_text='Your big brother will only be listed if he has an account')
+    big_brother = forms.ChoiceField(choices=(), required=False, widget=BrotherSelect)
     major = forms.ChoiceField(choices=MAJOR_CHOICES, required=False)
     hometown = forms.CharField(max_length=50, required=False)
     current_city = forms.CharField(max_length=50, required=False)
@@ -52,6 +58,10 @@ class UserForm(forms.Form):
     secret_key = forms.CharField(widget=forms.PasswordInput, help_text='Given to brothers by the webmaster')
     make_admin = forms.BooleanField(required=False, help_text='Check this box if you were given a separate admin password')
     admin_password = forms.CharField(widget=forms.PasswordInput, required=False)
+
+    def __init__(self, data=None):
+        super(UserForm, self).__init__(data=data)
+        self.fields['big_brother']._set_choices(get_all_big_bro_choices())
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -74,6 +84,16 @@ class UserForm(forms.Form):
             self._errors['badge'] = self.error_class(['A brother with that badge number already exists.'])
             del self.cleaned_data['badge']
         return self.cleaned_data['badge'] if 'badge' in self.cleaned_data else None
+
+    def clean_big_brother(self):
+        badge = self.cleaned_data.get('badge')
+        big_bro_badge = int(self.cleaned_data.get('big_brother'))
+        if badge is not None and big_bro_badge > 0:
+            error = _get_big_bro_error_message(badge, big_bro_badge)
+            if error is not None:
+                self._errors['big_brother'] = self.error_class([error])
+                del self.cleaned_data['big_brother']
+        return self.cleaned_data['big_brother'] if 'big_brother' in self.cleaned_data else None
 
     def clean_secret_key(self):
         if 'secret_key' in self.cleaned_data:
@@ -99,11 +119,24 @@ class UserForm(forms.Form):
 
 
 class EditProfileForm(forms.ModelForm):
-    big_brother = UserField(queryset=User.objects.exclude(userprofile__isnull=True).exclude(id=models.F('id')), required=False, help_text='Your big brother will only be listed if he has an account')
+    big_brother = forms.ChoiceField(choices=(), required=False, widget=BrotherSelect)
     initiation = forms.DateField(input_formats=settings.DATE_INPUT_FORMATS, widget=forms.DateInput(format='%B %d, %Y'), required=False)
     graduation = forms.DateField(input_formats=settings.DATE_INPUT_FORMATS, widget=forms.DateInput(format='%B %d, %Y'), required=False)
     dob = forms.DateField(input_formats=settings.DATE_INPUT_FORMATS, widget=forms.DateInput(format='%B %d, %Y'), required=False, label='Date of birth')
     phone = forms.RegexField(regex=r'^\d{3}-\d{3}-\d{4}$', min_length=12, max_length=12, required=False, help_text='XXX-XXX-XXXX')
+
+    def __init__(self, data=None, instance=None):
+        super(EditProfileForm, self).__init__(data=data, instance=instance)
+        self.fields['big_brother']._set_choices(get_all_big_bro_choices())
+
+    def clean_big_brother(self):
+        big_bro_badge = int(self.cleaned_data.get('big_brother'))
+        if self.instance is not None and big_bro_badge > 0:
+            error = _get_big_bro_error_message(self.instance.badge, big_bro_badge)
+            if error is not None:
+                self._errors['big_brother'] = self.error_class([error])
+                del self.cleaned_data['big_brother']
+        return self.cleaned_data['big_brother'] if 'big_brother' in self.cleaned_data else None
 
     class Meta:
         model = UserProfile
@@ -148,3 +181,16 @@ class ChangePasswordForm(forms.Form):
             self._errors['confirm'] = self.error_class(['The passwords you typed do not match.'])
             del self.cleaned_data['confirm']
         return self.cleaned_data['confirm'] if 'confirm' in self.cleaned_data else None
+
+
+# ============= Private Functions ============= #
+
+def _get_big_bro_error_message(user_badge, big_bro_badge):
+    """Returns an error message if big_bro_badge >= user_badge, None otherwise."""
+
+    error = None
+    if big_bro_badge == user_badge:
+        error = 'You may not be your own big brother.'
+    elif big_bro_badge > user_badge:
+        error = 'Your big brother may not have a higher badge number than you.'
+    return error

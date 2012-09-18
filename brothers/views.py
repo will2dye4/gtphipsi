@@ -11,7 +11,8 @@ from django.contrib.auth.models import User, Permission, Group
 from django.http import Http404, HttpResponseRedirect
 
 from gtphipsi.messages import get_message
-from brothers.models import UserProfile, VisibilitySettings, STATUS_BITS
+from gtphipsi.common import get_name_from_badge, create_user_and_profile
+from brothers.models import UserProfile, STATUS_BITS
 from brothers.forms import UserForm, EditProfileForm, EditAccountForm, PublicVisibilityForm, ChapterVisibilityForm, ChangePasswordForm
 
 
@@ -45,9 +46,16 @@ def show(request, badge=0):
     visibility = profile.public_visibility if show_public else profile.chapter_visibility
     fields = get_fields_from_profile(profile, visibility)
     chapter_fields, personal_fields, contact_fields = get_field_categories(fields)
+    big_bro = None
+    if 'Big brother' in fields:
+        try:
+            big_bro = '%s ... %d' % (UserProfile.objects.get(badge=profile.big_brother).common_name(), profile.big_brother)
+        except UserProfile.DoesNotExist:
+            big_bro = '%s ... %d' % (get_name_from_badge(profile.big_brother), profile.big_brother)
     return render(request, 'brothers/show.html', {'fields': fields,
                                                   'account': user,
                                                   'profile': profile,
+                                                  'big': big_bro,
                                                   'public': show_public,
                                                   'own_account': own_account,
                                                   'chapter_fields': chapter_fields,
@@ -85,20 +93,10 @@ def add(request):
     if request.method == 'POST':
         form = UserForm(request.POST)
         if form.is_valid():
-            first, last, username, password, email = form.cleaned_data['first_name'], form.cleaned_data['last_name'], form.cleaned_data['username'], form.cleaned_data['password'], form.cleaned_data['email']
-            user = User.objects.create_user(username, email, password)
-            user.first_name = first
-            user.last_name = last
-            add_user_to_groups(user, (form.cleaned_data['status'] == 'U'), form.cleaned_data['make_admin'])
-            user.save()
-            middle, suffix, nickname = form.cleaned_data['middle_name'], form.cleaned_data['suffix'], form.cleaned_data['nickname']
-            badge, status, big = form.cleaned_data['badge'], form.cleaned_data['status'], form.cleaned_data['big_brother']
-            major, hometown, current_city, phone = form.cleaned_data['major'], form.cleaned_data['hometown'], form.cleaned_data['current_city'], form.cleaned_data['phone']
-            initiation, graduation, dob = form.cleaned_data['initiation'], form.cleaned_data['graduation'], form.cleaned_data['dob']
-            public, chapter = create_visibility_settings()
-            profile = UserProfile(user=user, middle_name=middle, suffix=suffix, nickname=nickname, badge=badge, status=status, big_brother=big, major=major, hometown=hometown, current_city=current_city, phone=phone, initiation=initiation, graduation=graduation, dob=dob, public_visibility=public, chapter_visibility=chapter)
-            profile.save()
-            log.info('Admin %s (badge %d) created new user %s (%s %s)', request.user.get_full_name(), request.user.get_profile().badge, username, first, last)
+            create_user_and_profile(form.cleaned_data)
+            log.info('Admin %s (badge %d) created new user %s (%s %s)', request.user.get_full_name(),
+                    request.user.get_profile().badge, form.cleaned_data['username'], form.cleaned_data['first_name'],
+                    form.cleaned_data['last_name'])
             return HttpResponseRedirect(reverse('manage_users'))
     else:
         form = UserForm()
@@ -405,36 +403,13 @@ def edit_chapter_visibility(request):
 
 # ============= Private Functions ============= #
 
-def add_user_to_groups(user, undergrad, admin):
-    if undergrad:
-        group, created = Group.objects.get_or_create(name='Undergraduates')
-        if created:
-            group.permissions = [Permission.objects.get(codename=code) for code in settings.UNDERGRADUATE_PERMISSIONS]
-            group.save()
-        user.groups.add(group)
-    if admin:
-        group, created = Group.objects.get_or_create(name='Administrators')
-        if created:
-            group.permissions = [Permission.objects.get(codename=code) for code in settings.ADMINISTRATOR_PERMISSIONS]
-            group.save()
-        user.groups.add(group)
-
-
-def create_visibility_settings():
-    public_visibility = VisibilitySettings(full_name=False, big_brother=False, major=False, hometown=False, current_city=False, initiation=False, graduation=False, dob=False, phone=False, email=False)
-    public_visibility.save()
-    chapter_visibility = VisibilitySettings(full_name=True, big_brother=True, major=True, hometown=True, current_city=True, initiation=True, graduation=True, dob=True, phone=True, email=True)
-    chapter_visibility.save()
-    return public_visibility, chapter_visibility
-
-
 def get_fields_from_profile(profile, vis=None):
     fields = []
     if (profile.middle_name or profile.nickname) and (vis is None or vis.full_name):
         fields.append('Full name')
 
     # chapter information
-    if profile.big_brother is not None and (vis is None or vis.big_brother):
+    if profile.big_brother > 0 and (vis is None or vis.big_brother):
         fields.append('Big brother')
     if profile.major and (vis is None or vis.major):
         fields.append('Major')
