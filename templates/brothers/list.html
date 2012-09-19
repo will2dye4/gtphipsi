@@ -5,35 +5,36 @@
     Chapter Brothers | {{ block.super }}
 {% endblock %}
 
-{% block head_extras %}
-    <style type="text/css">
-        #content li a, #content li a:visited {
-            color: #282828 !important;
-        }
-    </style>
-{% endblock %}
-
 {% block content %}
     <h1>The Brothers</h1>
-    <p>The chapter currently has {{ num_brothers }} undergraduate brothers.
-    The following is a list of the chapter's current active membership.
-    Click a brother's name to view his profile.</p>
-    <ul>
-    {% for brother in brothers.object_list %}
-        {% with brother.get_profile as profile %}
-            <li><a href="{% url 'gtphipsi.brothers.views.show' badge=profile.badge %}">{{ profile.preferred_name }} {{ brother.last_name }} ... {{ profile.badge }}</a></li>
-        {% endwith %}
-    {% empty %}
-        <li>Nothing to display.</li>
-    {% endfor %}
-    </ul>
-    <div>
-    {% if brothers.has_previous %}
-        <a href="?page={{ brothers.previous_page_number }}">previous</a>
-    {% endif %}
-    Page {{ brothers.number }} of {{ brothers.paginator.num_pages }}
-    {% if brothers.has_next %}
-        <a href="?page={{ brothers.next_page_number }}">next</a>
-    {% endif %}
-    </div>
+    <p>The chapter currently has {{ num_undergrads }} undergraduate brother{{ num_undergrads|pluralize }}. The following is a list of the chapter's current active membership as well as a list of the chapter's alumni below that.</p>
+    <table width="100%">
+        <tbody>
+            {% for row in undergrad_rows %}
+                <tr>
+                    {% for data in row %}
+                        {% with badge=data.0 name=data.1 has_profile=data.2 %}
+                            <td width="{{ col_width }}%">{% if data %}{% if has_profile %}<a class="hovercolor" href="{% url 'gtphipsi.brothers.views.show' badge=badge %}">{% endif %}{{ name }} ... {{ badge }}{% if has_profile %}</a>{% endif %}{% endif %}</td>
+                        {% endwith %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br />
+    <hr>
+    <br />
+    <table width="100%">
+        <tbody>
+        {% for row in alumni_rows %}
+            <tr>
+                {% for data in row %}
+                    {% with badge=data.0 name=data.1 has_profile=data.2 %}
+                        <td width="{{ col_width }}%">{% if data %}{% if has_profile %}<a class="hovercolor" href="{% url 'gtphipsi.brothers.views.show' badge=badge %}">{% endif %}{{ name }} ... {{ badge }}{% if has_profile %}</a>{% endif %}{% endif %}</td>
+                    {% endwith %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

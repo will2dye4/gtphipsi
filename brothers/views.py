@@ -1,10 +1,10 @@
 import logging
 from re import match
 
+from django.db.models import Min
 from django.shortcuts import render
 from django.template import RequestContext
 from django.conf import settings
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User, Permission, Group
@@ -14,6 +14,7 @@ from gtphipsi.messages import get_message
 from gtphipsi.common import get_name_from_badge, create_user_and_profile
 from brothers.models import UserProfile, STATUS_BITS
 from brothers.forms import UserForm, EditProfileForm, EditAccountForm, PublicVisibilityForm, ChapterVisibilityForm, ChangePasswordForm
+from brothers.bootstrap import INITIAL_BROTHER_LIST as IBL
 
 
 log = logging.getLogger('django')
@@ -21,17 +22,11 @@ log = logging.getLogger('django')
 
 # visible to all users
 def list(request):
-    profile_list = UserProfile.objects.filter(status='U')
-    brothers_list = User.objects.filter(pk__in=[profile.user.id for profile in profile_list])   # TODO why not just `[profile.user for profile in profile_list]` ??
-    paginator = Paginator(brothers_list, 20)
-    page = request.GET.get('page') if request.GET.get('page') else 1
-    try:
-        brothers = paginator.page(page)
-    except PageNotAnInteger:
-        brothers = paginator.page(1)
-    except EmptyPage:
-        brothers = paginator.page(paginator.num_pages)
-    return render(request, 'brothers/list.html', {'brothers': brothers, 'num_brothers': brothers_list.count()}, context_instance=RequestContext(request))
+    columns = 3
+    undergrad_rows, num_undergrads = _get_brother_listing(num_cols=columns)
+    alumni_rows, num_alumni = _get_brother_listing(False, columns)
+    context = {'undergrad_rows': undergrad_rows, 'num_undergrads': num_undergrads, 'alumni_rows': alumni_rows, 'col_width': 100/columns}
+    return render(request, 'brothers/list.html', context, context_instance=RequestContext(request))
 
 
 # visible to all users
@@ -40,28 +35,28 @@ def show(request, badge=0):
         profile = UserProfile.objects.get(badge=badge)
         user = profile.user
     except (UserProfile.DoesNotExist, User.DoesNotExist):
-        raise Http404
-    own_account = (user.id == request.user.id)
-    show_public = ('public' in request.GET and request.GET['public'] == 'true') or request.user.is_anonymous()
-    visibility = profile.public_visibility if show_public else profile.chapter_visibility
-    fields = get_fields_from_profile(profile, visibility)
-    chapter_fields, personal_fields, contact_fields = get_field_categories(fields)
-    big_bro = None
-    if 'Big brother' in fields:
-        try:
-            big_bro = '%s ... %d' % (UserProfile.objects.get(badge=profile.big_brother).common_name(), profile.big_brother)
-        except UserProfile.DoesNotExist:
-            big_bro = '%s ... %d' % (get_name_from_badge(profile.big_brother), profile.big_brother)
-    return render(request, 'brothers/show.html', {'fields': fields,
-                                                  'account': user,
-                                                  'profile': profile,
-                                                  'big': big_bro,
-                                                  'public': show_public,
-                                                  'own_account': own_account,
-                                                  'chapter_fields': chapter_fields,
-                                                  'personal_fields': personal_fields,
-                                                  'contact_fields': contact_fields
-    }, context_instance=RequestContext(request))
+        name = get_name_from_badge(int(badge))
+        if name is None:
+            raise Http404
+        min = _get_lowest_undergrad_badge()
+        status = 'Undergraduate' if int(badge) > min else 'Alumnus'
+        context = {'account': None, 'name': name, 'badge': badge, 'status': status}
+    else:
+        show_public = ('public' in request.GET and request.GET['public'] == 'true') or request.user.is_anonymous()
+        visibility = profile.public_visibility if show_public else profile.chapter_visibility
+        fields = get_fields_from_profile(profile, visibility)
+        chapter_fields, personal_fields, contact_fields = get_field_categories(fields)
+        big_bro = None
+        if 'Big brother' in fields:
+            try:
+                big_bro = '%s ... %d' % (UserProfile.objects.get(badge=profile.big_brother).common_name(), profile.big_brother)
+            except UserProfile.DoesNotExist:
+                big_bro = '%s ... %d' % (get_name_from_badge(profile.big_brother), profile.big_brother)
+        context = {'own_account': (user.id == request.user.id), 'account': user, 'profile': profile, 'public': show_public,
+                   'big': big_bro, 'fields': fields, 'chapter_fields': chapter_fields, 'personal_fields': personal_fields,
+                   'contact_fields': contact_fields
+        }
+    return render(request, 'brothers/show.html', context, context_instance=RequestContext(request))
 
 
 @login_required
@@ -402,6 +397,46 @@ def edit_chapter_visibility(request):
 
 
 # ============= Private Functions ============= #
+
+def _get_lowest_undergrad_badge():
+    return UserProfile.objects.filter(status='U').aggregate(Min('badge'))['badge__min']
+
+
+def _get_brother_listing(undergrad=True, num_cols=2):
+    """Returns a list of lists, each sublist having num_cols elements, of data about undergraduates or alumni."""
+
+    # first, look up brothers with accounts and add them to a dictionary keyed by badge
+    map = {}
+    for profile in UserProfile.objects.filter(status=('U' if undergrad else 'A')):
+        map[int(profile.badge)] = (profile.common_name(), True)
+
+    # next, add brothers without accounts to the dictionary as necessary
+    no_profile_list = IBL[_get_lowest_undergrad_badge():] if undergrad else IBL[1:_get_lowest_undergrad_badge()]
+    ignore_list = UserProfile.objects.filter(status='A').values_list('badge', flat=True) if undergrad else []
+    for badge, name in no_profile_list:
+        if badge not in ignore_list and not map.has_key(badge):
+            map[badge] = (name, False)
+
+    # sort the dictionary by badge and use the sorted values to generate the final list
+    sorted_list = sorted(map.iteritems())
+    num_bros = len(sorted_list)
+    num_rows = num_bros/num_cols
+    if num_bros % num_cols:
+        num_rows += 1
+    result = []
+    for i in range(num_cols):
+        for j in range(num_rows):
+            if len(result) == j:
+                result.append([])
+            index = i * num_rows + j
+            if index < num_bros:
+                data = sorted_list[index]   # data is a tuple in the format (badge, (name, has_account))
+                result[j].append((data[0], data[1][0], data[1][1]))
+            else:
+                result[j].append(tuple())
+
+    return result, num_bros
+
 
 def get_fields_from_profile(profile, vis=None):
     fields = []

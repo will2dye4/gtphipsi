@@ -1,4 +1,4 @@
-{% extends "base_bros_only.html" %}
+{% extends "base.html" %}
 {% load url from future %}
 
 {% block title %}
@@ -45,110 +45,115 @@
 {% endblock %}
 
 {% block content %}
-    {% if own_account %}
-        <div id="infoBox">
-            viewing your {% if public %}public{% else %}chapter{% endif %} profile
-            <span class="small">{% if public %}<a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.my_profile' %}">show chapter profile</a>{% else %}<a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.my_profile' %}?public=true">show public profile</a>{% endif %}</span>
-        </div>
-    {% endif %}
-    <h1>{% if 'Full name' in fields %}{{ profile.full_name }}{% else %}{{ account.get_full_name }}{% endif %} ... {{ profile.badge }}</h1>
-    <h3 style="margin-bottom: 30px">{{ profile.get_status_display }}</h3>
-    {% if chapter_fields or personal_fields or contact_fields %}
-        <table>
-            {% if chapter_fields %}
-                <tr class="header top">
-                    <td colspan="2">Chapter Information</td>
-                </tr>
-                <tr>
-                    <td class="spacer right-border"></td>
-                </tr>
-            {% endif %}
-            {% if 'Big brother' in fields %}
-                <tr>
-                    <td class="label right-border">Big brother</td>
-                    <td class="content">{{ big }}</td>
-                </tr>
-            {% endif %}
-            {% if 'Major' in fields %}
-                <tr>
-                    <td class="label right-border">Major</td>
-                    <td class="content">{{ profile.get_major_display }}</td>
-                </tr>
-            {% endif %}
-            {% if 'Initiation' in fields %}
-                <tr>
-                    <td class="label right-border">Initiation</td>
-                    <td class="content">{{ profile.initiation|date:"F j, Y" }}</td>
-                </tr>
-            {% endif %}
-            {% if 'Graduation' in fields %}
-                <tr>
-                    <td class="label right-border">Graduation</td>
-                    <td class="content">{{ profile.graduation|date:"F j, Y" }}</td>
-                </tr>
-            {% endif %}
-
-            {% if personal_fields %}
-                {% if chapter_fields %}
-                    <tr>
-                        <td class="spacer right-border"></td>
-                    </tr>
-                {% endif %}
-                <tr class="header {% if not chapter_fields %}top{% endif %}">
-                    <td colspan="2">Personal Information</td>
-                </tr>
-                <tr>
-                    <td class="spacer right-border"></td>
-                </tr>
-            {% endif %}
-            {% if 'Hometown' in fields %}
-                <tr>
-                    <td class="label right-border">Hometown</td>
-                    <td class="content">{{ profile.hometown }}</td>
-                </tr>
-            {% endif %}
-            {% if 'Current city' in fields %}
-                <tr>
-                    <td class="label right-border">Current city</td>
-                    <td class="content">{{ profile.current_city }}</td>
-                </tr>
-            {% endif %}
-            {% if 'Date of birth' in fields %}
-                <tr>
-                    <td class="label right-border">Date of birth</td>
-                    <td class="content">{{ profile.dob }}</td>
-                </tr>
-            {% endif %}
-
-            {% if contact_fields %}
-                {% if chapter_fields or personal_fields %}
-                    <tr>
-                        <td class="spacer right-border"></td>
-                    </tr>
-                {% endif %}
-                <tr class="header {% if not chapter_fields and not personal_fields %}top{% endif %}">
-                    <td colspan="2">Contact Information</td>
-                </tr>
-                <tr>
-                    <td class="spacer right-border"></td>
-                </tr>
-            {% endif %}
-            {% if 'Phone' in fields %}
-                <tr>
-                    <td class="label right-border">Phone</td>
-                    <td class="content">{{ profile.phone }}</td>
-                </tr>
-            {% endif %}
-            {% if 'Email' in fields %}
-                <tr>
-                    <td class="label right-border">Email</td>
-                    <td class="content">{% if not public %}<a href="mailto:{{ account.email }}">{% endif %}{{ account.email }}{% if not public %}</a>{% endif %}</td>
-                </tr>
-            {% endif %}
-        </table>
-    {% else %}
+    {% if account %}
         {% if own_account %}
-            <p style="font-style: italic">You have not made any information visible on your public profile. You may want to <a href="{% url 'gtphipsi.brothers.views.edit_public_visibility' %}">edit your privacy settings</a> and show some information.</p>
+            <div id="infoBox">
+                viewing your {% if public %}public{% else %}chapter{% endif %} profile
+                <span class="small">{% if public %}<a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.my_profile' %}">show chapter profile</a>{% else %}<a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.my_profile' %}?public=true">show public profile</a>{% endif %}</span>
+            </div>
         {% endif %}
+        <h1>{% if 'Full name' in fields %}{{ profile.full_name }}{% else %}{{ account.get_full_name }}{% endif %} ... {{ profile.badge }}</h1>
+        <h3 style="margin-bottom: 30px">{{ profile.get_status_display }}</h3>
+        {% if chapter_fields or personal_fields or contact_fields %}
+            <table>
+                {% if chapter_fields %}
+                    <tr class="header top">
+                        <td colspan="2">Chapter Information</td>
+                    </tr>
+                    <tr>
+                        <td class="spacer right-border"></td>
+                    </tr>
+                {% endif %}
+                {% if 'Big brother' in fields %}
+                    <tr>
+                        <td class="label right-border">Big brother</td>
+                        <td class="content">{{ big }}</td>
+                    </tr>
+                {% endif %}
+                {% if 'Major' in fields %}
+                    <tr>
+                        <td class="label right-border">Major</td>
+                        <td class="content">{{ profile.get_major_display }}</td>
+                    </tr>
+                {% endif %}
+                {% if 'Initiation' in fields %}
+                    <tr>
+                        <td class="label right-border">Initiation</td>
+                        <td class="content">{{ profile.initiation|date:"F j, Y" }}</td>
+                    </tr>
+                {% endif %}
+                {% if 'Graduation' in fields %}
+                    <tr>
+                        <td class="label right-border">Graduation</td>
+                        <td class="content">{{ profile.graduation|date:"F j, Y" }}</td>
+                    </tr>
+                {% endif %}
+
+                {% if personal_fields %}
+                    {% if chapter_fields %}
+                        <tr>
+                            <td class="spacer right-border"></td>
+                        </tr>
+                    {% endif %}
+                    <tr class="header {% if not chapter_fields %}top{% endif %}">
+                        <td colspan="2">Personal Information</td>
+                    </tr>
+                    <tr>
+                        <td class="spacer right-border"></td>
+                    </tr>
+                {% endif %}
+                {% if 'Hometown' in fields %}
+                    <tr>
+                        <td class="label right-border">Hometown</td>
+                        <td class="content">{{ profile.hometown }}</td>
+                    </tr>
+                {% endif %}
+                {% if 'Current city' in fields %}
+                    <tr>
+                        <td class="label right-border">Current city</td>
+                        <td class="content">{{ profile.current_city }}</td>
+                    </tr>
+                {% endif %}
+                {% if 'Date of birth' in fields %}
+                    <tr>
+                        <td class="label right-border">Date of birth</td>
+                        <td class="content">{{ profile.dob }}</td>
+                    </tr>
+                {% endif %}
+
+                {% if contact_fields %}
+                    {% if chapter_fields or personal_fields %}
+                        <tr>
+                            <td class="spacer right-border"></td>
+                        </tr>
+                    {% endif %}
+                    <tr class="header {% if not chapter_fields and not personal_fields %}top{% endif %}">
+                        <td colspan="2">Contact Information</td>
+                    </tr>
+                    <tr>
+                        <td class="spacer right-border"></td>
+                    </tr>
+                {% endif %}
+                {% if 'Phone' in fields %}
+                    <tr>
+                        <td class="label right-border">Phone</td>
+                        <td class="content">{{ profile.phone }}</td>
+                    </tr>
+                {% endif %}
+                {% if 'Email' in fields %}
+                    <tr>
+                        <td class="label right-border">Email</td>
+                        <td class="content">{% if not public %}<a href="mailto:{{ account.email }}">{% endif %}{{ account.email }}{% if not public %}</a>{% endif %}</td>
+                    </tr>
+                {% endif %}
+            </table>
+        {% else %}
+            {% if own_account %}
+                <p style="font-style: italic">You have not made any information visible on your public profile. You may want to <a href="{% url 'gtphipsi.brothers.views.edit_public_visibility' %}">edit your privacy settings</a> and show some information.</p>
+            {% endif %}
+        {% endif %}
+    {% else %}
+        <h1>{{ name }} ... {{ badge }}</h1>
+        <h3 style="margin-bottom: 30px">{{ status }}</h3>
     {% endif %}
 {% endblock %}
