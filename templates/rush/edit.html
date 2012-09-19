@@ -20,7 +20,7 @@
     <h1>Edit Rush Details</h1>
     <p>Use the form below to edit the details of a rush. Click "Save" when you are finished.</p>
     <form action="{% url 'gtphipsi.rush.views.edit' name=rush_name %}" method="post">
-        {% include "_table_form.html" with submit_text="Save" %}
+        {% include "snippets/_table_form.html" with submit_text="Save" %}
         <div style="float: right"><a href="#" onclick="confirm_delete()">delete</a></div>
     </form>
 {% endblock %}

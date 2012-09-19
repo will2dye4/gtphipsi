@@ -1,4 +1,4 @@
-{% extends "base_bros_only.html" %}
+{% extends "base.html" %}
 
 {% block title %}
     Calendar | {{ block.super }}
@@ -18,5 +18,5 @@
 {% endblock %}
 
 {% block content %}
-    {% include "_calendar.html" %}
+    {% include "snippets/_calendar.html" %}
 {% endblock %}

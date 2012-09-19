@@ -20,7 +20,7 @@
     <h1>Edit Rush Event</h1>
     <p>Use this form to make changes to a rush event. Click "Save" when you are finished.</p>
     <form action="{% url 'gtphipsi.rush.views.edit_event' id=event_id %}" method="post">
-        {% include "_table_form.html" with submit_text="Save" %}
+        {% include "snippets/_table_form.html" with submit_text="Save" %}
     </form>
     <div style="float: right"><a href="#" onclick="confirm_delete()">delete</a></div>
 {% endblock %}

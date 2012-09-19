@@ -1,0 +1,24 @@
+{% load url from future %}
+
+<ul>
+    <li><a href="{% url 'gtphipsi.views.home' %}" {% ifequal menu_item 'home' %}class="selected"{% endifequal %}>Home</a></li>
+    <li><a href="{% url 'gtphipsi.rush.views.rush' %}" {% ifequal menu_item 'rush' %}class="selected"{% endifequal %}>Rush Phi Psi</a>
+        <ul>
+            <li><a href="{% url 'gtphipsi.rush.views.rush' %}">About Rush</a></li>
+            <li><a href="{% url 'gtphipsi.rush.views.rushphipsi' %}">Why Rush Phi Psi</a></li>
+            <li><a href="{% url 'gtphipsi.rush.views.schedule' %}">Rush Schedule</a></li>
+            <li><a href="{% url 'gtphipsi.rush.views.info_card' %}">Information Card</a></li>
+        </ul>
+    </li>
+    <li><a href="{% url 'gtphipsi.chapter.views.about' %}" {% ifequal menu_item 'chapter' %}class="selected"{% endifequal %}>The Chapter</a>
+        <ul>
+            <li><a href="{% url 'gtphipsi.chapter.views.about' %}">About Georgia Beta</a></li>
+            <li><a href="{% url 'gtphipsi.chapter.views.history' %}">Chapter History</a></li>
+            <li><a href="{% url 'gtphipsi.chapter.views.creed' %}">Phi Psi Creed</a></li>
+            <li><a href="{% url 'gtphipsi.brothers.views.list' %}">The Brothers</a></li>
+        </ul>
+    </li>
+    <li><a href="{% url 'gtphipsi.views.calendar' %}" {% ifequal menu_item 'calendar' %}class="selected"{% endifequal %}>Calendar</a></li>
+    <li><a href="http://www.flickr.com/photos/georgiabeta/sets/" target="_blank">Media</a></li>
+    <li><a href="{% url 'gtphipsi.views.contact' %}" {% ifequal menu_item 'contact' %}class="selected"{% endifequal %}>Contact Us</a></li>
+</ul>

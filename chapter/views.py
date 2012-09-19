@@ -66,7 +66,7 @@ def add_announcement(request):
             return HttpResponseRedirect(reverse('announcements'))
     else:
         form = AnnouncementForm()
-    return render(request, 'chapter/addannouncement.html', {'form': form}, context_instance=RequestContext(request))
+    return render(request, 'chapter/add_announcement.html', {'form': form}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -87,4 +87,4 @@ def edit_announcement(request, id=0):
                 return HttpResponseRedirect(reverse('announcements'))
         else:
             form = AnnouncementForm(instance=announcement)
-    return render(request, 'chapter/editannouncement.html', {'form': form, 'id': announcement.id}, context_instance=RequestContext(request))
+    return render(request, 'chapter/edit_announcement.html', {'form': form, 'id': announcement.id}, context_instance=RequestContext(request))

@@ -1,0 +1,39 @@
+{% load url from future %}
+
+<ul>
+    <li><a href="{% url 'gtphipsi.views.home' %}" {% ifequal menu_item 'home' %}class="selected"{% endifequal %}>Home</a></li>
+    <li><a href="{% url 'gtphipsi.rush.views.show' %}" {% ifequal menu_item 'rush' %}class="selected"{% endifequal %}>Rush</a>
+        <ul>
+            <li><a href="{% url 'gtphipsi.rush.views.list' %}">All Rushes</a></li>
+            <li><a href="{% url 'gtphipsi.rush.views.show' %}">Current Rush</a></li>
+            <li><a href="{% url 'gtphipsi.rush.views.add' %}">Add New Rush</a></li>
+            <li><a href="{% url 'gtphipsi.rush.views.info_card_list' %}">Information Cards</a></li>
+        </ul>
+    </li>
+    <li><a href="{% url 'gtphipsi.chapter.views.announcements' %}" {% ifequal menu_item 'announcements' %}class="selected"{% endifequal %}>Announcements</a>
+        <ul>
+            <li><a href="{% url 'gtphipsi.chapter.views.announcements' %}">All Announcements</a></li>
+            <li><a href="{% url 'gtphipsi.chapter.views.add_announcement' %}">Add Announcement</a></li>
+        </ul>
+    </li>
+    <li><a href="{% url 'gtphipsi.brothers.views.manage' %}" {% ifequal menu_item 'admin' %}class="selected"{% endifequal %}>Admin</a>
+        <ul>
+            <li><a href="{% url 'gtphipsi.brothers.views.manage' %}">Manage Users</a></li>
+            {% if user.get_profile.is_admin %}
+                <li><a href="{% url 'gtphipsi.brothers.views.add' %}">Add New User</a></li>
+                <li><a href="{% url 'gtphipsi.brothers.views.manage_groups' %}">Manage User Groups</a></li>
+            {% endif %}
+        </ul>
+    </li>
+    {% comment %}<li><a href="{% url 'gtphipsi.chapter.views.word' %}" {% ifequal menu_item 'word' %}class="selected"{% endifequal %}>WORD</a></li>{% endcomment %}
+    <li><a href="{% url 'gtphipsi.views.calendar' %}" {% ifequal menu_item 'calendar' %}class="selected"{% endifequal %}>Calendar</a></li>
+    <li><a href="{% url 'gtphipsi.brothers.views.my_profile' %}" {% ifequal menu_item 'account' %}class="selected"{% endifequal %}>Account</a>
+        <ul>
+            <li><a href="{% url 'gtphipsi.brothers.views.my_profile' %}">View Profile</a></li>
+            <li><a href="{% url 'gtphipsi.brothers.views.edit' %}">Edit Profile</a></li>
+            <li><a href="{% url 'gtphipsi.brothers.views.edit_account' %}">Edit Account Details</a></li>
+            <li><a href="{% url 'gtphipsi.brothers.views.visibility' %}">Privacy Settings</a></li>
+            <li><a href="{% url 'gtphipsi.brothers.views.change_password' %}">Change Password</a></li>
+        </ul>
+    </li>
+</ul>

@@ -69,7 +69,7 @@ def sign_in(request):
                 request.session['login_attempts'] = 1
             except UserProfile.DoesNotExist:
                 pass
-    return render(request, 'login.html', {'username': username, 'error': error}, context_instance=RequestContext(request))
+    return render(request, 'public/login.html', {'username': username, 'error': error}, context_instance=RequestContext(request))
 
 
 def sign_out(request):
@@ -94,8 +94,7 @@ def register_success(request):
 
 
 def calendar(request):
-    template_name = 'calendar.html' if request.user.is_anonymous() else 'calendar_bros_only.html'
-    return render(request, template_name, context_instance=RequestContext(request))
+    return render(request, 'public/calendar.html', context_instance=RequestContext(request))
 
 
 def contact(request):
@@ -108,7 +107,7 @@ def contact(request):
             return HttpResponseRedirect(reverse('contact_thanks'))
     else:
         form = ContactForm(initial={'message': ''})
-    return render(request, 'contact.html', {'form': form}, context_instance=RequestContext(request))
+    return render(request, 'public/contact.html', {'form': form}, context_instance=RequestContext(request))
 
 
 def contact_thanks(request):
@@ -116,7 +115,7 @@ def contact_thanks(request):
     if not (REFERRER in request.META and request.META[REFERRER].endswith(reverse('contact'))):
         raise Http404
     else:
-        return render(request, 'contactthanks.html', context_instance=RequestContext(request))
+        return render(request, 'public/contact_thanks.html', context_instance=RequestContext(request))
 
 
 def forbidden(request):
@@ -132,7 +131,7 @@ def forgot_password(request):
             return reset_password(request, user.id) #HttpResponseRedirect(reverse('reset_password', args=[user.id]))
         except User.DoesNotExist:
             error = 'That username is invalid.'
-    return render(request, 'forgot_password.html', {'error': error}, context_instance=RequestContext(request))
+    return render(request, 'public/forgot_password.html', {'error': error}, context_instance=RequestContext(request))
 
 
 def reset_password(request, id=0):
@@ -172,12 +171,14 @@ def reset_password(request, id=0):
         return HttpResponseRedirect(redirect)
 
     else:
-        return render(request, 'reset_password.html', {'own_account': own_account, 'name': user.first_name, 'user_id': id}, context_instance=RequestContext(request))
+        return render(request, 'public/reset_password.html', {'own_account': own_account, 'name': user.first_name, 'user_id': id}, context_instance=RequestContext(request))
 
 
 def reset_password_success(request):
-    return render(request, 'reset_password_success.html', context_instance=RequestContext(request))
+    return render(request, 'public/reset_password_success.html', context_instance=RequestContext(request))
 
+
+# ============= Private Functions ============= #
 
 def get_redirect_destination(referrer, profile):
     """Helper function to find and return the 'next' parameter from the HTTP Referrer header, if present."""

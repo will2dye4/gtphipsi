@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block sidebar %}
-    {% include "_sidebar_addresses.html" %}
+    {% include "snippets/_sidebar_addresses.html" %}
 {% endblock %}
 
 {% block content %}
@@ -14,6 +14,6 @@
     <p>Please use this form to notify the chapter of your questions or comments.
     All fields are required. The message may not exceed 500 characters.</p>
     <form action="{% url 'gtphipsi.views.contact' %}" method="post">
-        {% include "_table_form.html" with submit_text="Submit" %}
+        {% include "snippets/_table_form.html" with submit_text="Submit" %}
     </form>
 {% endblock %}

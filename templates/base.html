@@ -12,8 +12,8 @@
     <meta name="author" content="William Dye" />
     <meta name="Copyright" content="Copyright (c) 2012 Phi Kappa Psi Fraternity, Georgia Beta Chapter" />
 
-    <link href="{% get_static_prefix %}styles/gtphipsi_screen.css" rel="stylesheet" type="text/css" media="screen" />
-    <link href="{% get_static_prefix %}images/favicon.ico" rel="shortcut icon" />
+    <link href="{{ STATIC_URL }}styles/gtphipsi_screen.css" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{{ STATIC_URL }}images/favicon.ico" rel="shortcut icon" />
 
     {% block head_extras %}{% endblock %} {# Allow child templates to include additional head elements. #}
 
@@ -26,52 +26,37 @@
                 <div id="header-links" class="padded" style="display: table; position: absolute; right: 10%; top: 25px; z-index: 20;">
                     <div id="login" style="display: table-cell; vertical-align: middle; padding: 0 15px 0 0; font-size: 0.95em">
                         {% if user.is_authenticated %}
-                        <p>Welcome, {{ user.get_profile.preferred_name }}! <a href="{% url 'gtphipsi.views.sign_out' %}">Sign out</a>.</p>
+                            <p>Welcome, {{ user.get_profile.preferred_name }}! <a href="{% url 'gtphipsi.views.sign_out' %}">Sign out</a>.</p>
                         {% else %}
-                        <p>Are you a brother? <a href="{% url 'gtphipsi.views.sign_in' %}">Sign in</a> or <a href="{% url 'gtphipsi.views.register' %}">register</a>.</p>
+                            <p>Are you a brother? <a href="{% url 'gtphipsi.views.sign_in' %}">Sign in</a> or <a href="{% url 'gtphipsi.views.register' %}">register</a>.</p>
                         {% endif %}
                     </div>
                     <div id="social" class="padded">
-		                <a href="http://www.facebook.com/pages/Phi-Kappa-Psi-Georgia-Tech/85390843914" target="_blank" title="Find us on Facebook"><img id="fbLogo" alt="Facebook" src="{% get_static_prefix %}images/fb_logo.jpg"/></a>
-		                <a href="http://twitter.com/#!/gtphipsi" target="_blank" title="Find us on Twitter"><img id="twitterLogo" alt="Twitter" src="{% get_static_prefix %}images/twitter_logo.gif"/></a>
+		                <a href="http://www.facebook.com/pages/Phi-Kappa-Psi-Georgia-Tech/85390843914" target="_blank" title="Find us on Facebook"><img id="fbLogo" alt="Facebook" src="{{ STATIC_URL }}images/fb_logo.jpg"/></a>
+		                <a href="http://twitter.com/#!/gtphipsi" target="_blank" title="Find us on Twitter"><img id="twitterLogo" alt="Twitter" src="{{ STATIC_URL }}images/twitter_logo.gif"/></a>
                     </div>
                 </div>
                 <div id="logo" style="display: table; font-size: 1.75em; font-weight: bold; padding: 5px 0">
-                    <a href="{% url 'gtphipsi.views.home' %}"><img src="{% get_static_prefix %}images/main_logo.jpg" alt="Logo"></a>
+                    <a href="{% url 'gtphipsi.views.home' %}"><img src="{{ STATIC_URL }}images/main_logo.jpg" alt="Logo"></a>
                     <div id="title" style="display: table-cell; vertical-align: middle; padding: 0 0 0 20px">
                         <h1>Phi Kappa Psi<br /><span style="font-variant: small-caps; font-size: 0.6em">Georgia Institute of Technology</span></h1>
                     </div>
                 </div>
             {% endblock %}
         </div>
+
         <div id="menuContainer" class="rounded" style="padding: 0; margin-bottom: 10px; height: 35px; min-height: 35px; overflow: hidden">
             {% block menu %}
                 <div id="menu">
-                    <ul>
-                        <li><a href="{% url 'gtphipsi.views.home' %}" {% ifequal menu_item 'home' %}class="selected"{% endifequal %}>Home</a></li>
-                        <li><a href="{% url 'gtphipsi.rush.views.rush' %}" {% ifequal menu_item 'rush' %}class="selected"{% endifequal %}>Rush Phi Psi</a>
-                            <ul>
-                                <li><a href="{% url 'gtphipsi.rush.views.rush' %}">About Rush</a></li>
-                                <li><a href="{% url 'gtphipsi.rush.views.rushphipsi' %}">Why Rush Phi Psi</a></li>
-                                <li><a href="{% url 'gtphipsi.rush.views.schedule' %}">Rush Schedule</a></li>
-                                <li><a href="{% url 'gtphipsi.rush.views.info_card' %}">Information Card</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="{% url 'gtphipsi.chapter.views.about' %}" {% ifequal menu_item 'chapter' %}class="selected"{% endifequal %}>The Chapter</a>
-                            <ul>
-                                <li><a href="{% url 'gtphipsi.chapter.views.about' %}">About Georgia Beta</a></li>
-                                <li><a href="{% url 'gtphipsi.chapter.views.history' %}">Chapter History</a></li>
-                                <li><a href="{% url 'gtphipsi.chapter.views.creed' %}">Phi Psi Creed</a></li>
-                                <li><a href="{% url 'gtphipsi.brothers.views.list' %}">The Brothers</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="{% url 'gtphipsi.views.calendar' %}" {% ifequal menu_item 'calendar' %}class="selected"{% endifequal %}>Calendar</a></li>
-                        <li><a href="http://www.flickr.com/photos/georgiabeta/sets/" target="_blank">Media</a></li>
-                        <li><a href="{% url 'gtphipsi.views.contact' %}" {% ifequal menu_item 'contact' %}class="selected"{% endifequal %}>Contact Us</a></li>
-                    </ul>
+                    {% if user.is_authenticated %}
+                        {% include "snippets/_menu_bros_only.html" %}
+                    {% else %}
+                        {% include "snippets/_main_menu.html" %}
+                    {% endif %}
                 </div>
             {% endblock %}
         </div>
+
         <div id="sidebar" class="rounded" style="padding: 5px 10px 5px 10px; font-size: 0.9em">
             {% block sidebar %}
                 <h3 class="sidebar">Recent News</h3>
@@ -89,9 +74,12 @@
                 {% endif %}
             {% endblock %}
         </div>
+
+        <!-- Main page content -->
         <div id="content" class="rounded padded">
             {% block content %}{% endblock %}
         </div>
+
         <div id="footer" class="rounded">
             {% block footer %}
                 <div style="width: 100%; display: table; font-size: 0.9em">

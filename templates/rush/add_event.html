@@ -30,7 +30,7 @@
     location, or food information, but you should include as much detail as possible.</p>
     {% with rush.get_unique_name as rush_name %}
     <form action="{% url 'gtphipsi.rush.views.add_event' name=rush_name %}" method="post">
-        {% include "_table_form.html" with submit_text="Add Event" %}
+        {% include "snippets/_table_form.html" with submit_text="Add Event" %}
     </form>
     {% endwith %}
 {% endblock %}

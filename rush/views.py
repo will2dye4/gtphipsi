@@ -62,7 +62,7 @@ def info_card_thanks(request):
     if not (REFERRER in request.META and request.META[REFERRER].endswith(reverse('info_card'))):
         raise Http404
     else:
-        return render(request, 'rush/infocardthanks.html', context_instance=RequestContext(request))
+        return render(request, 'rush/infocard_thanks.html', context_instance=RequestContext(request))
 
 
 @login_required
@@ -146,7 +146,7 @@ def add_event(request, name):
             return get_redirect_from_rush(rush)
     else:
         form = RushEventForm(initial={'rush': rush})
-    return render(request, 'rush/addevent.html', {'rush': rush, 'form': form}, context_instance=RequestContext(request))
+    return render(request, 'rush/add_event.html', {'rush': rush, 'form': form}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -166,13 +166,13 @@ def edit_event(request, id=0):
         return get_redirect_from_rush(event.rush)
     else:
         form = RushEventForm(instance=event)
-    return render(request, 'rush/editevent.html', {'event_id': event.id, 'form': form}, context_instance=RequestContext(request))
+    return render(request, 'rush/edit_event.html', {'event_id': event.id, 'form': form}, context_instance=RequestContext(request))
 
 
 @login_required
 def info_card_list(request):
     queryset = InformationCard.objects.all()
-    return render(request, 'rush/infocardlist.html', {'cards': queryset if queryset.count() > 0 else InformationCard.objects.none()}, context_instance=RequestContext(request))
+    return render(request, 'rush/infocard_list.html', {'cards': queryset if queryset.count() > 0 else InformationCard.objects.none()}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -181,7 +181,7 @@ def info_card_show(request, id=0):
     if card is None:
         raise Http404
     else:
-        return render(request, 'rush/infocardshow.html', {'card': card}, context_instance=RequestContext(request))
+        return render(request, 'rush/infocard_show.html', {'card': card}, context_instance=RequestContext(request))
 
 
 def get_redirect_from_rush(rush):

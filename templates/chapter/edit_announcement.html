@@ -25,7 +25,7 @@
     <h1>Edit Announcement</h1>
     <p>Use this form to edit an announcement.</p>
     <form action="{% url 'gtphipsi.chapter.views.edit_announcement' id=id %}" method="post">
-        {% include "_table_form.html" with submit_text="Save" %}
+        {% include "snippets/_table_form.html" with submit_text="Save" %}
     </form>
     <div style="float: right"><a href="#" onclick="confirm_delete()">delete</a></div>
 {% endblock %}

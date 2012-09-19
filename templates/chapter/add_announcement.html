@@ -16,6 +16,6 @@
     <h1>Add Announcement</h1>
     <p>Use this form to add an announcement.</p>
     <form action="{% url 'gtphipsi.chapter.views.add_announcement' %}" method="post">
-        {% include "_table_form.html" with submit_text="Add" %}
+        {% include "snippets/_table_form.html" with submit_text="Add" %}
     </form>
 {% endblock %}
