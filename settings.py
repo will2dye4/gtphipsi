@@ -13,11 +13,11 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
 #        'ENGINE': 'django.db.backends.mysql',
+#        'NAME': 'gtphipsi',
+#        'USER': 'gtphipsi',
+#        'PASSWORD': 'tester',
         'ENGINE': 'django.db.backends.sqlite3',
-#       'NAME': 'gtphipsi',
         'NAME': '/Users/William/dev/sqlite/gtphipsi',
-#       'USER': 'gtphipsi',
-#       'PASSWORD': 'tester',
         'HOST': '127.0.0.1',
         'PORT': '',                      # Set to empty string for default.
     }
@@ -48,6 +48,7 @@ USE_L10N = True
 
 # The root directory for the project's source code.
 GTPHIPSI_APP_ROOT = '/Users/William/dev/git/gtphipsi'  # Change me!
+# GTPHIPSI_APP_ROOT = '/Users/William/Git/gtphipsi'
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
@@ -212,6 +213,8 @@ AUTH_PROFILE_MODULE = 'brothers.UserProfile'
 
 LOGIN_URL = '/login/'
 
+FORBIDDEN_URL = '/forbidden/'
+
 # Invoke test SMTP server with 'python -m smtpd -n -c DebuggingServer localhost:1025'
 EMAIL_HOST = 'localhost'    # TODO change
 
@@ -253,27 +256,15 @@ ADMIN_KEY = '21ad61523fbd563a8fe87860b16c4730f7d58cb08e4394af81c7c81f'
 
 # Permissions to grant all undergraduate users when their accounts are created.
 UNDERGRADUATE_PERMISSIONS = [
-    'add_rush',
-    'change_rush',
-    'delete_rush',
-    'add_rushevent',
-    'change_rushevent',
-    'delete_rushevent',
-    'add_announcement',
-    'change_announcement',
-    'delete_announcement'
+    'add_rush', 'change_rush', 'delete_rush',
+    'add_rushevent', 'change_rushevent', 'delete_rushevent',
+    'add_announcement', 'change_announcement', 'delete_announcement'
 ]
 
 # Permissions to grant administrator users.
-# Consists of all permissions not granted to undergrads;
-# not all permissions are used at this time.
-ADMINISTRATOR_PERMISSIONS = [
-    'add_permission', 'change_permission', 'delete_permission',
+ADMINISTRATOR_PERMISSIONS = UNDERGRADUATE_PERMISSIONS + [
+    'add_permission', #'change_permission', 'delete_permission',
     'add_group', 'change_group', 'delete_group',
     'add_user', 'change_user', 'delete_user',
-    'add_message', 'change_message', 'delete_message',
-    'add_contenttype', 'change_contenttype', 'delete_contenttype',
-    'add_session', 'change_session', 'delete_session',
-    'add_site', 'change_site', 'delete_site',
     'add_userprofile', 'change_userprofile', 'delete_userprofile'
 ]
