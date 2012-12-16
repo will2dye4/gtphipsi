@@ -214,8 +214,6 @@ LOGIN_URL = '/login/'
 
 FORBIDDEN_URL = '/forbidden/'
 
-FORBIDDEN_URL = '/forbidden/'
-
 # Invoke test SMTP server with 'python -m smtpd -n -c DebuggingServer localhost:1025'
 EMAIL_HOST = 'smtp.gmail.com'   # localhost
 
