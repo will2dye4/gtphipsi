@@ -2,7 +2,18 @@
 {% load static %}
 {% load url from future %}
 
+{% block head_extras %}
+    <script type="text/javascript">
+        function closeNotification() {
+            document.getElementById("notification").style.display = "none";
+        }
+    </script>
+{% endblock %}
+
 {% block content %}
+    <div id="notification">
+        You suck. <span style="float: right; padding-right: 8px">[<a href="#" onclick="closeNotification();">x</a>]</span>
+    </div>
     <h1>Brotherhood</h1>
 	<h3>the idea behind phi kappa psi</h3>
 	<img class="content-left" alt="Badge" title="The Badge of Phi Kappa Psi" src="{% get_static_prefix %}images/badge.jpg" />

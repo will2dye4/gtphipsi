@@ -1,0 +1,25 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Edit Notification Settings | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <style type="text/css">
+        #content form table tbody tr td label {
+            width: auto;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>Notification Settings</h1>
+    <p>Use the checkboxes below to control the notifications you receive from this site.</p>
+    <p>Notifications will be sent to <b>{{ email }}</b>. Click <a href="{% url 'gtphipsi.brothers.views.edit_account' %}">here</a> to update your email address.</p>
+    <p style="margin: 35px 0 0 0"><b><i>Email me when . . .</i></b></p>
+    <form action="{% url 'gtphipsi.brothers.views.edit_notification_settings' %}" method="post">
+        {% csrf_token %}
+        {% include "snippets/_table_form.html" with submit_text="Save" %}
+    </form>
+{% endblock %}

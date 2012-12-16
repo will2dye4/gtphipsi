@@ -37,7 +37,7 @@
                     <hr />
                 </td>
             </tr>
-            <tr><td colspan="3" height="5px"></td></tr> <!-- TODO avoid this? -->
+            <tr><td colspan="3" height="5px"></td></tr>
             {% with field=form.first_name %}
             <tr>
                 <td {% if field.errors %}class="error {% if not field.help_text %}spaced{% endif %}" style="font-weight: bold"{% else %}{% if not field.help_text %}class="spaced"{% endif %}{% endif %}>

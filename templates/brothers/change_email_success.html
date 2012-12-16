@@ -1,0 +1,20 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Email Address Changed | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <script type="text/javascript">
+        window.setTimeout(function() {
+            window.location.href = '/';
+        }, 10000);
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h1>Email Changed Successfully</h1>
+    <p>Your email address has been changed. Click <a href="{% url 'gtphipsi.views.home' %}">here</a> to go to the home page,
+        or you will be automatically redirected there after ten seconds.</p>
+{% endblock %}

@@ -118,6 +118,15 @@ span.error {
     padding: 5px 0 5px 5px;
 }
 
+#login {
+    min-width: 225px;
+    text-align: right;
+}
+
+#social {
+    min-width: 70px;
+}
+
 #menu {
     height: 35px;
     min-height: 35px;
@@ -132,6 +141,20 @@ span.error {
     width: 20%;
     margin: 10px 0 10px 0;
     float: left;
+}
+
+#notification {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 15px;
+    max-height: 30px;
+    overflow: hidden;
+    background-color: #eecc00;
+    border-bottom: 1px solid #444444;
+    z-index: 1000;
+    padding: 5px;
 }
 
 #content {

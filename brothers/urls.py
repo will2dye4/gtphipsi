@@ -1,8 +1,10 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 
 urlpatterns = patterns('gtphipsi.brothers.views',
     url(r'^$', 'list', name='brothers_list'),
     url(r'^(?P<badge>\d+)/$', 'show', name='view_profile'),
+    url(r'^email/$', 'change_email', name='change_email'),
+    url(r'^email/success/$', 'change_email_success', name='change_email_success'),
     ### authenticated pages ###
     url(r'^profile/$', 'my_profile', name='my_profile'),
     url(r'^manage/$', 'manage', name='manage_users'),
@@ -22,4 +24,5 @@ urlpatterns = patterns('gtphipsi.brothers.views',
     url(r'^privacy/$', 'visibility', name='visibility'),
     url(r'^privacy/public/$', 'edit_public_visibility', name='edit_public_visibility'),
     url(r'^privacy/chapter/$', 'edit_chapter_visibility', name='edit_chapter_visibility'),
+    url(r'^notifications/$', 'edit_notification_settings', name='notification_settings'),
 )

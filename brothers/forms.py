@@ -183,6 +183,12 @@ class ChangePasswordForm(forms.Form):
         return self.cleaned_data['confirm'] if 'confirm' in self.cleaned_data else None
 
 
+class NotificationSettingsForm(forms.Form):
+    infocard = forms.BooleanField(required=False, label='New information cards are submitted')
+    contact = forms.BooleanField(required=False, label='New contact forms are submitted')
+    announcement = forms.BooleanField(required=False, label='New announcements are posted')
+
+
 # ============= Private Functions ============= #
 
 def _get_big_bro_error_message(user_badge, big_bro_badge):

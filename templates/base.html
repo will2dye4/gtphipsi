@@ -24,7 +24,7 @@
         <div id="header" class="rounded">
             {% block header %}
                 <div id="header-links" class="padded" style="display: table; position: absolute; right: 10%; top: 25px; z-index: 20;">
-                    <div id="login" style="display: table-cell; vertical-align: middle; padding: 0 15px 0 0; font-size: 0.95em">
+                    <div id="login" style="display: table-cell; vertical-align: middle; padding: 0 5px 0 0; font-size: 0.95em">
                         {% if user.is_authenticated %}
                             <p>Welcome, {{ user.get_profile.preferred_name }}! <a href="{% url 'gtphipsi.views.sign_out' %}">Sign out</a>.</p>
                         {% else %}

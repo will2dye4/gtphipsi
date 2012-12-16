@@ -4,12 +4,16 @@ from django.shortcuts import render
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, Http404
 from django.conf import settings
+from django.core.mail import get_connection
+from django.core.mail.message import EmailMessage
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required, permission_required
 
 from rush.models import Rush, RushEvent
 from rush.forms import RushForm, RushEventForm
 from chapter.models import InformationCard
+from brothers.models import UserProfile, STATUS_BITS
+from gtphipsi.messages import get_message as _
 
 
 log = logging.getLogger('django')
@@ -48,8 +52,20 @@ def info_card(request):
     if request.method == 'POST':
         form = InformationForm(request.POST)
         if form.is_valid():
-            form.save()
-            request.META[REFERRER] = reverse('info_card')
+            card = form.save()      # save the new record to the database
+            conn = get_connection() # open a connection to the SMTP backend
+            conn.open()
+            message = EmailMessage(_('email.infocard.subject'), _('email.infocard.body', args=(
+                    card.name, card.created.strftime('%B %d, %Y at %I:%M %p'), card.to_string()
+                )), to=[card.email]
+            )       # message to the person who submitted the information card
+            notification = EmailMessage(_('notify.infocard.subject'), _('notify.infocard.body', args=(
+                    card.created.strftime('%B %d, %Y at %I:%M %p'), card.to_string(), settings.URI_PREFIX
+                )), to=['membership@gtphipsi.org'], bcc=UserProfile.all_emails_with_bit(STATUS_BITS['EMAIL_NEW_INFOCARD'])
+            )       # message to the Membership Chair and everyone who has selected to be notified about new info cards
+            conn.send_messages([message, notification])
+            conn.close()
+            request.META[REFERRER] = reverse('info_card')   # set the HTTP_REFERER header, expected by the 'thanks' view
             return HttpResponseRedirect(reverse('info_card_thanks'))
     else:
         form = InformationForm()

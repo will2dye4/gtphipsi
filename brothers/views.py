@@ -1,3 +1,4 @@
+import hashlib
 import logging
 from re import match
 
@@ -5,6 +6,7 @@ from django.db.models import Min
 from django.shortcuts import render
 from django.template import RequestContext
 from django.conf import settings
+from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User, Permission, Group
@@ -12,8 +14,8 @@ from django.http import Http404, HttpResponseRedirect
 
 from gtphipsi.messages import get_message
 from gtphipsi.common import get_name_from_badge, create_user_and_profile
-from brothers.models import UserProfile, STATUS_BITS
-from brothers.forms import UserForm, EditProfileForm, EditAccountForm, PublicVisibilityForm, ChapterVisibilityForm, ChangePasswordForm
+from brothers.models import UserProfile, EmailChangeRequest, STATUS_BITS
+from brothers.forms import UserForm, EditProfileForm, EditAccountForm, PublicVisibilityForm, ChapterVisibilityForm, ChangePasswordForm, NotificationSettingsForm
 from brothers.bootstrap import INITIAL_BROTHER_LIST as IBL
 
 
@@ -57,6 +59,26 @@ def show(request, badge=0):
                    'contact_fields': contact_fields
         }
     return render(request, 'brothers/show.html', context, context_instance=RequestContext(request))
+
+
+# visible to all users
+def change_email(request):
+    if 'hash' in request.GET:
+        try:
+            req = EmailChangeRequest.objects.get(hash=request.GET.get('hash'))
+        except EmailChangeRequest.DoesNotExist:
+            raise Http404
+        user = req.user
+        user.email = req.email
+        user.save()
+        req.delete()
+        return HttpResponseRedirect(reverse('change_email_success'))
+    return HttpResponseRedirect(reverse('home'))
+
+
+# visible to all users
+def change_email_success(request):
+    return render(request, 'brothers/change_email_success.html', context_instance=RequestContext(request))
 
 
 @login_required
@@ -147,7 +169,6 @@ def edit_account(request, badge=0):
             email, status = form.cleaned_data['email'], form.cleaned_data['status']
             save_user = False
             if first != user.first_name or last != user.last_name:
-                # TODO verify name change?
                 user.first_name = first
                 user.last_name = last
                 save_user = True
@@ -159,9 +180,14 @@ def edit_account(request, badge=0):
                 profile.status = status
                 save_user = process_status_change(user, old_status, status) or save_user
             if email != user.email:
-                # TODO process email change
-                user.email = email
-                save_user = True
+                digest = hashlib.sha224('%d-%s' % (profile.badge, email)).hexdigest()
+                req = EmailChangeRequest(user=user, email=email, hash=digest)
+                req.save()
+                send_mail(get_message('email.change.subject'), get_message('email.change.body', args=(
+                        user.first_name, settings.URI_PREFIX, digest
+                    )), 'webmaster@gtphipsi.org', [email]
+                )
+                # TODO notify user to check his email
             profile.save()
             if save_user:
                 user.save()
@@ -394,6 +420,45 @@ def edit_public_visibility(request):
 @login_required
 def edit_chapter_visibility(request):
     return edit_visibility(request, False)
+
+
+@login_required
+def edit_notification_settings(request):
+    try:
+        profile = UserProfile.objects.get(user__id=request.user.id)
+    except UserProfile.DoesNotExist:
+        raise Http404
+    initial = {
+        'infocard': profile.has_bit(STATUS_BITS['EMAIL_NEW_INFOCARD']),
+        'contact': profile.has_bit(STATUS_BITS['EMAIL_NEW_CONTACT']),
+        'announcement': profile.has_bit(STATUS_BITS['EMAIL_NEW_ANNOUNCEMENT'])
+    }
+    if request.method == 'POST':
+        form = NotificationSettingsForm(request.POST, initial=initial)
+        if form.is_valid():
+            old_bits = profile.bits
+            if form.cleaned_data['infocard'] and not initial['infocard']:
+                profile.set_bit(STATUS_BITS['EMAIL_NEW_INFOCARD'])
+            elif not form.cleaned_data['infocard'] and initial['infocard']:
+                profile.clear_bit(STATUS_BITS['EMAIL_NEW_INFOCARD'])
+
+            if form.cleaned_data['contact'] and not initial['contact']:
+                profile.set_bit(STATUS_BITS['EMAIL_NEW_CONTACT'])
+            elif not form.cleaned_data['contact'] and initial['contact']:
+                profile.clear_bit(STATUS_BITS['EMAIL_NEW_CONTACT'])
+
+            if form.cleaned_data['announcement'] and not initial['announcement']:
+                profile.set_bit(STATUS_BITS['EMAIL_NEW_ANNOUNCEMENT'])
+            elif not form.cleaned_data['announcement'] and initial['announcement']:
+                profile.clear_bit(STATUS_BITS['EMAIL_NEW_ANNOUNCEMENT'])
+
+            if profile.bits != old_bits:
+                profile.save()
+            return HttpResponseRedirect(reverse('my_profile'))
+    else:
+        form = NotificationSettingsForm(initial=initial)
+    return render(request, 'brothers/notification_settings.html', {'form': form, 'email': request.user.email}, context_instance=RequestContext(request))
+
 
 
 # ============= Private Functions ============= #

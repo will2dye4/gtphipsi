@@ -3,12 +3,15 @@ import logging
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, Http404
 from django.template import RequestContext
+from django.core.mail import get_connection
+from django.core.mail.message import EmailMessage
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.conf import settings
 
 from gtphipsi.common import create_user_and_profile
+from gtphipsi.messages import get_message as _
 from rush.views import REFERRER
 from brothers.models import UserProfile, STATUS_BITS
 from brothers.forms import UserForm
@@ -102,8 +105,20 @@ def contact(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
-            form.save()
-            request.META[REFERRER] = reverse('contact')
+            contact = form.save()   # save the new record to the database
+            conn = get_connection() # open a connection to the SMTP backend
+            conn.open()
+            message = EmailMessage(_('email.contact.subject'), _('email.contact.body', args=(
+                contact.name, contact.created.strftime('%B %d, %Y at %I:%M %p'), contact.to_string()
+                )), to=[contact.email]
+            )       # message to the person who submitted the information card
+            notification = EmailMessage(_('notify.contact.subject'), _('notify.contact.body', args=(
+                    contact.created.strftime('%B %d, %Y at %I:%M %p'), contact.to_string()
+                )), to=['webmaster@gtphipsi.org'], bcc=UserProfile.all_emails_with_bit(STATUS_BITS['EMAIL_NEW_CONTACT'])
+            )       # message to the webmaster and everyone who has selected to be notified about new contact forms
+            conn.send_messages([message, notification])
+            conn.close()
+            request.META[REFERRER] = reverse('contact') # set the HTTP_REFERER header, expected by the 'thanks' view
             return HttpResponseRedirect(reverse('contact_thanks'))
     else:
         form = ContactForm(initial={'message': ''})

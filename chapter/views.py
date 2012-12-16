@@ -2,13 +2,17 @@ import logging
 
 from django.shortcuts import render
 from django.template import RequestContext
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core.mail.message import EmailMessage
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404
 
-from chapter.models import Announcement
+from chapter.models import Announcement, InformationCard
 from chapter.forms import AnnouncementForm
+from brothers.models import STATUS_BITS, UserProfile
+from gtphipsi.messages import get_message as _
 
 
 log = logging.getLogger('django')
@@ -63,6 +67,17 @@ def add_announcement(request):
             announcement = form.save(commit=False)
             announcement.user = request.user
             announcement.save()
+            recipients = UserProfile.all_emails_with_bit(STATUS_BITS['EMAIL_NEW_ANNOUNCEMENT'])
+            if announcement.public:
+                recipients += InformationCard.all_subscriber_emails()
+            message = EmailMessage(_('notify.announcement.subject'), _('notify.announcement.body', args=(
+                    announcement.user.get_profile().common_name(),
+                    '' if announcement.date is None else '[%s] ' % announcement.date.strftime('%B %d, %Y'),
+                    announcement.text,
+                    settings.URI_PREFIX
+                )), to=['messenger@gtphipsi.org'], bcc=recipients
+            )
+            message.send()
             return HttpResponseRedirect(reverse('announcements'))
     else:
         form = AnnouncementForm()

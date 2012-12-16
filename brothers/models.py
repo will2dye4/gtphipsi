@@ -9,6 +9,9 @@ from django.contrib.localflavor.us.models import PhoneNumberField
 STATUS_BITS = {
     'LOCKED_OUT': 0x1,
     'PASSWORD_RESET': 0x2,
+    'EMAIL_NEW_INFOCARD': 0x4,
+    'EMAIL_NEW_CONTACT': 0x8,
+    'EMAIL_NEW_ANNOUNCEMENT': 0x10
 }
 
 # Possible suffixes for names.
@@ -135,6 +138,15 @@ class UserProfile(models.Model):
 
 #    security_question = models.ForeignKey(SecurityQuestion, blank=True, null=True)
 
+    @classmethod
+    def all_profiles_with_bit(cls, bit=0):
+        return cls.objects.raw('SELECT * FROM brothers_userprofile WHERE (bits & %s) > 0', [bit])
+
+    @classmethod
+    def all_emails_with_bit(cls, bit=0):
+        queryset = cls.objects.raw('SELECT u.id, u.email FROM auth_user u JOIN brothers_userprofile b ON (b.user_id = u.id) WHERE (b.bits & %s) > 0', [bit])
+        return [user.email for user in queryset]
+
     def __unicode__(self):
         return self.common_name()
 
@@ -186,6 +198,12 @@ class UserProfile(models.Model):
     class Meta:
         ordering = ['badge']
         # permissions = (('codename', 'description'),) ... add permissions as needed
+
+
+class EmailChangeRequest(models.Model):
+    user = models.ForeignKey(User)
+    email = models.EmailField()
+    hash = models.CharField(max_length=28)
 
 
 # The code below should be used here, but due to the fact that `badge` and `status` must be provided

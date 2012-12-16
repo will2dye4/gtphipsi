@@ -1,5 +1,4 @@
 # Django settings for gtphipsi.
-# TODO: Set the global variable telling Django this is where this project's settings are.
 
 DEBUG = True        # Change me!
 TEMPLATE_DEBUG = DEBUG
@@ -212,13 +211,25 @@ AUTH_PROFILE_MODULE = 'brothers.UserProfile'
 
 LOGIN_URL = '/login/'
 
-# Invoke test SMTP server with 'python -m smtpd -n -c DebuggingServer localhost:1025'
-EMAIL_HOST = 'localhost'    # TODO change
+FORBIDDEN_URL = '/forbidden/'
 
-EMAIL_PORT = 1025           # TODO change
+# Invoke test SMTP server with 'python -m smtpd -n -c DebuggingServer localhost:1025'
+EMAIL_HOST = 'smtp.gmail.com'   # localhost
+
+EMAIL_HOST_USER = 'webmaster@gtphipsi.org'
+
+EMAIL_HOST_PASSWORD = 'gt1852'
+
+EMAIL_PORT = 587    # 1025
+
+EMAIL_USE_TLS = True
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 ### gtphipsi-specific settings ###
+URI_PREFIX = 'http://127.0.0.1:8000'    # Change me!
+
 MAX_LOGIN_ATTEMPTS = 3
 
 MIN_PASSWORD_LENGTH = 6
@@ -271,7 +282,7 @@ ADMINISTRATOR_PERMISSIONS = [
     'add_permission', 'change_permission', 'delete_permission',
     'add_group', 'change_group', 'delete_group',
     'add_user', 'change_user', 'delete_user',
-    'add_message', 'change_message', 'delete_message',
+#    'add_message', 'change_message', 'delete_message',
     'add_contenttype', 'change_contenttype', 'delete_contenttype',
     'add_session', 'change_session', 'delete_session',
     'add_site', 'change_site', 'delete_site',

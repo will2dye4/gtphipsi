@@ -52,6 +52,9 @@ class ContactRecord(models.Model):
     def __unicode__(self):
         return 'Contact Request from %s on %s' % (self.name, self.created.strftime('%b %d, %Y'))
 
+    def to_string(self):
+        return 'Name: %s\nEmail: %s\nMessage: %s' % (self.name, self.email, self.message)
+
     class Meta:
         ordering = ['-created']
 
@@ -62,8 +65,22 @@ class InformationCard(ContactRecord):
     relatives = models.CharField(max_length=150, blank=True, verbose_name="Phi Psi Relatives", help_text="If any, please include chapter and year.")
     subscribe = models.BooleanField(default=False, help_text="Get updates on the chapter's activities.")
 
+    @classmethod
+    def all_subscriber_emails(cls):
+        return cls.objects.filter(subscribe=True).distinct().values_list('email', flat=True)
+
     def __unicode__(self):
         return 'Information Card from %s on %s' % (self.name, self.created.strftime('%b %d, %Y'))
+
+    def to_string(self):
+        str = 'Name: %s\nEmail: %s\nYear: %s' % (self.name, self.email, self.get_year_display())
+        if self.phone:
+            str += '\nPhone: %s' % self.phone
+        if self.interests:
+            str += '\nInterests: %s' % self.interests
+        if self.relatives:
+            str += '\nRelatives: %s' % self.relatives
+        return str
 
     class Meta:
         ordering = ['-created']
