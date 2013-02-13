@@ -1,0 +1,50 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Officer History | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <style type="text/css">
+        #content table tbody tr td {
+            width: 230px;
+            height: 50px;
+            font-size: 1.2em;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>Officer History</h1>
+    <p>Select an office to view a list of brothers who have held that office in the past.</p>
+    <table>
+        <tbody>
+            <tr>
+                <td><a class="alwaysgreen" href="{% url 'gtphipsi.officers.views.office_history' office='GP' %}">President</a></td>
+                <td><a class="alwaysgreen" href="{% url 'gtphipsi.officers.views.office_history' office='VGP' %}">Vice President</a></td>
+            </tr>
+            <tr>
+                <td><a class="alwaysgreen" href="{% url 'gtphipsi.officers.views.office_history' office='P' %}">Treasurer</a></td>
+                <td><a class="alwaysgreen" href="{% url 'gtphipsi.officers.views.office_history' office='AG' %}">Corresponding Secretary</a></td>
+            </tr>
+            <tr>
+                <td><a class="alwaysgreen" href="{% url 'gtphipsi.officers.views.office_history' office='BG' %}">Recording Secretary</a></td>
+                <td><a class="alwaysgreen" href="{% url 'gtphipsi.officers.views.office_history' office='SG' %}">Historian</a></td>
+            </tr>
+            <tr>
+                <td><a class="alwaysgreen" href="{% url 'gtphipsi.officers.views.office_history' office='Hod' %}">Messenger</a></td>
+                <td><a class="alwaysgreen" href="{% url 'gtphipsi.officers.views.office_history' office='Phu' %}">Sergeant at Arms</a></td>
+            </tr>
+            <tr>
+                <td><a class="alwaysgreen" href="{% url 'gtphipsi.officers.views.office_history' office='Hi' %}">Chaplain</a></td>
+                <td><a class="alwaysgreen" href="{% url 'gtphipsi.officers.views.office_history' office='IFC' %}">IFC Representative</a></td>
+            </tr>
+            {% comment %}
+                <tr>
+                    <td><a class="alwaysgreen" href="{% url 'gtphipsi.officers.views.office_history' office='HM' %}">House Manager</a></td>
+                </tr>
+            {% endcomment %}
+        </tbody>
+    </table>
+{% endblock %}

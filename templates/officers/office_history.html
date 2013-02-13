@@ -1,0 +1,69 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Officer History - {{ office }} | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <style type="text/css">
+        #content table {
+            border-collapse: collapse;
+            margin: 30px 10px 15px 10px;
+        }
+        #content table thead tr td {
+            border-bottom: 1px solid black;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #006b3f;
+        }
+        #content table tr td.left {
+            padding-right: 10px;
+        }
+        #content table tr td.middle {
+            padding: 0 20px;
+            border-left: 1px solid black;
+            border-right: 1px solid black;
+        }
+        #content table tr td.right {
+            padding-left: 20px;
+            border-left: 1px solid black;
+        }
+        #content table tr td.dash {
+            padding: 0 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>Officer History for {{ office }}</h1>
+    {% ifequal history|length 0 %}
+        <p style="margin-top: 20px">There is no information available on the position of {{ office }}.</p>
+    {% else %}
+    <p>The following is a list of the most recent brothers who have held the office of {{ office }}, starting with the current officer.
+        {% if more %}
+            The first ten names are shown. <span class="small"><a class="alwaysgreen" href="{% url 'gtphipsi.officers.views.office_history' office=abbrev %}?full=true">show all</a></span>
+        {% endif %}
+    </p>
+    <table>
+        <thead>
+            <tr>
+                <td class="left">#</td>
+                <td class="middle">Brother</td>
+                <td class="right" colspan=3>Date Range</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for brother, start, end in history %}
+            <tr>
+                <td class="left">{{ forloop.counter }}</td>
+                <td class="middle"><a class="hovercolor" href="{% url 'gtphipsi.brothers.views.show' badge=brother.badge %}">{{ brother.common_name }} ... {{ brother.badge }}</a></td>
+                <td class="right">{{ start|date:"F Y" }}</td>
+                <td class="dash">&mdash;</td>
+                <td>{% if end %}{{ end|date:"F Y" }}{% else %}present{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endifequal %}
+{% endblock %}

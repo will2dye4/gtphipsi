@@ -1,0 +1,61 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Add Officer | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <style type="text/css">
+        #content form {
+            padding-left: 10px;
+        }
+        #content form ul li {
+            list-style-type: none;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>Add Officer</h1>
+    <p>Use the form below to add an officer. Click "Add" when you are finished.</p>
+    {% if error %}
+        <p><span class="error">{{ error }}</span></p>
+    {% endif %}
+    <form action="{% url 'gtphipsi.officers.views.add_officer' %}" method="post">
+        {% csrf_token %}
+        <table class="form">
+            <tbody>
+                <tr>
+                    <td class="spaced">
+                        <label for="office">Office</label>
+                    </td>
+                    <td class="spaced">
+                        <select id="office" name="office">
+                        {% for abbrev, title in offices %}
+                            <option value="{{ abbrev }}">{{ title }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="spaced">
+                        <label for="brother">Brother</label>
+                    </td>
+                    <td class="spaced">
+                        <select id="brother" name="brother">
+                        {% for badge, name in brothers %}
+                            <option value="{{ badge }}">{{ name }} ... {{ badge }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input class="submit" type="submit" value="Add" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Update {{ title }} | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <style type="text/css">
+        #content form {
+            padding-left: 10px;
+        }
+        #content form ul li {
+            list-style-type: none;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>Update {{ title }}</h1>
+    <p>Use the form below to update an officer position. Click "Save" when you are finished.</p>
+    <form action="{% url 'gtphipsi.officers.views.edit_officer' office=office %}" method="post">
+        {% include "snippets/_table_form.html" with submit_text="Save" %}
+    </form>
+{% endblock %}

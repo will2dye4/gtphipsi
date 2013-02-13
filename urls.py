@@ -1,4 +1,4 @@
-from django.conf.urls import *
+from django.conf.urls.defaults import patterns, url, include
 
 # from django.contrib import admin
 # admin.autodiscover()
@@ -21,6 +21,7 @@ urlpatterns = patterns('gtphipsi.views',
 
 urlpatterns += patterns('',
      url(r'^brothers/', include('gtphipsi.brothers.urls')),
+     url(r'^officers/', include('gtphipsi.officers.urls')),
      url(r'^rush/', include('gtphipsi.rush.urls')),
      url(r'^chapter/', include('gtphipsi.chapter.urls')),
     # other app-specific URLs here
