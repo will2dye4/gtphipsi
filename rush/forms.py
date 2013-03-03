@@ -1,9 +1,9 @@
 # Forms related to chapter rush and rush events.
 
-from django.forms import ModelForm, TimeField, DateField
+from django.forms import ModelForm, TimeField, DateField, RegexField, BooleanField
 from django.conf import settings
 
-from rush.models import Rush, RushEvent
+from rush.models import Rush, RushEvent, Potential
 
 
 class RushForm(ModelForm):
@@ -30,3 +30,19 @@ class RushEventForm(ModelForm):
     class Meta:
         model = RushEvent
         fields = ('title', 'date', 'start', 'end', 'description', 'location', 'food')
+
+
+class PotentialForm(ModelForm):
+    phone = RegexField(regex=r'^\d{3}-\d{3}-\d{4}$', min_length=12, max_length=12, required=True, help_text='XXX-XXX-XXXX')
+
+    class Meta:
+        model = Potential
+
+
+class PledgeForm(ModelForm):
+    phone = RegexField(regex=r'^\d{3}-\d{3}-\d{4}$', min_length=12, max_length=12, required=True, help_text='XXX-XXX-XXXX')
+    hidden = BooleanField(required=False, label='Initiated')
+
+    class Meta:
+        model = Potential
+        exclude = ('pledged',)

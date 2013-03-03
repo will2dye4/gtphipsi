@@ -1,0 +1,149 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Potential Members | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <style type="text/css">
+        #content a.sort {
+            text-decoration: none !important;
+            font-size: 0.5em;
+        }
+        #content a.pad {
+            padding-left: 10px;
+        }
+        #content table {
+            border-collapse: collapse;
+            margin: 30px 10px 15px 10px;
+        }
+        #content table thead tr td.top {
+            padding-bottom: 20px;
+        }
+        #content table thead tr td.bottom {
+            border-bottom: 1px solid black;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #006b3f;
+        }
+        #content table tr td.left {
+            padding-right: 10px;
+        }
+        #content table tr td.middle {
+            padding: 0 20px;
+            border-left: 1px solid black;
+            border-right: 1px solid black;
+        }
+        #content table tr td.right {
+            padding: 0 10px;
+            border-left: 1px solid black;
+        }
+        #content table tr td.dash {
+            padding: 0 10px;
+        }
+    </style>
+
+    <script type="text/javascript">
+        function handleSelect() {
+            switch (document.getElementById("action").selectedIndex) {
+                case 0:
+                    break;
+                default:
+                    var inputs = document.getElementById("form_container").getElementsByTagName("input");
+                    var found = false;
+                    for (var i = 0; i < inputs.length; i++) {
+                        if (inputs[i].type == 'checkbox' && inputs[i].checked) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (found)
+                        document.getElementById("potential_form").submit();
+                    else {
+                        alert("You have not selected any potentials from the list.");
+                        document.getElementById("action").selectedIndex = 0;
+                    }
+                    break;
+            }
+        }
+    </script>
+{% endblock %}
+
+{% block sidebar %}
+    <h3 class="sidebar">Quick Links</h3>
+    <ul style="padding-left: 20px">
+        {% if rush %}
+            <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.potentials' %}">View All Potentials</a></li>
+            <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.add_potential' name=rush.get_unique_name %}">Add New Potential</a></li>
+        {% else %}
+            <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.potentials' name=current_rush %}">Current Rush Potentials</a></li>
+            <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.add_potential' %}">Add New Potential</a></li>
+        {% endif %}
+        <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.pledges' %}">View Pledges</a></li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+    <h1>Potential Members{% if rush %} for {{ rush }}{% endif %}</h1>
+    {% ifequal potentials|length 0 %}
+        <p style="margin-top: 30px">No potentials have been added yet. Click "Add New Potential" in the box at left to add a potential.</p>
+    {% else %}
+        <p style="margin-top: 20px">Below is a list of all potential members{% if rush %} for {{ rush }}{% endif %}. Click a potential's name to see more information about him. Select several potentials using the checkboxes at right and choose an action from the dropdown menu to update multiple potentials at once.</p>
+        {% if hidden %}
+            <p>
+                <span style="font-style: italic">Not showing {{ hidden }} potential{{ hidden|pluralize }} marked as hidden.</span>
+                <span class="small"><a class="alwaysgreen" href=".?all=true">show all</a></span>
+            </p>
+        {% endif %}
+        <div id="form_container" style="margin-top: 20px">
+            <form action="{% if rush %}{% url 'gtphipsi.rush.views.update_potentials' name=rush.get_unique_name %}{% else %}{% url 'gtphipsi.rush.views.update_potentials' %}{% endif %}" method="post" id="potential_form">
+                {% csrf_token %}
+                <table>
+                    <thead>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            {% if not rush %}
+                                <td></td>
+                            {% endif %}
+                            <td class="top" colspan="2">
+                                <select onchange="handleSelect()" style="width: 250px" name="action" id="action">
+                                    <option value="">-- Select an Action --</option>
+                                    <option value="hide">Hide selected potentials</option>
+                                    <option value="pledge">Mark selected as pledges</option>
+                                    <option value="delete">Delete selected</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="left bottom">#</td>
+                            <td class="middle bottom">Name <a class="alwaysgreen sort pad" href=".">&#x25B2;</a> <a class="alwaysgreen sort" href=".?sort=name&order=desc">&#x25BC;</a></td>
+                            <td class="middle bottom">Phone <a class="alwaysgreen sort pad" href=".?sort=phone">&#x25B2;</a> <a class="alwaysgreen sort" href=".?sort=phone&order=desc">&#x25BC;</a></td>
+                            {% if not rush %}
+                                <td class="middle bottom">Rush <a class="alwaysgreen sort pad" href=".?sort=rush">&#x25B2;</a> <a class="alwaysgreen sort" href=".?sort=rush&order=desc">&#x25BC;</a></td>
+                            {% endif %}
+                            <td class="middle bottom">Date Added <a class="alwaysgreen sort pad" href=".?sort=date">&#x25B2;</a> <a class="alwaysgreen sort" href=".?sort=date&order=desc">&#x25BC;</a></td>
+                            <td class="right bottom" align="center">&#x2713;</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for potential in potentials %}
+                        <tr>
+                            <td class="left">{{ forloop.counter }}</td>
+                            <td class="middle"><a class="hovercolor" href="{% url 'gtphipsi.rush.views.show_potential' id=potential.id %}">{{ potential.first_name }} {{ potential.last_name }}</a></td>
+                            <td class="middle">{{ potential.phone }}</td>
+                            {% if not rush %}
+                                <td class="middle">{{ potential.rush }}</td>
+                            {% endif %}
+                            <td class="middle">{{ potential.created|date:"F d, Y" }}</td>
+                            <td class="right" align="center"><input type="checkbox" name="potential" value="{{ potential.id }}" /></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    {% endifequal %}
+{% endblock %}

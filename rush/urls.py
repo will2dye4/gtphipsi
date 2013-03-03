@@ -1,4 +1,4 @@
-from django.conf.urls import *
+from django.conf.urls.defaults import patterns, url
 
 urlpatterns = patterns('gtphipsi.rush.views',
     url(r'^$', 'rush', name='rush'),
@@ -12,8 +12,22 @@ urlpatterns = patterns('gtphipsi.rush.views',
     url(r'^current/$', 'show', name='current_rush'),
     url(r'^(?P<name>[FSU]\d{4})/$', 'show', name='view_rush'),
     url(r'^(?P<name>[FSU]\d{4})/edit/$', 'edit', name='edit_rush'),
+    url(r'^(?P<name>[FSU]\d{4})/potentials/$', 'potentials', name='potentials'),
+    url(r'^(?P<name>[FSU]\d{4})/potentials/add/$', 'add_potential', name='add_rush_potential'),
+    url(r'^(?P<name>[FSU]\d{4})/potentials/update/$', 'update_potentials', name='update_rush_potentials'),
+    url(r'^(?P<name>[FSU]\d{4})/pledges/$', 'pledges', name='pledges'),
+    url(r'^(?P<name>[FSU]\d{4})/pledges/add/$', 'add_pledge', name='add_rush_pledge'),
     url(r'^(?P<name>[FSU]\d{4})/add-event/$', 'add_event', name='add_rush_event'),
     url(r'^edit-event/(?P<id>\d+)/$', 'edit_event', name='edit_rush_event'),
+    url(r'^potentials/$', 'potentials', name='all_potentials'),
+    url(r'^potentials/add/$', 'add_potential', name='add_potential'),
+    url(r'^potentials/(?P<id>\d+)/$', 'show_potential', name='show_potential'),
+    url(r'^potentials/(?P<id>\d+)/edit/$', 'edit_potential', name='edit_potential'),
+    url(r'^potentials/update/$', 'update_potentials', name='update_potentials'),
+    url(r'^pledges/$', 'pledges', name='all_pledges'),
+    url(r'^pledges/add/$', 'add_pledge', name='add_pledge'),
+    url(r'^pledges/(?P<id>\d+)/$', 'show_pledge', name='show_pledge'),
+    url(r'^pledges/(?P<id>\d+)/edit/$', 'edit_pledge', name='edit_pledge'),
     url(r'^infocards/$', 'info_card_list', name='info_card_list'),
     url(r'^infocards/(?P<id>\d+)/$', 'info_card_show', name='info_card_view')
 )

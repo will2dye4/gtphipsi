@@ -1,0 +1,51 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Edit {% if pledge %}Pledge{% else %}Potential Member{% endif %} | {{ block.super }}
+{% endblock %}
+
+{% if pledge %}
+    {% url 'gtphipsi.rush.views.edit_pledge' id=potential.id as action_url %}
+{% else %}
+    {% url 'gtphipsi.rush.views.edit_potential' id=potential.id as action_url %}
+{% endif %}
+
+{% block head_extras %}
+    <script type="text/javascript">
+        function confirm_delete () {
+            var result = confirm("Are you sure you want to delete this {% if pledge %}pledge{% else %}potential{% endif %}?");
+            if (result == true) {
+                window.location.href = "{{ action_url }}?delete=true";
+            }
+        }
+    </script>
+{% endblock %}
+
+{% block sidebar %}
+    {% if form.errors %}
+        <h3 class="sidebar">Oops!</h3>
+        <p class="sidebar">There is a problem with the following field{{ form.errors|pluralize }}:
+        {% for name, errors in form.errors.items %}
+            {% if forloop.last %}
+                {{ name }}.
+            {% else %}
+                {{ name }},
+            {% endif %}
+        {% endfor %}
+        Please fix {{ form.errors|pluralize:"it,them" }} and click "Save" again.
+        </p>
+    {% else %}
+        <h3 class="sidebar">Note</h3>
+        <p class="sidebar">The first name, last name, and phone number fields are required.</p>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <h1>Edit {% if pledge %}Pledge{% else %}Potential Member{% endif %}</h1>
+    <p>Use this form to edit information about {{ potential.first_name }} {{ potential.last_name }}. Click "Save" when you are finished.</p>
+    <form action="{{ action_url }}" method="post">
+        {% include "snippets/_table_form.html" with submit_text="Save" %}
+        <div style="float: right"><a onclick="confirm_delete()">delete</a></div>
+    </form>
+{% endblock %}

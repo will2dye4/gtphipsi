@@ -4,6 +4,7 @@ from datetime import datetime
 
 from django.db import models
 from django.core.urlresolvers import reverse
+from django.contrib.localflavor.us.models import PhoneNumberField
 
 
 SEASON_CHOICES = (
@@ -17,8 +18,8 @@ class Rush(models.Model):
     season = models.CharField(choices=SEASON_CHOICES, max_length=10, blank=False)
     start_date = models.DateField(blank=False, null=True)
     end_date = models.DateField(blank=False, null=True)
-    pledges = models.PositiveIntegerField(blank=True, default=0)
     visible = models.BooleanField(default=True)
+    updated = models.DateTimeField(auto_now=True)
 
     @classmethod
     def current(cls):
@@ -46,7 +47,7 @@ class Rush(models.Model):
 
 
 class RushEvent(models.Model):
-    rush = models.ForeignKey(Rush, blank=False, related_name='events')
+    rush = models.ForeignKey(Rush, related_name='events')
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     date = models.DateField(null=True)
@@ -64,3 +65,15 @@ class RushEvent(models.Model):
 
     class Meta:
         ordering = ['date', 'start']
+
+
+class Potential(models.Model):
+    rush = models.ForeignKey(Rush, related_name='potentials', blank=True, null=True)
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    phone = PhoneNumberField(blank=True)
+    email = models.EmailField(blank=True)
+    notes = models.TextField(blank=True)
+    hidden = models.BooleanField(blank=True)
+    pledged = models.BooleanField(blank=True)
+    created = models.DateTimeField(auto_now_add=True)

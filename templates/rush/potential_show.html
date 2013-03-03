@@ -1,0 +1,74 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    View {% if potential.pledged %}Pledge{% else %}Potential Member{% endif %} | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <style type="text/css">
+        #content table {
+            margin-top: 30px;
+            border-collapse:  collapse;
+        }
+        #content table tbody tr td.label {
+            text-align: right;
+            font-weight: bold;
+            padding-right: 10px;
+            border-right: 1px solid black;
+        }
+        #content table tbody tr td.value {
+            padding-left: 10px;
+        }
+        #content table tbody tr td textarea.notes {
+            width: 30em;
+            height: 5em;
+            min-height: 3em;
+            background-color: #eeeeee;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>{{ potential.first_name }} {{ potential.last_name }} ({% if potential.pledged %}Pledge{% else %}Potential Member{% endif %})</h1>
+    {% if potential.pledged %}
+        {% url 'gtphipsi.rush.views.edit_pledge' id=potential.id as edit_url %}
+    {% else %}
+        {% url 'gtphipsi.rush.views.edit_potential' id=potential.id as edit_url %}
+    {% endif %}
+    <span class="small"><a class="alwaysgreen" href="{{ edit_url }}">edit</a></span>
+    <table>
+        <tbody>
+            <tr>
+                <td class="label">Rush</td>
+                <td class="value">{{ potential.rush }}</td>
+            </tr>
+            <tr>
+                <td class="label">Date Added</td>
+                <td class="value">{{ potential.created|date:"F d, Y" }}</td>
+            </tr>
+            <tr>
+                <td class="label">Phone</td>
+                <td class="value">{{ potential.phone }}</td>
+            </tr>
+            {% if potential.email %}
+            <tr>
+                <td class="label">Email</td>
+                <td class="value"><a href="mailto:{{ potential.email }}">{{ potential.email }}</a></td>
+            </tr>
+            {% endif %}
+            {% if not potential.pledged %}
+            <tr>
+                <td class="label">Hidden</td>
+                <td class="value">{{ potential.hidden|yesno:"Yes,No" }}</td>
+            </tr>
+            {% endif %}
+            {% if potential.notes %}
+                <tr>
+                    <td class="label">Notes</td>
+                    <td class="value"><textarea readonly="true" class="notes">{{ potential.notes }}</textarea></td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+{% endblock %}

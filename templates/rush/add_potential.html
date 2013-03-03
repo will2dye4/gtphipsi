@@ -1,0 +1,46 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Add {% if pledge %}Pledge{% else %}Potential Member{% endif %} | {{ block.super }}
+{% endblock %}
+
+{% block sidebar %}
+    {% if form.errors %}
+        <h3 class="sidebar">Oops!</h3>
+        <p class="sidebar">There is a problem with the following field{{ form.errors|pluralize }}:
+        {% for name, errors in form.errors.items %}
+            {% if forloop.last %}
+                {{ name }}.
+            {% else %}
+                {{ name }},
+            {% endif %}
+        {% endfor %}
+        Please fix {{ form.errors|pluralize:"it,them" }} and click "Add" again.
+        </p>
+    {% else %}
+        <h3 class="sidebar">Note</h3>
+        <p class="sidebar">The first name, last name, and phone number fields are required.</p>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <h1>Add {% if pledge %}Pledge{% else %}Potential Member{% endif %}</h1>
+    <p>Use this form to add a new {% if pledge %}pledge{% else %}potential member{% endif %}{% if rush %} for {{ rush }}{% endif %}.{% if not pledge %} Use the Notes field to record any identifying or distinguishing information about the potential.{% endif %}</p>
+    {% if pledge %}
+        {% if rush %}
+            {% url 'gtphipsi.rush.views.add_pledge' name=rush.get_unique_name as action_url %}
+        {% else %}
+            {% url 'gtphipsi.rush.views.add_pledge' as action_url %}
+        {% endif %}
+    {% else %}
+        {% if rush %}
+            {% url 'gtphipsi.rush.views.add_potential' name=rush.get_unique_name as action_url %}
+        {% else %}
+            {% url 'gtphipsi.rush.views.add_potential' as action_url %}
+        {% endif %}
+    {% endif %}
+    <form action="{{ action_url }}" method="post">
+        {% include "snippets/_table_form.html" with submit_text="Add" %}
+    </form>
+{% endblock %}

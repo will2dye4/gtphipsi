@@ -12,7 +12,7 @@
     <ul>
     {% for card in cards %}
         {% with card.id as card_id %}
-        <li><a href="{% url 'gtphipsi.rush.views.info_card_show' id=card_id %}">{{ card }}</a></li>
+        <li><a class="hovercolor" href="{% url 'gtphipsi.rush.views.info_card_show' id=card_id %}">{{ card }}</a></li>
         {% endwith %}
     {% empty %}
         <li style="list-style-type: none">There are no information cards to display.</li>

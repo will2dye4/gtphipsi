@@ -4,7 +4,7 @@
 /* ---- [Overall Look and Feel] ---- */
 body {
     background-color: #404040;
-    font-family: "Lucida Sans Unicode", "Bitstream Vera Sans", "Trebuchet Unicode MS", "Lucida Grande", Verdana, Helvetica, sans-serif;
+    font-family: "PT Sans", "Lucida Grande", "Trebuchet Unicode MS", Helvetica, Verdana, sans-serif;
     color: #282828;
 }
 
@@ -288,7 +288,7 @@ input, select, textarea {
 }
 
 input.submit {
-    width: 100px;
+    width: 120px;
     background: #006b3f;
     color: #eeeeee;
     cursor: pointer;

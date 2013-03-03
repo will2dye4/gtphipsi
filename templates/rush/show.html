@@ -5,27 +5,73 @@
     Rush Info | {{ block.super }}
 {% endblock %}
 
+{% block head_extras %}
+    <style type="text/css">
+        #content table {
+            border-collapse: collapse;
+            margin: 20px 0 30px 0;
+        }
+        #content table thead tr td {
+            border-bottom: 1px solid black;
+        }
+        #content table tbody tr td.label {
+            font-weight: bold;
+            text-align: right;
+            padding-right: 10px;
+            border-right: 1px solid black;
+        }
+        #content table tbody tr td.value {
+            padding-left: 10px;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
-    <div style="float: right; padding: 15px"><a href="{% url 'gtphipsi.rush.views.list' %}">back to list</a></div>
+    <div style="float: right; padding: 15px"><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.list' %}"><span style="font-size: 0.7em">&#x25C0;</span> back to list</a></div>
     <h1>{{ rush.title }}</h1>
     <h2>{{ rush.start_date|date:"l, F j" }} &ndash; {{ rush.end_date|date:"l, F j" }}</h2>
     {% with rush.get_unique_name as rush_name %}
-    <p><a href="{% url 'gtphipsi.rush.views.edit' name=rush_name %}">edit</a></p><br />
+    <span class="small"><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.edit' name=rush_name %}">edit</a></span>
     {% if rush.is_current %}
-        <p>This is the current rush, meaning that this rush's schedule is displayed on the main site.</p><br />
+        <p style="margin-top: 15px">This is the current rush, meaning that this rush's schedule is displayed on the main site. Click <a href="{% url 'gtphipsi.rush.views.schedule' %}">here</a> to see what the rush schedule looks like to non-members.</p>
     {% endif %}
-    <p><strong>Visible:</strong> {{ rush.visible|yesno:"Yes,No" }} {% if not rush.visible %}<span style="padding-left: 15px"><a href="{% url 'gtphipsi.rush.views.edit' name=rush_name %}?visible=true">make visible</a></span>{% endif %}<br />
-    <strong>Pledges:</strong> {{ rush.pledges }} {% if rush.is_current %}<span style="padding-left: 15px"><a href="{% url 'gtphipsi.rush.views.edit' name=rush_name %}?new_pledges=1">+</a>/<a href="{% url 'gtphipsi.rush.views.edit' name=rush_name %}?new_pledges=-1">-</a></span>{% endif %}</p>
+    <table>
+        <thead>
+            <tr>
+                <td colspan="2"><h3>General Info</h3></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="label">Visible</td>
+                <td class="value">{{ rush.visible|yesno:"Yes,No" }}</td>
+            </tr>
+            <tr>
+                <td class="label">Potentials</td>
+                <td class="value"><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.potentials' name=rush_name %}">{{ potentials }}</a> {% if rush.is_current %}<span style="padding-left: 15px" class="small"><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.add_potential' name=rush_name %}">add</a></span>{% endif %}</td>
+            </tr>
+            <tr>
+                <td class="label">Pledges</td>
+                <td class="value"><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.pledges' name=rush_name %}">{{ pledges }}</a> {% if rush.is_current %}<span style="padding-left: 15px" class="small"><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.add_pledge' name=rush_name %}">add</a></span>{% endif %}</td>
+            </tr>
+            <tr>
+                <td class="label">Last Modified</td>
+                <td class="value">{{ rush.updated|date:"M d, Y P" }}</td>
+            </tr>
+        </tbody>
+    </table>
     <h3>Events</h3>
     <ul>
     {% for event in rush.events.all %}
         {% with event.id as event_id %}
-        <li>{{ event.date|date:"M j" }}, {{ event.start|time:"f" }} &ndash; {{ event.end|time:"f" }}: {{ event.title }}<span style="padding-left: 25px"><a href="{% url 'gtphipsi.rush.views.edit_event' id=event_id %}">edit</a></span></li>
+        <li>{{ event.date|date:"M j" }}, {{ event.start|time:"f" }} &ndash; {{ event.end|time:"f" }}: {{ event.title }}<span class="small" style="padding-left: 25px"><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.edit_event' id=event_id %}">edit</a></span></li>
         {% endwith %}
     {% empty %}
         <li style="list-style-type: none">This rush has no events.</li>
     {% endfor %}
     </ul>
-    <p><a href="{% url 'gtphipsi.rush.views.add_event' name=rush_name %}">add event</a></p>
+    <form action="{% url 'gtphipsi.rush.views.add_event' name=rush_name %}" method="get">
+        <input type="submit" class="submit" value="Add Event" />
+    </form>
     {% endwith %}
 {% endblock %}

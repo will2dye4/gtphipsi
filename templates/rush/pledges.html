@@ -1,0 +1,96 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Pledges | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <style type="text/css">
+        #content a.sort {
+            text-decoration: none !important;
+            font-size: 0.5em;
+        }
+        #content a.pad {
+            padding-left: 10px;
+        }
+        #content table {
+            border-collapse: collapse;
+            margin: 30px 10px 15px 10px;
+        }
+        #content table thead tr td {
+            border-bottom: 1px solid black;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #006b3f;
+        }
+        #content table tr td.left {
+            padding-right: 10px;
+        }
+        #content table tr td.middle {
+            padding: 0 20px;
+            border-left: 1px solid black;
+            border-right: 1px solid black;
+        }
+        #content table tr td.right {
+            padding-left: 20px;
+            border-left: 1px solid black;
+        }
+    </style>
+{% endblock %}
+
+{% block sidebar %}
+    <h3 class="sidebar">Quick Links</h3>
+    <ul style="padding-left: 20px">
+        {% if rush %}
+            <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.pledges' %}">View All Pledges</a></li>
+        {% else %}
+            <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.pledges' name=current_rush %}">Current Rush Pledges</a></li>
+        {% endif %}
+        <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.add_pledge' %}">Add New Pledge</a></li>
+        <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.potentials' %}">View Potentials</a></li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+    <h1>View Pledges{% if rush %} for {{ rush }}{% endif %}</h1>
+    {% ifequal pledges|length 0 %}
+        <p>Nothing to show.</p>
+    {% else %}
+        <p style="margin-top: 20px">Below is a list of all pledges{% if rush %} for {{ rush }}{% endif %}. Click a pledge's name to see more information about him.</p>
+        {% if hidden %}
+            <p>
+                <span style="font-style: italic">Not showing {{ hidden }} pledge{{ hidden|pluralize }} marked as initiated.</span>
+                <span class="small"><a class="alwaysgreen" href=".?all=true">show all</a></span>
+            </p>
+        {% endif %}
+        <div id="list_container" style="margin-top: 20px">
+            <table>
+                <thead>
+                    <tr>
+                        <td class="left">#</td>
+                        <td class="middle">Name <a class="alwaysgreen sort pad" href=".">&#x25B2;</a> <a class="alwaysgreen sort" href=".?sort=name&order=desc">&#x25BC;</a></td>
+                        <td class="middle">Phone <a class="alwaysgreen sort pad" href=".?sort=phone">&#x25B2;</a> <a class="alwaysgreen sort" href=".?sort=phone&order=desc">&#x25BC;</a></td>
+                        {% if not rush %}
+                            <td class="middle">Rush <a class="alwaysgreen sort pad" href=".?sort=rush">&#x25B2;</a> <a class="alwaysgreen sort" href=".?sort=rush&order=desc">&#x25BC;</a></td>
+                        {% endif %}
+                        <td class="right">Date Added <a class="alwaysgreen sort pad" href=".?sort=date">&#x25B2;</a> <a class="alwaysgreen sort" href=".?sort=date&order=desc">&#x25BC;</a></td>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for pledge in pledges %}
+                    <tr>
+                        <td class="left">{{ forloop.counter }}</td>
+                        <td class="middle"><a class="hovercolor" href="{% url 'gtphipsi.rush.views.show_pledge' id=pledge.id %}">{{ pledge.first_name }} {{ pledge.last_name }}</a></td>
+                        <td class="middle">{{ pledge.phone }}</td>
+                        {% if not rush %}
+                            <td class="middle">{{ pledge.rush }}</td>
+                        {% endif %}
+                        <td class="right">{{ pledge.created|date:"F d, Y" }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endifequal %}
+{% endblock %}
