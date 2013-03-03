@@ -4,6 +4,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import PhoneNumberField
+from django.core.urlresolvers import reverse
 #from django.db.models.signals import post_save -- see comment at the bottom of the file
 
 STATUS_BITS = {
@@ -149,6 +150,9 @@ class UserProfile(models.Model):
 
     def __unicode__(self):
         return self.common_name()
+
+    def get_absolute_url(self):
+        return reverse('view_profile', kwargs={'badge': self.badge})
 
     def full_name(self):
         """Returns the brother's full name, in the format 'First[ Middle] Last[, Suffix]'."""

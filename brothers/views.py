@@ -461,7 +461,15 @@ def edit_notification_settings(request):
 
 
 
-# ============= Private Functions ============= #
+
+
+
+## ============================================= ##
+##                                               ##
+##               Private Functions               ##
+##                                               ##
+## ============================================= ##
+
 
 def _get_lowest_undergrad_badge():
     return UserProfile.objects.filter(status='U').aggregate(Min('badge'))['badge__min']
