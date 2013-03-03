@@ -1,0 +1,72 @@
+{% extends 'base_bros_only.html' %}
+{% load url from future %}
+
+{% block title %}
+    Subscribed Threads | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <style type="text/css">
+        #content table {
+            border-collapse: collapse;
+            margin: 30px 10px 15px 10px;
+        }
+        #content table thead tr td {
+            border-bottom: 1px solid black;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #006b3f;
+        }
+        #content table tr td.left {
+            padding-right: 10px;
+        }
+        #content table tr td.middle {
+            padding: 0 10px;
+            border-left: 1px solid black;
+            border-right: 1px solid black;
+        }
+        #content table tr td.right {
+            padding: 0 10px;
+            border-left: 1px solid black;
+        }
+        #content table tr td.center {
+            text-align: center;
+            padding: 0;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>Subscribed Threads</h1>
+    {% ifequal subscriptions|length 0 %}
+        <p style="margin-top: 20px">There are no threads to display.</p>
+    {% else %}
+        <p>Below is a list of threads to which you have subscribed, ordered by date updated.</p>
+        <table>
+            <thead>
+                <tr>
+                    <td class="left">Thread</td>
+                    <td class="middle">Owner</td>
+                    <td class="middle">Last Post</td>
+                    <td class="right">Replies</td>
+                </tr>
+            </thead>
+            <tbody>
+            {% for thread in subscriptions %}
+                <tr>
+                    <td class="left"><a class="alwaysgreen" href="{% url 'gtphipsi.forums.views.view_thread' forum=thread.forum.slug id=thread.id thread=thread.slug %}">{{ thread.title }}</a></td>
+                    <td class="middle"><a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.show' badge=thread.owner.badge %}">{{ thread.owner.common_name }}</a></td>
+                    {% with thread.latest_post as post %}
+                    <td class="middle">
+                        {{ post.created|date:"n/j/Y f A" }}
+                        by <a class="alwaysgreen" href="{{ post.user.get_absolute_url }}">{{ post.user.common_name }}</a>
+                        <span style="font-size: 0.7em; padding-left: 5px"><a class="alwaysgreen" href="{{ post.get_absolute_url }}">&#x25B6;</a></span>
+                    </td>
+                    {% endwith %}
+                    <td class="right center">{{ thread.posts.count|add:-1 }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endifequal %}
+{% endblock %}

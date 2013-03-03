@@ -1,0 +1,94 @@
+{% extends 'base_bros_only.html' %}
+{% load url from future %}
+
+{% block title %}
+    Forums | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <style type="text/css">
+        #content table {
+            border-collapse: collapse;
+            margin: 30px 10px 15px 10px;
+        }
+        #content table tr td {
+            border-bottom: 1px solid black;
+        }
+        #content table thead tr td {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #006b3f;
+        }
+        #content table tr td.left {
+            padding-right: 10px;
+        }
+        #content table tr td.middle {
+            padding: 0 10px;
+            border-left: 1px solid black;
+            border-right: 1px solid black;
+        }
+        #content table tr td.right {
+            padding: 0 10px;
+            border-left: 1px solid black;
+        }
+        #content table tr td.center {
+            text-align: center;
+            padding: 0;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>Forums</h1>
+    {% ifequal forums|length 0 %}
+        <p>There are currently no forums to display. Click "New Forum" to add a forum.</p>
+    {% else %}
+        <p>Below is a list of the chapter's forums. Click a forum's name to view its threads.{% if can_add %} Click "New Forum" below to add a new forum.{% endif %}</p>
+        <table>
+            <thead>
+                <tr>
+                    <td width="32%" class="left">Forum</td>
+                    <td width="38%" class="middle">Last Post</td>
+                    <td width="10%" class="middle">Threads</td>
+                    <td width="20%" class="right">Moderators</td>
+                </tr>
+            </thead>
+            <tbody>
+            {% for forum, post in forums %}
+                <tr>
+                    <td class="left">
+                        <a class="alwaysgreen" href="{{ forum.get_absolute_url }}">{{ forum.name }}</a>
+                        {% if forum.description %}
+                            <div style="margin-left: 10px">
+                                <span style="font-size: 0.8em; font-style: italic">{{ forum.description }}</span>
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td class="middle">
+                    {% if post %}
+                        <div><a class="alwaysgreen" href="{{ post.thread.get_absolute_url }}">{{ post.thread.title }}</a></div>
+                        <div>
+                            by <a class="alwaysgreen" href="{{ post.user.get_absolute_url }}">{{ post.user.common_name }}</a>, {{ post.created|date:"n/j/Y f A" }}
+                            <span style="font-size: 0.7em; padding-left: 5px"><a class="alwaysgreen" href="{{ post.get_absolute_url }}">&#x25B6;</a></span>
+                        </div>
+                    {% else %}
+                        &mdash;
+                    {% endif %}
+                    </td>
+                    <td class="middle center">{{ forum.threads.count }}</td>
+                    <td class="right">
+                        {% for mod in forum.moderators.all %}
+                            <a class="alwaysgreen" href="{{ mod.get_absolute_url }}">{{ mod.common_name }}</a>{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endifequal %}
+    {% if can_add %}
+        <form action="{% url 'gtphipsi.forums.views.add_forum' %}" method="get">
+            <input type="submit" class="submit" value="New Forum" />
+        </form>
+    {% endif %}
+{% endblock %}

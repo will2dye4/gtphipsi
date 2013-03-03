@@ -1,0 +1,11 @@
+<div style="float: right">
+    {% if page.has_previous %}
+        <span style="padding-right: 5px"><a class="alwaysgreen" href="{{ first }}">&lt;&lt;</a></span>
+        <span style="padding-right: 5px"><a class="alwaysgreen" href="{{ prev }}">&lt;</a></span>
+    {% endif %}
+    <span style="font-style: italic; padding-right: 5px">Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+    {% if page.has_next %}
+        <span style="padding-right: 5px"><a class="alwaysgreen" href="{{ next }}">&gt;</a></span>
+        <a class="alwaysgreen" href="{{ last }}">&gt;&gt;</a>
+    {% endif %}
+</div>

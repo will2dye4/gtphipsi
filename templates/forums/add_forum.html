@@ -1,0 +1,35 @@
+{% extends 'base_bros_only.html' %}
+{% load url from future %}
+
+{% block title %}
+    {% if create %}Add{% else %}Edit{% endif %} Forum | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <script type="text/javascript">
+    {% if not create %}
+        function confirm_delete () {
+            if (confirm("Are you sure you want to delete this forum? All of the forum's threads and posts will also be deleted."));
+                window.location.href = "{% url 'gtphipsi.forums.views.edit_forum' slug=forum.slug %}?delete=true";
+        }
+    {% endif %}
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h1>{% if create %}Add{% else %}Edit{% endif %} Forum</h1>
+    {% if create %}
+        <p>Use the form below to create a new forum. Click "Add" when you are finished.</p>
+        <form action="{% url 'gtphipsi.forums.views.add_forum' %}" method="post">
+            {% include 'snippets/_table_form.html' with submit_text='Add' %}
+        </form>
+    {% else %}
+        <p>Use the form below to edit the forum "{{ forum.name }}". Click "Save" when you are finished.</p>
+        <form action="{% url 'gtphipsi.forums.views.edit_forum' slug=forum.slug %}" method="post">
+            {% include 'snippets/_table_form.html' with submit_text='Save' %}
+        </form>
+        <div style="float: right">
+            <a class="alwaysgreen" onclick="confirm_delete()">delete</a>
+        </div>
+    {% endif %}
+{% endblock %}

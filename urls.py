@@ -24,6 +24,7 @@ urlpatterns += patterns('',
      url(r'^officers/', include('gtphipsi.officers.urls')),
      url(r'^rush/', include('gtphipsi.rush.urls')),
      url(r'^chapter/', include('gtphipsi.chapter.urls')),
+     url(r'^forums/', include('gtphipsi.forums.urls')),
     # other app-specific URLs here
 )
 

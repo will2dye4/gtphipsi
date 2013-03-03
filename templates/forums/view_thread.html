@@ -1,0 +1,148 @@
+{% extends 'base_bros_only.html' %}
+{% load url from future %}
+
+{% block title %}
+    {{ thread.title }} | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <style type="text/css">
+        #content table {
+            border-collapse: collapse;
+            margin: 40px 20px 10px 10px;
+            width: 95%;
+        }
+        #content table tbody tr td {
+            border-top: 1px solid black;
+        }
+        #content table tr td.left {
+            padding: 10px 10px 10px 0;
+        }
+        #content table tr td.middle {
+            padding: 10px;
+            border-left: 1px solid black;
+            border-right: 1px solid black;
+        }
+        #content table tr td.right {
+            padding: 10px 0 10px 10px;
+            border-left: 1px solid black;
+        }
+        #content table tr td.bottom {
+            border-bottom: 1px solid black;
+        }
+        #content div.quote {
+            margin: 5px 0 20px 10px;
+            padding: 5px;
+            width: 80%;
+            border: 1px solid black;
+            background-color: #cccccc;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            border-radius: 5px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div style="margin-top: 10px">
+        <a class="alwaysgreen" href="{% url 'gtphipsi.forums.views.forums' %}">Forums</a>
+        <span style="padding: 0 5px">&gt;</span>
+        <a class="alwaysgreen" href="{% url 'gtphipsi.forums.views.view_forum' slug=forum.slug %}">{{ forum.name }}</a>
+        <span style="padding: 0 5px">&gt;</span>
+    </div>
+    <h1>{{ thread.title }}</h1>
+    {% url 'gtphipsi.forums.views.view_thread' forum=forum.slug id=thread.id thread=thread.slug as first_url %}
+    {% url 'gtphipsi.forums.views.view_thread' forum=forum.slug id=thread.id thread=thread.slug page=posts.previous_page_number as prev_url %}
+    {% url 'gtphipsi.forums.views.view_thread' forum=forum.slug id=thread.id thread=thread.slug page=posts.next_page_number as next_url %}
+    {% url 'gtphipsi.forums.views.view_thread' forum=forum.slug id=thread.id thread=thread.slug page=posts.paginator.num_pages as last_url %}
+    <table>
+        <thead>
+            <tr>
+                <td colspan="2">
+                    <div style="float: left">
+                        <a class="alwaysgreen" href="{% url 'gtphipsi.forums.views.add_post' forum=forum.slug id=thread.id thread=thread.slug %}">Reply</a> <span style="padding: 0 5px">|</span>
+                    {% if subscribed %}
+                        <a class="alwaysgreen" href="{% url 'gtphipsi.forums.views.view_thread' forum=forum.slug id=thread.id thread=thread.slug %}?unsubscribe">Unsubscribe</a>
+                    {% else %}
+                        <a class="alwaysgreen" href="{% url 'gtphipsi.forums.views.view_thread' forum=forum.slug id=thread.id thread=thread.slug %}?subscribe">Subscribe</a>
+                    {% endif %}
+                    </div>
+                    {% include 'snippets/_pagination.html' with page=posts first=first_url prev=prev_url next=next_url last=last_url %}
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for post in posts.object_list %}
+            <tr>
+                <td colspan="2" style="font-weight: bold; color: #ffffff; background-color: #006b3f">
+                    {{ post.created|date:"N j, Y, f A" }} <span style="float: right; color: #ffffff"><a id="post_{{ post.number }}"></a>#{{ post.number }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td width="20%" class="left{% if forloop.last %} bottom{% endif %}" style="padding-left: 5px">
+                    <div>
+                        <a class="alwaysgreen" href="{{ post.user.get_absolute_url }}">{{ post.user.common_name }}</a>
+                    </div>
+                    <div>
+                        ... {{ post.user.badge }}
+                    </div>
+                </td>
+                <td width="80%" class="right{% if forloop.last %} bottom{% endif %}">
+                    {% if post.deleted %}
+                        <div class="quote">
+                            <span style="font-style: italic">This post was deleted by {{ post.updated_by.common_name }}.</span>
+                        </div>
+                    {% else %}
+                        {% if post.quote %}
+                        <div class="quote">
+                            <div style="margin-bottom: 10px">
+                                <b>Quote:</b> {{ post.quote.user.common_name }} <span style="font-size: 0.7em"><a class="alwaysgreen" href="{{ post.quote.get_absolute_url }}">&#x25B6;</a></span>
+                            </div>
+                            <span style="font-style: italic">{{ post.quote.body|safe }}</span>
+                        </div>
+                        {% endif %}
+                        <div style="padding: 10px 10px 10px 5px">{{ post.body|safe }}</div>
+                        <div style="float: right">
+                            <span class="small">
+                                <a class="alwaysgreen" href="{{ post.get_absolute_url }}">permalink</a> | <a class="alwaysgreen" href="{% url 'gtphipsi.forums.views.add_post' forum=forum.slug id=thread.id thread=thread.slug %}?quote={{ post.number }}">quote</a>
+                                {% ifequal post.number 1 %}
+                                    {% url 'gtphipsi.forums.views.edit_thread' forum=forum.slug id=thread.id thread=thread.slug as edit_url %}
+                                {% else %}
+                                    {% url 'gtphipsi.forums.views.edit_post' id=post.id as edit_url %}
+                                {% endifequal %}
+                                {% ifequal post.user profile %}
+                                    | <a class="alwaysgreen" href="{{ edit_url }}">edit</a>
+                                {% else %}
+                                    {% if is_mod or profile.is_admin %}
+                                        | <a class="alwaysgreen" href="{{ edit_url }}">edit</a>
+                                    {% endif %}
+                                {% endifequal %}
+                            </span>
+                        </div>
+                        {% if post.is_edited %}
+                            <div style="margin-top: 20px">
+                                <span class="small">Last edited by {{ post.updated_by.common_name }} on {{ post.updated|date:"N j, Y, f A" }}.</span>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2">
+                    <div style="float: left">
+                        <a class="alwaysgreen" href="{% url 'gtphipsi.forums.views.add_post' forum=forum.slug id=thread.id thread=thread.slug %}">Reply</a> <span style="padding: 0 5px">|</span>
+                    {% if subscribed %}
+                        <a class="alwaysgreen" href="{% url 'gtphipsi.forums.views.view_thread' forum=forum.slug id=thread.id thread=thread.slug %}?unsubscribe">Unsubscribe</a>
+                    {% else %}
+                        <a class="alwaysgreen" href="{% url 'gtphipsi.forums.views.view_thread' forum=forum.slug id=thread.id thread=thread.slug %}?subscribe">Subscribe</a>
+                    {% endif %}
+                    </div>
+                    {% include 'snippets/_pagination.html' with page=posts first=first_url prev=prev_url next=next_url last=last_url %}
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+{% endblock %}

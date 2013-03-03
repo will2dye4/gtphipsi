@@ -1,0 +1,59 @@
+{% extends 'base_bros_only.html' %}
+{% load url from future %}
+
+{% block title %}
+    Reply to Thread | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <style type="text/css">
+        #content div.quote {
+            margin: 10px 50px 20px 20px;
+            width: 75%;
+            padding: 10px;
+            border: 1px solid black;
+            background-color: #cccccc;
+        }
+    </style>
+
+    {% if not create %}
+    <script type="text/javascript">
+        function confirm_delete () {
+            if (confirm("Are you sure you want to delete this post?"))
+                window.location.href = "{% url 'gtphipsi.forums.views.edit_post' id=post.id %}?delete=true";
+        }
+    </script>
+    {% endif %}
+{% endblock %}
+
+{% comment %} TODO - add sidebar explaining formatting options (B, I, U, URL) {% endcomment %}
+
+
+{% block content %}
+    <h1>{% if create %}Reply to Thread{% else %}Edit Post{% endif %}</h1>
+    <p>Use the form below to{% if not create %} edit your{% endif %} reply to the thread "{{ thread.title }}". Click "{% if create %}Post{% else %}Save{% endif %}" when you are finished.</p>
+    {% if quote %}
+        <p>You are replying to post #{{ quote.number }} by {{ quote.user.common_name }}, which reads:</p>
+        <div class="rounded quote">{{ quote.body|safe }}</div>
+    {% endif %}
+    {% if create %}
+        {% url 'gtphipsi.forums.views.add_post' forum=forum.slug id=thread.id thread=thread.slug as action_url %}
+    {% else %}
+        {% url 'gtphipsi.forums.views.edit_post' id=post.id as action_url %}
+    {% endif %}
+    <form action="{{ action_url }}" method="post">
+        {% if create %}
+            {% include 'snippets/_table_form.html' with submit_text='Post' %}
+        {% else %}
+            {% include 'snippets/_table_form.html' with submit_text='Save' %}
+        {% endif %}
+        {% if quote %}
+            <input type="hidden" id="quote" name="quote" value="{{ quote.number }}" />
+        {% endif %}
+    </form>
+    {% if not create and post.number > 1 %}
+        <div style="float: right">
+            <a onclick="confirm_delete()">delete</a>
+        </div>
+    {% endif %}
+{% endblock %}

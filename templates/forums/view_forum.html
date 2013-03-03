@@ -1,0 +1,113 @@
+{% extends 'base_bros_only.html' %}
+{% load url from future %}
+
+{% block title %}
+    {{ forum.name }} Forum | {{ block.super }}
+{% endblock %}
+
+{% block head_extras %}
+    <style type="text/css">
+        #content table {
+            border-collapse: collapse;
+            margin: 50px 10px 15px 10px;
+        }
+        #content table thead tr td {
+            border-bottom: 1px solid black;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #006b3f;
+        }
+        #content table tr td.left {
+            padding-right: 10px;
+        }
+        #content table tr td.middle {
+            padding: 0 10px;
+            border-left: 1px solid black;
+            border-right: 1px solid black;
+        }
+        #content table tr td.right {
+            padding: 0 10px;
+            border-left: 1px solid black;
+        }
+        #content table tr td.center {
+            text-align: center;
+            padding: 0;
+        }
+        #content table tfoot tr td {
+            border-top: 1px solid black;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div style="margin-top: 10px">
+        <a class="alwaysgreen" href="{% url 'gtphipsi.forums.views.forums' %}">Forums</a>
+        <span style="padding: 0 5px">&gt;</span>
+    </div>
+    <h1>{{ forum.name }} Forum</h1>
+    {% if forum.description %}
+        <p style="font-style: italic">{{ forum.description }}</p>
+    {% endif %}
+    {% with request.user.get_profile as profile %}
+    {% if is_mod or profile.is_admin %}
+        <span class="small"><a class="alwaysgreen" href="{% url 'gtphipsi.forums.views.edit_forum' slug=forum.slug %}">edit</a></span>
+    {% endif %}
+    {% endwith %}
+    {% ifequal threads.object_list|length 0 %}
+        <p style="margin-top: 20px">There are no threads to display.</p>
+        <form action="{% url 'gtphipsi.forums.views.add_thread' slug=forum.slug %}" method="get">
+            {% csrf_token %}
+            <input type="submit" class="submit" value="New Thread" />
+        </form>
+    {% else %}
+        <table>
+            <thead>
+                <tr>
+                    <td class="left">Thread</td>
+                    <td class="middle">Owner</td>
+                    <td class="middle">Last Post</td>
+                    <td class="right">Replies</td>
+                </tr>
+            </thead>
+            <tbody>
+            {% for thread in threads.object_list %}
+                <tr>
+                    <td class="left"><a class="alwaysgreen" href="{{ thread.get_absolute_url }}">{{ thread.title }}</a></td>
+                    <td class="middle"><a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.show' badge=thread.owner.badge %}">{{ thread.owner.common_name }}</a></td>
+                    {% with thread.latest_post as post %}
+                    <td class="middle">
+                        {{ post.created|date:"n/j/Y f A" }}
+                        by <a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.show' badge=post.user.badge %}">{{ post.user.common_name }}</a>
+                        <span style="font-size: 0.7em; padding-left: 5px"><a class="alwaysgreen" href="{{ post.get_absolute_url }}">&#x25B6;</a></span>
+                    </td>
+                    {% endwith %}
+                    <td class="right center">{{ thread.posts.count|add:-1 }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4">
+                        <div style="float: right; margin-top: 10px">
+                        {% with forum.get_absolute_url as forum_url %}
+                        {% if threads.has_previous %}
+                            <span style="padding-right: 5px"><a class="alwaysgreen" href="{{ forum_url }}">&lt;&lt;</a></span>
+                            <span style="padding-right: 5px"><a class="alwaysgreen" href="{{ forum_url }}?page={{ threads.previous_page_number }}">&lt;</a></span>
+                        {% endif %}
+                        <span style="font-style: italic; padding-right: 5px">Page {{ threads.number }} of {{ threads.paginator.num_pages }}</span>
+                        {% if threads.has_next %}
+                            <span style="padding-right: 5px"><a class="alwaysgreen" href="{{ forum_url }}?page={{ threads.next_page_number }}">&gt;</a></span>
+                            <a class="alwaysgreen" href="{{ forum_url }}?page={{ threads.paginator.num_pages }}">&gt;&gt;</a>
+                        {% endif %}
+                        {% endwith %}
+                        </div>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        <form action="{% url 'gtphipsi.forums.views.add_thread' slug=forum.slug %}" method="get">
+            {% csrf_token %}
+            <input type="submit" class="submit" value="New Thread" />
+        </form>
+    {% endifequal %}
+{% endblock %}
