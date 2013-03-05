@@ -77,7 +77,9 @@
             <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.potentials' %}">View All Potentials</a></li>
             <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.add_potential' name=rush.get_unique_name %}">Add New Potential</a></li>
         {% else %}
-            <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.potentials' name=current_rush %}">Current Rush Potentials</a></li>
+            {% if current_rush %}
+                <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.potentials' name=current_rush %}">Current Rush Potentials</a></li>
+            {% endif %}
             <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.add_potential' %}">Add New Potential</a></li>
         {% endif %}
         <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.pledges' %}">View Pledges</a></li>

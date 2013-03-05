@@ -1,10 +1,21 @@
-from chapter.models import Announcement
+"""Context processors for the gtphipsi web application.
 
-# Makes a list of the most recent announcements accessible to all requests.
+This module exports the following context processor functions:
+    - announcements_processor (request)
+    - menu_item_processor (request)
+
+"""
+
+from gtphipsi.chapter.models import Announcement
+
+
 def announcements_processor(request):
+    """Add an item 'recent_news', containing the most recently posted announcements, to all requests."""
     return {'recent_news': Announcement.most_recent(public=request.user.is_anonymous())}
 
+
 def menu_item_processor(request):
+    """Add an item 'menu_item', indicating which menu category should be highlighted, to all requests."""
     path = request.path
     menu_item = ''
     if path == '/':
@@ -17,7 +28,8 @@ def menu_item_processor(request):
         if path.startswith('/chapter/announcements'):
             menu_item = 'announcements'
         elif path.startswith('/brothers'):
-            if path in ['/brothers/profile/', '/brothers/edit/', '/brothers/account/'] or path.startswith('/brothers/privacy') or path.startswith('/brothers/password'):
+            if path in ['/brothers/profile/', '/brothers/edit/', '/brothers/account/'] \
+                    or path.startswith('/brothers/privacy') or path.startswith('/brothers/password'):
                 menu_item = 'account'
             else:
                 menu_item = 'admin'

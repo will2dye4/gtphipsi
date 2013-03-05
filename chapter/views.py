@@ -1,66 +1,104 @@
+"""View functions for the gtphipsi.chapter package.
+
+This module exports the following view functions:
+    - about (request)
+    - history (request)
+    - creed (request)
+    - announcements (request)
+    - add_announcement (request)
+    - edit_announcement (request, id)
+
+"""
+
 import logging
 
-from django.shortcuts import render
-from django.template import RequestContext
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.core.mail.message import EmailMessage
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import EmptyPage, InvalidPage, Paginator
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, Http404
+from django.http import Http404, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from django.template import RequestContext
 
-from chapter.models import Announcement, InformationCard
-from chapter.forms import AnnouncementForm
-from brothers.models import STATUS_BITS, UserProfile
+from gtphipsi.brothers.models import UserProfile, STATUS_BITS
+from gtphipsi.chapter.models import Announcement, InformationCard
+from gtphipsi.chapter.forms import AnnouncementForm
 from gtphipsi.messages import get_message as _
 
 
 log = logging.getLogger('django')
 
 
-# visible to all users
+## ============================================= ##
+##                                               ##
+##                 Public Views                  ##
+##                                               ##
+## ============================================= ##
+
+
 def about(request):
+    """Render a page of text containing general information about the chapter."""
     return render(request, 'chapter/about.html', context_instance=RequestContext(request))
 
 
-# visible to all users
 def history(request):
+    """Render a page of text describing the history of the national fraternity and the Georgia Beta chapter."""
     return render(request, 'chapter/history.html', context_instance=RequestContext(request))
 
 
-# visible to all users
 def creed(request):
+    """Render a page of text containing the Creed of Phi Kappa Psi."""
     return render(request, 'chapter/creed.html', context_instance=RequestContext(request))
 
 
-# visible to all users
 def announcements(request):
+    """Render a listing of announcements posted by members of the chapter."""
+
     private = False
     if request.user.is_authenticated():
         if 'bros_only' in request.GET and request.GET['bros_only'] == 'true':
-            announcement_list = Announcement.objects.filter(public=False)
+            objects = Announcement.objects.filter(public=False)
             private = True
         else:
-            announcement_list = Announcement.objects.all()
+            objects = Announcement.objects.all()
         template = 'chapter/announcements_bros_only.html'
     else:
-        announcement_list = Announcement.objects.filter(public=True)
+        objects = Announcement.objects.filter(public=True)
         template = 'chapter/announcements.html'
 
-    paginator = Paginator(announcement_list, 20)
-    page = request.GET.get('page', 1)
+    paginator = Paginator(objects, settings.ANNOUNCEMENTS_PER_PAGE)
     try:
-        list = paginator.page(page)
-    except PageNotAnInteger:
-        list = paginator.page(1)
-    except EmptyPage:
-        list = paginator.page(paginator.num_pages)
+        page = int(request.GET.get('page', '1'))
+    except ValueError:
+        page = 1        # if 'page' parameter is not an integer, default to page 1
+    try:
+        announcements = paginator.page(page)
+    except (EmptyPage, InvalidPage):
+        announcements = paginator.page(paginator.num_pages)
 
-    return render(request, template, {'announcements': list, 'private': private}, context_instance=RequestContext(request))
+    return render(request, template, {'announcements': announcements, 'private': private},
+                  context_instance=RequestContext(request))
+
+
+
+
+## ============================================= ##
+##                                               ##
+##              Authenticated Views              ##
+##                                               ##
+## ============================================= ##
 
 
 @login_required
+@permission_required('chapter.add_announcement', login_url=settings.FORBIDDEN_URL)
 def add_announcement(request):
+    """Render and process a form to create a new announcement.
+
+    This function will email all users who have elected to be notified of new announcements and also all potentials
+    who have submitted information cards and elected to subscribe to chapter updates.
+
+    """
     if request.method == 'POST':
         form = AnnouncementForm(request.POST)
         if form.is_valid():
@@ -70,13 +108,11 @@ def add_announcement(request):
             recipients = UserProfile.all_emails_with_bit(STATUS_BITS['EMAIL_NEW_ANNOUNCEMENT'])
             if announcement.public:
                 recipients += InformationCard.all_subscriber_emails()
-            message = EmailMessage(_('notify.announcement.subject'), _('notify.announcement.body', args=(
-                    announcement.user.get_profile().common_name(),
-                    '' if announcement.date is None else '[%s] ' % announcement.date.strftime('%B %d, %Y'),
-                    announcement.text,
-                    settings.URI_PREFIX
-                )), to=['messenger@gtphipsi.org'], bcc=recipients
-            )
+            date = ('' if announcement.date is None else '[%s] ' % announcement.date.strftime('%B %d, %Y'))
+            message = EmailMessage(_('notify.announcement.subject'),
+                                   _('notify.announcement.body', args=(announcement.user.get_profile().common_name(),
+                                                                       date, announcement.text, settings.URI_PREFIX)),
+                                   to=['messenger@gtphipsi.org'], bcc=recipients)
             message.send()
             return HttpResponseRedirect(reverse('announcements'))
     else:
@@ -85,21 +121,31 @@ def add_announcement(request):
 
 
 @login_required
-def edit_announcement(request, id=0):
-    announcement = Announcement.objects.get(pk=id)
-    if announcement is None:
-        raise Http404
+@permission_required('chapter.change_announcement', login_url=settings.FORBIDDEN_URL)
+def edit_announcement(request, id):
+    """Render and process a form to modify an existing announcement.
+
+    Required parameters:
+        - id    =>  the unique ID of the announcement to edit (as an integer)
+
+    If 'delete=true' appears in the request's query string, the announcement will be deleted.
+
+    """
+    announcement = get_object_or_404(Announcement, id=id)
+    profile = request.user.get_profile()
+    if announcement.user != request.user and not profile.is_admin():
+        return HttpResponseRedirect(reverse('forbidden'))   # only admins may edit other people's announcements
+    if request.method == 'POST':
+        form = AnnouncementForm(request.POST, instance=announcement)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('announcements'))
     else:
         if 'delete' in request.GET and request.GET['delete'] == 'true':
             text = announcement.text
             announcement.delete()
-            log.info('User %s (badge %d) deleted announcement "%s"', request.user.get_full_name(), request.user.get_profile().badge, text)
+            log.info('User %s (badge %d) deleted announcement "%s"', request.user.get_full_name(), profile.badge, text)
             return HttpResponseRedirect(reverse('announcements'))
-        elif request.method == 'POST':
-            form = AnnouncementForm(request.POST, instance=announcement)
-            if form.is_valid():
-                form.save()
-                return HttpResponseRedirect(reverse('announcements'))
-        else:
-            form = AnnouncementForm(instance=announcement)
-    return render(request, 'chapter/edit_announcement.html', {'form': form, 'id': announcement.id}, context_instance=RequestContext(request))
+        form = AnnouncementForm(instance=announcement)
+    return render(request, 'chapter/edit_announcement.html', {'form': form, 'id': announcement.id},
+                  context_instance=RequestContext(request))

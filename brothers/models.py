@@ -1,19 +1,35 @@
-# Models related to brothers of the fraternity and permissions for administrative activity on the site.
-# All administrator users will necessarily be brothers of the chapter.
+"""Models for the gtphipsi.brothers package.
 
-from django.db import models
+This module exports the following model classes:
+    - VisibilitySettings
+    - UserProfile
+    - EmailChangeRequest
+
+This module exports the following tuples of field choices:
+    - SUFFIX_CHOICES
+    - STATUS_CHOICES
+    - MAJOR_CHOICES
+
+This module exports the following dictionary, mapping 'status' strings to unique bits:
+    - STATUS_BITS
+
+"""
+
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import PhoneNumberField
 from django.core.urlresolvers import reverse
-#from django.db.models.signals import post_save -- see comment at the bottom of the file
+from django.db import models
 
+
+# Maps 'status' strings to unique bits. A user may have multiple 'status' bits set in the 'bits' field of his profile.
 STATUS_BITS = {
-    'LOCKED_OUT': 0x1,
-    'PASSWORD_RESET': 0x2,
-    'EMAIL_NEW_INFOCARD': 0x4,
-    'EMAIL_NEW_CONTACT': 0x8,
-    'EMAIL_NEW_ANNOUNCEMENT': 0x10
+    'LOCKED_OUT':               0x1,
+    'PASSWORD_RESET':           0x2,
+    'EMAIL_NEW_INFOCARD':       0x4,
+    'EMAIL_NEW_CONTACT':        0x8,
+    'EMAIL_NEW_ANNOUNCEMENT':   0x10
 }
+
 
 # Possible suffixes for names.
 SUFFIX_CHOICES = (
@@ -25,13 +41,16 @@ SUFFIX_CHOICES = (
     ('4', 'IV')
 )
 
-# Current status in the chapter.
+
+# Choices for current status in the chapter.
 STATUS_CHOICES = (
     ('U', 'Undergraduate'),
     ('O', 'Out of Town'),
     ('A', 'Alumnus')
 )
 
+
+# Possible majors at Georgia Tech.
 # This list was last updated on 12/3/2011.
 MAJOR_CHOICES = (
     ('College of Architecture', (
@@ -90,18 +109,8 @@ MAJOR_CHOICES = (
 )
 
 
-#class SecurityQuestion(models.Model):
-#    question = models.CharField(max_length=256)
-#    answer = models.CharField(max_length=256)
-
-
-#class SecurityQuestionForm(forms.Form):
-
-#    class Meta:
-#        model = SecurityQuestion
-
-
 class VisibilitySettings(models.Model):
+    """A user's visibility settings, determining which users should be allowed to see what information."""
     full_name = models.BooleanField(blank=True)
     big_brother = models.BooleanField(blank=True)
     major = models.BooleanField(blank=True)
@@ -115,13 +124,15 @@ class VisibilitySettings(models.Model):
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User) # need this to connect a user to his profile
+    """A user's profile, storing supplemental data about users not provided by Django's built-in User class."""
+
+    user = models.OneToOneField(User)   # need this to connect a user to his profile
 
     middle_name = models.CharField(max_length=30, blank=True)
     suffix = models.CharField(choices=SUFFIX_CHOICES, max_length=5, default='')
     nickname = models.CharField(max_length=30, blank=True, help_text='the name a brother prefers to be called')
 
-    badge = models.PositiveIntegerField(unique=True, blank=False)
+    badge = models.PositiveIntegerField(unique=True)
     status = models.CharField(choices=STATUS_CHOICES, max_length=15, blank=False, default='U')
     big_brother = models.PositiveIntegerField(blank=True, default=0)
 
@@ -132,31 +143,33 @@ class UserProfile(models.Model):
     graduation = models.DateField(blank=True, null=True)
     dob = models.DateField(blank=True, null=True)
     phone = PhoneNumberField(blank=True)
-    bits = models.IntegerField(blank=True, default=0) # (1 << 0): user is locked out
+    bits = models.IntegerField(blank=True, default=0)
 
     public_visibility = models.ForeignKey(VisibilitySettings, blank=False, null=True, related_name='public_profiles')
     chapter_visibility = models.ForeignKey(VisibilitySettings, blank=False, null=True, related_name='chapter_profiles')
 
-#    security_question = models.ForeignKey(SecurityQuestion, blank=True, null=True)
-
     @classmethod
     def all_profiles_with_bit(cls, bit=0):
+        """Return a list of all user profiles having the specified status bit."""
         return cls.objects.raw('SELECT * FROM brothers_userprofile WHERE (bits & %s) > 0', [bit])
 
     @classmethod
     def all_emails_with_bit(cls, bit=0):
+        """Return a list of the email addresses of all user profiles having the specified status bit."""
         queryset = cls.objects.raw('SELECT u.id, u.email FROM auth_user u JOIN brothers_userprofile b ON (b.user_id = u.id) WHERE (b.bits & %s) > 0', [bit])
         return [user.email for user in queryset]
 
     def __unicode__(self):
-        return self.common_name()
+        """Return a Unicode string representation of the user profile."""
+        return unicode(self.common_name())
 
     def get_absolute_url(self):
+        """Return the absolute URL path for the user profile."""
         return reverse('view_profile', kwargs={'badge': self.badge})
 
     def full_name(self):
-        """Returns the brother's full name, in the format 'First[ Middle] Last[, Suffix]'."""
-        suffix = self.suffix != ''
+        """Return the brother's full name, in the format 'First[ Middle] Last[, Suffix]'."""
+        suffix = (self.suffix != '')
         values = (self.user.first_name,
                 ' ' if self.middle_name else '',
                 self.middle_name,
@@ -168,52 +181,44 @@ class UserProfile(models.Model):
         return '%s%s%s %s%s%s%s' % values
 
     def preferred_name(self):
-        """Returns the brother's nickname, if defined, or first name otherwise."""
+        """Return the brother's nickname, if defined, or first name otherwise."""
         return '%s' % (self.nickname if self.nickname else self.user.first_name)
 
     def common_name(self):
-        """Returns the brother's nickname (if defined; first name otherwise) and last name."""
+        """Return the brother's nickname (if defined; first name otherwise) and last name."""
         return '%s %s' % (self.preferred_name(), self.user.last_name)
 
     def is_undergrad(self):
-        """Returns True if the brother is currently an active undergraduate."""
+        """Return True if the brother is currently an active undergraduate, False otherwise."""
         return self.status == 'U'
 
     def is_admin(self):
-        """Returns True if the brother is an administrator user (i.e., a member of the Administrators group)."""
+        """Return True if the brother is an administrator (i.e., a member of the Administrators group), False otherwise."""
         return self.user.groups.filter(name='Administrators').count() > 0
 
     def get_little_brothers(self):
-        """Returns the set of UserProfile objects having this profile's badge as their big_brother."""
+        """Return the set of UserProfile objects having the user as their big brother."""
         return self.objects.filter(big_brother=self.badge)
 
     def has_bit(self, bit):
-        """Returns True if the brother has the specified bit set."""
+        """Return True if the brother has the specified bit set, False otherwise."""
         return self.bits & bit == bit
 
     def set_bit(self, bit):
-        """Sets the specified bit."""
+        """Set the specified bit."""
         self.bits |= bit
 
     def clear_bit(self, bit):
-        """Clears the specified bit."""
+        """Clear the specified bit."""
         self.bits &= ~bit
 
     class Meta:
+        """Define a default sort by badge number ascending."""
         ordering = ['badge']
-        # permissions = (('codename', 'description'),) ... add permissions as needed
 
 
 class EmailChangeRequest(models.Model):
+    """A request from a user to change his email address."""
     user = models.ForeignKey(User)
     email = models.EmailField()
     hash = models.CharField(max_length=28)
-
-
-# The code below should be used here, but due to the fact that `badge` and `status` must be provided
-# but are not known at the time the User instance is created, it is omitted. This should be fixed.
-#def create_user_profile(sender, instance, created, **kwargs):
-#    """Hook to create a user profile whenever a new user is created."""
-#   if created:
-#        UserProfile.objects.create(user=instance)
-#post_save.connect(create_user_profile, sender=User)

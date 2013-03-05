@@ -8,43 +8,34 @@
 {% block sidebar %}
     <h3 class="sidebar">Brothers Only</h3>
     <p class="sidebar">Only brothers of the fraternity are able to sign in.
-    If you are a brother wishing to create an account, please visit <a href="{% url 'gtphipsi.views.register' %}">this page</a>
+    If you are a brother wishing to create an account, please visit <a class="alwaysgreen" href="{% url 'gtphipsi.views.register' %}">this page</a>
     (you must have been given a password by the webmaster).</p>
 {% endblock %}
 
 {% block content %}
     <h1>Sign In</h1>
-    {% if error == 'locked' %}
-        <p>You have attempted to sign in with the wrong credentials too many times.
-        Please contact the webmaster to have your account reset.</p>
-    {% else %}
-        {% if error == 'disabled' %}
-        <p>Your account has been disabled. Please contact the webmaster to have it re-enabled.</p>
-        {% else %}
-            {% if error == 'invalid' %}
-                <p>You have entered an invalid username or password. Please check your credentials and try again.</p>
-            {% endif %}
-            <form action="{% url 'gtphipsi.views.sign_in' %}" method="post">
-                {% csrf_token %}
-                <table class="form">
-                    <tbody>
-                        <tr>
-                            <td class="spaced"><label for="id_username">Username</label></td>
-                            <td class="spaced"><input name="username" id="id_username" type="text" value="{{ username }}"></td>
-                        </tr>
-                        <tr>
-                            <td class="spaced"><label for="id_password">Password</label></td>
-                            <td class="spaced"><input name="password" id="id_password" type="password"></td>
-                        </tr>
-                        <tr>
-                            <td colspan="2"><div style="float: right"><span class="small"><a class="hovercolor" href="{% url 'gtphipsi.views.forgot_password' %}">forgot password?</a></span></div></td>
-                        </tr>
-                        <tr>
-                            <td colspan="2"><input class="submit" type="submit" value="Sign In" /></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </form>
-        {% endif %}
+    {% if error %}
+        <p><span class="error">{{ error }}</span></p>
     {% endif %}
+    <form action="{% url 'gtphipsi.views.sign_in' %}" method="post">
+        {% csrf_token %}
+        <table class="form">
+            <tbody>
+                <tr>
+                    <td class="spaced"><label for="id_username">Username</label></td>
+                    <td class="spaced"><input name="username" id="id_username" type="text" value="{{ username }}"></td>
+                </tr>
+                <tr>
+                    <td class="spaced"><label for="id_password">Password</label></td>
+                    <td class="spaced"><input name="password" id="id_password" type="password"></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><div style="float: right"><span class="small"><a class="hovercolor" href="{% url 'gtphipsi.views.forgot_password' %}">forgot password?</a></span></div></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input class="submit" type="submit" value="Sign In" /></td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
 {% endblock %}

@@ -1,8 +1,13 @@
+"""Root URL configuration for the gtphipsi web application.
+
+All URIs are routed to this URL configuration, then possibly dispatched to other URL confs in this package's submodules.
+
+"""
+
 from django.conf.urls.defaults import patterns, url, include
 
-# from django.contrib import admin
-# admin.autodiscover()
 
+# 'Global' pages. These are pages that don't fit neatly into one app (submodule) or another.
 urlpatterns = patterns('gtphipsi.views',
     url(r'^$', 'home', name='home'),
     url(r'^login/$', 'sign_in', name='sign_in'),
@@ -16,22 +21,18 @@ urlpatterns = patterns('gtphipsi.views',
     url(r'^forgot/$', 'forgot_password', name='forgot_password'),
     url(r'^reset/(?P<id>\d+)/$', 'reset_password', name='reset_password'),
     url(r'^reset/success/$', 'reset_password_success', name='reset_password_success')
-    # other global pages here
 )
 
+# Include other URL configurations for app-specific pages.
 urlpatterns += patterns('',
      url(r'^brothers/', include('gtphipsi.brothers.urls')),
      url(r'^officers/', include('gtphipsi.officers.urls')),
      url(r'^rush/', include('gtphipsi.rush.urls')),
      url(r'^chapter/', include('gtphipsi.chapter.urls')),
      url(r'^forums/', include('gtphipsi.forums.urls')),
-    # other app-specific URLs here
 )
 
 # Hack - to continue to support the old rush schedule URI.
 urlpatterns += patterns('gtphipsi.rush.views',
     url(r'^rushschedule\.php$', 'old_schedule', name='old_rush_schedule'),
 )
-
-# url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-# url(r'^admin/', include(admin.site.urls)),

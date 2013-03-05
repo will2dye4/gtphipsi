@@ -1,11 +1,23 @@
+"""URL configuration for the gtphipsi.brothers package.
+
+All URIs beginning with '/brothers/' are routed to this URL configuration.
+
+"""
+
 from django.conf.urls.defaults import patterns, url
 
 urlpatterns = patterns('gtphipsi.brothers.views',
+    ## ============================================= ##
+    ##                 Public Pages                  ##
+    ## ============================================= ##
     url(r'^$', 'list', name='brothers_list'),
     url(r'^(?P<badge>\d+)/$', 'show', name='view_profile'),
     url(r'^email/$', 'change_email', name='change_email'),
     url(r'^email/success/$', 'change_email_success', name='change_email_success'),
-    ### authenticated pages ###
+
+    ## ============================================= ##
+    ##              Authenticated Pages              ##
+    ## ============================================= ##
     url(r'^profile/$', 'my_profile', name='my_profile'),
     url(r'^manage/$', 'manage', name='manage_users'),
     url(r'^add/$', 'add', name='add_user'),

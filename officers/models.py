@@ -1,6 +1,18 @@
+"""Models for the gtphipsi.officers package.
+
+This module exports the following model classes:
+    - ChapterOfficer
+    - OfficerHistory
+
+This module exports the following tuples of field choices:
+    - OFFICER_CHOICES
+
+"""
+
 from django.db import models
 
 from gtphipsi.brothers.models import UserProfile
+
 
 # List of officer positions within the chapter.
 OFFICER_CHOICES = (
@@ -18,16 +30,18 @@ OFFICER_CHOICES = (
 )
 
 
-# Represents a current officer of the chapter.
 class ChapterOfficer(models.Model):
+    """A current officer of the chapter, associating an undergraduate brother with an officer position."""
+
     office = models.CharField(choices=OFFICER_CHOICES, max_length=3)
-    brother = models.ForeignKey(UserProfile)
+    brother = models.ForeignKey(UserProfile, related_name='offices')
     updated = models.DateTimeField(auto_now=True)
 
 
-# Maintains a history of which brothers held which officer positions in the past.
 class OfficerHistory(models.Model):
-    office = models.CharField(choices=OFFICER_CHOICES, max_length=5)
-    brother = models.ForeignKey(UserProfile)
+    """A historical record of officer positions, tracking which brothers held which officer positions in the past."""
+
+    office = models.CharField(choices=OFFICER_CHOICES, max_length=3)
+    brother = models.ForeignKey(UserProfile, related_name='former_offices')
     start = models.DateTimeField()
     end = models.DateTimeField(auto_now_add=True)
