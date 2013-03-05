@@ -45,9 +45,11 @@ class UserForm(forms.Form):
     middle_name = forms.CharField(max_length=30, required=False)
     last_name = forms.CharField(max_length=30)
     suffix = forms.ChoiceField(choices=SUFFIX_CHOICES, required=False)
-    nickname = forms.CharField(max_length=30, required=False, help_text='The name you prefer to be called (if different from your first name)')
+    nickname = forms.CharField(max_length=30, required=False,
+                               help_text='The name you prefer to be called (if different from your first name)')
     username = forms.CharField(max_length=30)
-    password = forms.CharField(min_length=settings.MIN_PASSWORD_LENGTH, widget=forms.PasswordInput, help_text=('Must be at least %d characters long' % settings.MIN_PASSWORD_LENGTH))
+    password = forms.CharField(min_length=settings.MIN_PASSWORD_LENGTH, widget=forms.PasswordInput,
+                               help_text=('Must be at least %d characters long' % settings.MIN_PASSWORD_LENGTH))
     confirm = forms.CharField(min_length=settings.MIN_PASSWORD_LENGTH, widget=forms.PasswordInput, label='Confirm password')
     badge = forms.IntegerField(min_value=1)
     status = forms.ChoiceField(choices=STATUS_CHOICES, initial='U')
@@ -140,9 +142,12 @@ class EditProfileForm(forms.ModelForm):
     """
 
     big_brother = forms.ChoiceField(choices=(), required=False, widget=BrotherSelect)
-    initiation = forms.DateField(input_formats=settings.DATE_INPUT_FORMATS, widget=forms.DateInput(format='%B %d, %Y'), required=False)
-    graduation = forms.DateField(input_formats=settings.DATE_INPUT_FORMATS, widget=forms.DateInput(format='%B %d, %Y'), required=False)
-    dob = forms.DateField(input_formats=settings.DATE_INPUT_FORMATS, widget=forms.DateInput(format='%B %d, %Y'), required=False, label='Date of birth')
+    initiation = forms.DateField(input_formats=settings.DATE_INPUT_FORMATS, widget=forms.DateInput(format='%B %d, %Y'),
+                                 required=False)
+    graduation = forms.DateField(input_formats=settings.DATE_INPUT_FORMATS, widget=forms.DateInput(format='%B %d, %Y'),
+                                 required=False)
+    dob = forms.DateField(input_formats=settings.DATE_INPUT_FORMATS, widget=forms.DateInput(format='%B %d, %Y'),
+                          required=False, label='Date of birth')
     phone = forms.RegexField(regex=r'^\d{3}-\d{3}-\d{4}$', min_length=12, max_length=12, required=False, help_text='XXX-XXX-XXXX')
 
     def __init__(self, data=None, instance=None):
@@ -173,7 +178,8 @@ class EditAccountForm(forms.Form):
     middle_name = forms.CharField(max_length=30, required=False)
     last_name = forms.CharField(max_length=30)
     suffix = forms.ChoiceField(choices=SUFFIX_CHOICES, required=False)
-    nickname = forms.CharField(max_length=30, required=False, help_text='The name you prefer to be called (if different from your first name)')
+    nickname = forms.CharField(max_length=30, required=False,
+                               help_text='The name you prefer to be called (if different from your first name)')
     email = forms.EmailField(required=True)
     status = forms.ChoiceField(choices=STATUS_CHOICES, widget=forms.Select(attrs={'onchange': 'updateStatusSelect();'}))
 
@@ -182,7 +188,8 @@ class ChangePasswordForm(forms.Form):
     """A form to change a user's password."""
 
     old_pass = forms.CharField(widget=forms.PasswordInput, label='Current password')
-    password = forms.CharField(min_length=6, widget=forms.PasswordInput, label='New password', help_text=('Must be at least %d characters long' % settings.MIN_PASSWORD_LENGTH))
+    password = forms.CharField(min_length=6, widget=forms.PasswordInput, label='New password',
+                               help_text=('Must be at least %d characters long' % settings.MIN_PASSWORD_LENGTH))
     confirm = forms.CharField(min_length=6, widget=forms.PasswordInput, label='Confirm new password')
     user = None
 

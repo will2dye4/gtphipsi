@@ -156,7 +156,8 @@ class UserProfile(models.Model):
     @classmethod
     def all_emails_with_bit(cls, bit=0):
         """Return a list of the email addresses of all user profiles having the specified status bit."""
-        queryset = cls.objects.raw('SELECT u.id, u.email FROM auth_user u JOIN brothers_userprofile b ON (b.user_id = u.id) WHERE (b.bits & %s) > 0', [bit])
+        query = 'SELECT u.id, u.email FROM auth_user u JOIN brothers_userprofile b ON (b.user_id = u.id) WHERE (b.bits & %s) > 0'
+        queryset = cls.objects.raw(query, [bit])
         return [user.email for user in queryset]
 
     def __unicode__(self):

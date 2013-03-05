@@ -64,7 +64,8 @@ class Post(models.Model):
             page = (self.number / settings.POSTS_PER_PAGE) + 1
         else:
             page = (self.number / settings.POSTS_PER_PAGE)
-        page_url = reverse('view_thread_page', kwargs={'forum': self.thread.forum.slug, 'id': self.thread.id, 'thread': self.thread.slug, 'page': page})
+        page_url = reverse('view_thread_page', kwargs={'forum': self.thread.forum.slug, 'id': self.thread.id,
+                                                       'thread': self.thread.slug, 'page': page})
         return page_url + ('#post_%d' % self.number)
 
     def is_edited(self):
