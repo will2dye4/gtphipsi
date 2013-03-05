@@ -359,15 +359,18 @@ def update_potentials(request, name=None):
     """
     if request.method != 'POST':
         return HttpResponseRedirect(reverse('forbidden'))
+    action = request.POST.get('action', '')
+    if action in ['hide', 'pledge', 'delete']:
+        potentials = Potential.objects.filter(id__in=[int(potential) for potential in request.POST.getlist('potential')])
+        if action == 'hide':
+            potentials.update(hidden=True)
+        elif action == 'pledge':
+            potentials.update(pledged=True)
+        else:   # action == 'delete'
+            potentials.delete()
     rush = _get_rush_or_404(name)
-    action = request.POST.get('action', 'NULL')
-    potentials = [int(potential) for potential in request.POST.getlist('potential')]
-    if action == 'hide':
-        Potential.objects.filter(id__in=potentials).update(hidden=True)
-        redirect = reverse('all_potentials') if rush is None else reverse('potentials', kwargs={'name': name})
-        return HttpResponseRedirect(redirect)
-    # TODO - complete this function!!
-    return HttpResponse('%s %s' % (action, str(potentials)))
+    redirect = reverse('all_potentials') if rush is None else reverse('potentials', kwargs={'name': name})
+    return HttpResponseRedirect(redirect)
 
 
 
