@@ -4,15 +4,57 @@
     View Information Card | {{ block.super }}
 {% endblock %}
 
+{% block head_extras %}
+    {{ block.super }}
+    <style type="text/css">
+        table.details {
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
-    <h1>{{ card }}</h1><br />
-    <p><strong>Name:</strong> {{ card.name }}<br />
-    <strong>Year:</strong> {{ card.get_year_display }}<br />
-    <strong>Email:</strong> {{ card.email }}<br />
-    {% if card.phone %}<strong>Phone:</strong> {{ card.phone }}<br />{% endif %}
-    {% if card.interests %}<strong>Interests:</strong> {{ card.interests }}<br />{% endif %}
-    {% if card.relatives %}<strong>Relatives:</strong> {{ card.relatives }}<br />{% endif %}
-    <strong>Subscribed: </strong> {{ card.subscribe|yesno:"Yes,No" }}<br />
-    <strong>Created: </strong> {{ card.created|date:"F j, Y f A" }}
-    </p>
+    <h1>{{ card }}</h1>
+    <table class="details">
+        <tbody>
+            <tr>
+                <td class="label">Name</td>
+                <td class="value">{{ card.name }}</td>
+            </tr>
+            <tr>
+                <td class="label">Year</td>
+                <td class="value">{{ card.get_year_display }}</td>
+            </tr>
+            <tr>
+                <td class="label">Email</td>
+                <td class="value"><a class="alwaysgreen" href="mailto:{{ card.email }}">{{ card.email }}</a></td>
+            </tr>
+            {% if card.phone %}
+            <tr>
+                <td class="label">Phone</td>
+                <td class="value">{{ card.phone }}</td>
+            </tr>
+            {% endif %}
+            {% if card.interests %}
+            <tr>
+                <td class="label">Interests</td>
+                <td class="value">{{ card.interests }}</td>
+            </tr>
+            {% endif %}
+            {% if card.relatives %}
+            <tr>
+                <td class="label">Relatives</td>
+                <td class="value">{{ card.relatives }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td class="label">Subscribed</td>
+                <td class="value">{{ card.subscribe|yesno:"Yes,No" }}</td>
+            </tr>
+            <tr>
+                <td class="label">Submitted</td>
+                <td class="value">{{ card.created|date:"F j, Y f A" }}</td>
+            </tr>
+        </tbody>
+    </table>
 {% endblock %}

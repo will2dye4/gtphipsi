@@ -6,14 +6,15 @@
 {% endblock %}
 
 {% block head_extras %}
+    {{ block.super }}
+    {% if 'delete_rush' in group_perms %}
     <script type="text/javascript">
         function confirm_delete () {
-            var result = confirm("Are you sure you want to delete this rush? All associated rush events will also be deleted.");
-            if (result == true) {
+            if (confirm("Are you sure you want to delete this rush? All associated rush events will also be deleted."))
                 window.location.href = "{% url 'gtphipsi.rush.views.edit' name=rush_name %}?delete=true";
-            }
         }
     </script>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -21,6 +22,8 @@
     <p>Use the form below to edit the details of a rush. Click "Save" when you are finished.</p>
     <form action="{% url 'gtphipsi.rush.views.edit' name=rush_name %}" method="post">
         {% include "snippets/_table_form.html" with submit_text="Save" %}
-        <div style="float: right"><a href="#" onclick="confirm_delete()">delete</a></div>
+        {% if 'delete_rush' in group_perms %}
+            <div style="float: right"><a onclick="confirm_delete()">delete</a></div>
+        {% endif %}
     </form>
 {% endblock %}

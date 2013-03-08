@@ -6,30 +6,12 @@
 {% endblock %}
 
 {% block head_extras %}
+    {{ block.super }}
     <style type="text/css">
-        #content table {
-            border-collapse: collapse;
+        table.list {
             margin: 30px 10px 15px 10px;
         }
-        #content table thead tr td {
-            border-bottom: 1px solid black;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #006b3f;
-        }
-        #content table tr td.left {
-            padding-right: 10px;
-        }
-        #content table tr td.middle {
-            padding: 0 20px;
-            border-left: 1px solid black;
-            border-right: 1px solid black;
-        }
-        #content table tr td.right {
-            padding-left: 20px;
-            border-left: 1px solid black;
-        }
-        #content table tr td.dash {
+        table.list tbody tr td.dash {
             padding: 0 10px;
         }
     </style>
@@ -45,9 +27,9 @@
             The first ten names are shown. <span class="small"><a class="alwaysgreen" href="{% url 'gtphipsi.officers.views.office_history' office=abbrev %}?full=true">show all</a></span>
         {% endif %}
     </p>
-    <table>
+    <table class="list">
         <thead>
-            <tr>
+            <tr class="heading">
                 <td class="left">#</td>
                 <td class="middle">Brother</td>
                 <td class="right" colspan=3>Date Range</td>
@@ -56,7 +38,7 @@
         <tbody>
             {% for brother, start, end in history %}
             <tr>
-                <td class="left">{{ forloop.counter }}</td>
+                <td class="left center">{{ forloop.counter }}</td>
                 <td class="middle"><a class="hovercolor" href="{% url 'gtphipsi.brothers.views.show' badge=brother.badge %}">{{ brother.common_name }} ... {{ brother.badge }}</a></td>
                 <td class="right">{{ start|date:"F Y" }}</td>
                 <td class="dash">&mdash;</td>

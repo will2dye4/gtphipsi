@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block head_extras %}
+    {{ block.super }}
     <style type="text/css">
         #content a.sort {
             text-decoration: none !important;
@@ -14,33 +15,11 @@
         #content a.pad {
             padding-left: 10px;
         }
-        #content table {
-            border-collapse: collapse;
+        table.list {
             margin: 30px 10px 15px 10px;
         }
-        #content table thead tr td.top {
+        table.list thead tr td.top {
             padding-bottom: 20px;
-        }
-        #content table thead tr td.bottom {
-            border-bottom: 1px solid black;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #006b3f;
-        }
-        #content table tr td.left {
-            padding-right: 10px;
-        }
-        #content table tr td.middle {
-            padding: 0 20px;
-            border-left: 1px solid black;
-            border-right: 1px solid black;
-        }
-        #content table tr td.right {
-            padding: 0 10px;
-            border-left: 1px solid black;
-        }
-        #content table tr td.dash {
-            padding: 0 10px;
         }
     </style>
 
@@ -71,16 +50,20 @@
 {% endblock %}
 
 {% block sidebar %}
-    <h3 class="sidebar">Quick Links</h3>
-    <ul style="padding-left: 20px">
+    <h3>Quick Links</h3>
+    <ul>
         {% if rush %}
             <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.potentials' %}">View All Potentials</a></li>
-            <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.add_potential' name=rush.get_unique_name %}">Add New Potential</a></li>
+            {% if 'add_potential' in group_perms %}
+                <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.add_potential' name=rush.get_unique_name %}">Add New Potential</a></li>
+            {% endif %}
         {% else %}
             {% if current_rush %}
                 <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.potentials' name=current_rush %}">Current Rush Potentials</a></li>
             {% endif %}
-            <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.add_potential' %}">Add New Potential</a></li>
+            {% if 'add_potential' in group_perms %}
+                <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.add_potential' %}">Add New Potential</a></li>
+            {% endif %}
         {% endif %}
         <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.pledges' %}">View Pledges</a></li>
     </ul>
@@ -89,9 +72,9 @@
 {% block content %}
     <h1>Potential Members{% if rush %} for {{ rush }}{% endif %}</h1>
     {% ifequal potentials|length 0 %}
-        <p style="margin-top: 30px">No potentials have been added yet. Click "Add New Potential" in the box at left to add a potential.</p>
+        <p style="margin-top: 30px">No potentials have been added yet.{% if 'add_potential' in group_perms %} Click "Add New Potential" in the box at left to add a potential.{% endif %}</p>
     {% else %}
-        <p style="margin-top: 20px">Below is a list of all potential members{% if rush %} for {{ rush }}{% endif %}. Click a potential's name to see more information about him. Select several potentials using the checkboxes at right and choose an action from the dropdown menu to update multiple potentials at once.</p>
+        <p style="margin-top: 20px">Below is a list of all potential members{% if rush %} for {{ rush }}{% endif %}. Click a potential's name to see more information about him.{% if 'change_potential' in group_perms %} Select several potentials using the checkboxes at right and choose an action from the dropdown menu to update multiple potentials at once.{% endif %}</p>
         {% if hidden %}
             <p>
                 <span style="font-style: italic">Not showing {{ hidden }} potential{{ hidden|pluralize }} marked as hidden.</span>
@@ -101,8 +84,9 @@
         <div id="form_container" style="margin-top: 20px">
             <form action="{% if rush %}{% url 'gtphipsi.rush.views.update_potentials' name=rush.get_unique_name %}{% else %}{% url 'gtphipsi.rush.views.update_potentials' %}{% endif %}" method="post" id="potential_form">
                 {% csrf_token %}
-                <table>
+                <table class="list">
                     <thead>
+                        {% if 'change_potential' in group_perms %}
                         <tr>
                             <td></td>
                             <td></td>
@@ -119,15 +103,16 @@
                                 </select>
                             </td>
                         </tr>
-                        <tr>
-                            <td class="left bottom">#</td>
-                            <td class="middle bottom">Name <a class="alwaysgreen sort pad" href=".">&#x25B2;</a> <a class="alwaysgreen sort" href=".?sort=name&order=desc">&#x25BC;</a></td>
-                            <td class="middle bottom">Phone <a class="alwaysgreen sort pad" href=".?sort=phone">&#x25B2;</a> <a class="alwaysgreen sort" href=".?sort=phone&order=desc">&#x25BC;</a></td>
+                        {% endif %}
+                        <tr class="heading">
+                            <td class="left">#</td>
+                            <td class="middle">Name <a class="alwaysgreen sort pad" href=".">&#x25B2;</a> <a class="alwaysgreen sort" href=".?sort=name&order=desc">&#x25BC;</a></td>
+                            <td class="middle">Phone <a class="alwaysgreen sort pad" href=".?sort=phone">&#x25B2;</a> <a class="alwaysgreen sort" href=".?sort=phone&order=desc">&#x25BC;</a></td>
                             {% if not rush %}
-                                <td class="middle bottom">Rush <a class="alwaysgreen sort pad" href=".?sort=rush">&#x25B2;</a> <a class="alwaysgreen sort" href=".?sort=rush&order=desc">&#x25BC;</a></td>
+                                <td class="middle">Rush <a class="alwaysgreen sort pad" href=".?sort=rush">&#x25B2;</a> <a class="alwaysgreen sort" href=".?sort=rush&order=desc">&#x25BC;</a></td>
                             {% endif %}
-                            <td class="middle bottom">Date Added <a class="alwaysgreen sort pad" href=".?sort=date">&#x25B2;</a> <a class="alwaysgreen sort" href=".?sort=date&order=desc">&#x25BC;</a></td>
-                            <td class="right bottom" align="center">&#x2713;</td>
+                            <td class="middle">Date Added <a class="alwaysgreen sort pad" href=".?sort=date">&#x25B2;</a> <a class="alwaysgreen sort" href=".?sort=date&order=desc">&#x25BC;</a></td>
+                            <td class="right" align="center">&#x2713;</td>
                         </tr>
                     </thead>
                     <tbody>

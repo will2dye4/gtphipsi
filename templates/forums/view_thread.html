@@ -1,4 +1,4 @@
-{% extends 'base_bros_only.html' %}
+{% extends "base_bros_only.html" %}
 {% load url from future %}
 
 {% block title %}
@@ -6,32 +6,25 @@
 {% endblock %}
 
 {% block head_extras %}
+    {{ block.super }}
     <style type="text/css">
-        #content table {
-            border-collapse: collapse;
+        table.list {
             margin: 40px 20px 10px 10px;
             width: 95%;
         }
-        #content table tbody tr td {
+        table.list tbody tr td {
             border-top: 1px solid black;
         }
-        #content table tr td.left {
-            padding: 10px 10px 10px 0;
+        table.list tbody tr td.heading {
+            font-weight: bold;
+            color: #ffffff;
+            background-color: #006b3f
         }
-        #content table tr td.middle {
-            padding: 10px;
-            border-left: 1px solid black;
-            border-right: 1px solid black;
-        }
-        #content table tr td.right {
-            padding: 10px 0 10px 10px;
-            border-left: 1px solid black;
-        }
-        #content table tr td.bottom {
+        table.list tr td.bottom {
             border-bottom: 1px solid black;
         }
         #content div.quote {
-            margin: 5px 0 20px 10px;
+            margin: 10px 0 20px 10px;
             padding: 5px;
             width: 80%;
             border: 1px solid black;
@@ -55,12 +48,14 @@
     {% url 'gtphipsi.forums.views.view_thread' forum=forum.slug id=thread.id thread=thread.slug page=posts.previous_page_number as prev_url %}
     {% url 'gtphipsi.forums.views.view_thread' forum=forum.slug id=thread.id thread=thread.slug page=posts.next_page_number as next_url %}
     {% url 'gtphipsi.forums.views.view_thread' forum=forum.slug id=thread.id thread=thread.slug page=posts.paginator.num_pages as last_url %}
-    <table>
+    <table class="list">
         <thead>
             <tr>
                 <td colspan="2">
                     <div style="float: left">
+                    {% if 'add_post' in group_perms %}
                         <a class="alwaysgreen" href="{% url 'gtphipsi.forums.views.add_post' forum=forum.slug id=thread.id thread=thread.slug %}">Reply</a> <span style="padding: 0 5px">|</span>
+                    {% endif %}
                     {% if subscribed %}
                         <a class="alwaysgreen" href="{% url 'gtphipsi.forums.views.view_thread' forum=forum.slug id=thread.id thread=thread.slug %}?unsubscribe">Unsubscribe</a>
                     {% else %}
@@ -74,7 +69,7 @@
         <tbody>
         {% for post in posts.object_list %}
             <tr>
-                <td colspan="2" style="font-weight: bold; color: #ffffff; background-color: #006b3f">
+                <td colspan="2" class="heading">
                     {{ post.created|date:"N j, Y, f A" }} <span style="float: right; color: #ffffff"><a id="post_{{ post.number }}"></a>#{{ post.number }}</span>
                 </td>
             </tr>
@@ -110,10 +105,10 @@
                                 {% else %}
                                     {% url 'gtphipsi.forums.views.edit_post' id=post.id as edit_url %}
                                 {% endifequal %}
-                                {% ifequal post.user profile %}
+                                {% ifequal post.user user_profile %}
                                     | <a class="alwaysgreen" href="{{ edit_url }}">edit</a>
                                 {% else %}
-                                    {% if is_mod or profile.is_admin %}
+                                    {% if is_mod or user_profile.is_admin %}
                                         | <a class="alwaysgreen" href="{{ edit_url }}">edit</a>
                                     {% endif %}
                                 {% endifequal %}
@@ -133,7 +128,9 @@
             <tr>
                 <td colspan="2">
                     <div style="float: left">
+                    {% if 'add_post' in group_perms %}
                         <a class="alwaysgreen" href="{% url 'gtphipsi.forums.views.add_post' forum=forum.slug id=thread.id thread=thread.slug %}">Reply</a> <span style="padding: 0 5px">|</span>
+                    {% endif %}
                     {% if subscribed %}
                         <a class="alwaysgreen" href="{% url 'gtphipsi.forums.views.view_thread' forum=forum.slug id=thread.id thread=thread.slug %}?unsubscribe">Unsubscribe</a>
                     {% else %}

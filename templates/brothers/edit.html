@@ -8,7 +8,7 @@
 {% block content %}
     <h1>Edit User Profile</h1>
     <p>Use the form below to edit your user profile. Click "Save" when you are finished.</p>
-    <p>You may also want to <a href="{% url 'gtphipsi.brothers.views.edit_account' %}">edit your account details</a> or <a href="{% url 'gtphipsi.brothers.views.change_password' %}">change your password</a>.</p>
+    <p>You may also want to <a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.edit_account' %}">edit your account details</a> or <a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.change_password' %}">change your password</a>.</p>
     <form action="{% url 'gtphipsi.brothers.views.edit' %}" method="post">
         {% include "snippets/_table_form.html" with submit_text="Save" %}
     </form>

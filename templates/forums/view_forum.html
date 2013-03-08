@@ -1,4 +1,4 @@
-{% extends 'base_bros_only.html' %}
+{% extends "base_bros_only.html" %}
 {% load url from future %}
 
 {% block title %}
@@ -6,34 +6,12 @@
 {% endblock %}
 
 {% block head_extras %}
+    {{ block.super }}
     <style type="text/css">
-        #content table {
-            border-collapse: collapse;
+        table.list {
             margin: 50px 10px 15px 10px;
         }
-        #content table thead tr td {
-            border-bottom: 1px solid black;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #006b3f;
-        }
-        #content table tr td.left {
-            padding-right: 10px;
-        }
-        #content table tr td.middle {
-            padding: 0 10px;
-            border-left: 1px solid black;
-            border-right: 1px solid black;
-        }
-        #content table tr td.right {
-            padding: 0 10px;
-            border-left: 1px solid black;
-        }
-        #content table tr td.center {
-            text-align: center;
-            padding: 0;
-        }
-        #content table tfoot tr td {
+        table.list tfoot tr td {
             border-top: 1px solid black;
         }
     </style>
@@ -48,21 +26,21 @@
     {% if forum.description %}
         <p style="font-style: italic">{{ forum.description }}</p>
     {% endif %}
-    {% with request.user.get_profile as profile %}
-    {% if is_mod or profile.is_admin %}
+    {% if is_mod or user_profile.is_admin %}
         <span class="small"><a class="alwaysgreen" href="{% url 'gtphipsi.forums.views.edit_forum' slug=forum.slug %}">edit</a></span>
     {% endif %}
-    {% endwith %}
     {% ifequal threads.object_list|length 0 %}
         <p style="margin-top: 20px">There are no threads to display.</p>
-        <form action="{% url 'gtphipsi.forums.views.add_thread' slug=forum.slug %}" method="get">
-            {% csrf_token %}
-            <input type="submit" class="submit" value="New Thread" />
-        </form>
+        {% if 'add_thread' in group_perms %}
+            <form action="{% url 'gtphipsi.forums.views.add_thread' slug=forum.slug %}" method="get">
+                {% csrf_token %}
+                <input type="submit" class="submit" value="New Thread" />
+            </form>
+        {% endif %}
     {% else %}
-        <table>
+        <table class="list">
             <thead>
-                <tr>
+                <tr class="heading">
                     <td class="left">Thread</td>
                     <td class="middle">Owner</td>
                     <td class="middle">Last Post</td>
@@ -105,9 +83,11 @@
                 </tr>
             </tfoot>
         </table>
-        <form action="{% url 'gtphipsi.forums.views.add_thread' slug=forum.slug %}" method="get">
-            {% csrf_token %}
-            <input type="submit" class="submit" value="New Thread" />
-        </form>
+        {% if 'add_thread' in group_perms %}
+            <form action="{% url 'gtphipsi.forums.views.add_thread' slug=forum.slug %}" method="get">
+                {% csrf_token %}
+                <input type="submit" class="submit" value="New Thread" />
+            </form>
+        {% endif %}
     {% endifequal %}
 {% endblock %}

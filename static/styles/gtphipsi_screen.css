@@ -1,6 +1,7 @@
 /* Global and default CSS settings for the gtphipsi project. */
 
 
+
 /* ---- [Overall Look and Feel] ---- */
 body {
     background-color: #404040;
@@ -102,6 +103,9 @@ span.error {
     color: #d82240;
 }
 
+
+
+
 /* ---- [Common Elements] ---- */
 #header, #menu, #footer {
     min-width: 250px;
@@ -143,6 +147,22 @@ span.error {
     float: left;
 }
 
+#sidebar h3 {
+    font-variant: small-caps;
+    font-weight: bold;
+    font-size: 1.3em;
+    margin-top: 0;
+    background: url('../images/menu_sub_sep.gif') bottom left repeat-x !important;
+}
+
+#sidebar p {
+    padding-top: 5px;
+}
+
+#sidebar ul {
+    padding-left: 20px;
+}
+
 #notification {
     position: fixed;
     top: 0;
@@ -171,17 +191,52 @@ span.error {
     padding: 2px 0 2px 0;
 }
 
-h3.sidebar {
-    font-variant: small-caps;
-    font-weight: bold;
-    font-size: 1.3em;
-    margin-top: 0;
-    background: url('../images/menu_sub_sep.gif') bottom left repeat-x;
+table.list,
+table.details
+{
+    border-collapse: collapse;
 }
 
-p.sidebar {
-    padding-top: 5px;
+table.list thead tr.heading td {
+    border-bottom: 1px solid black;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #006b3f;
 }
+
+table.list tr td.left {
+    padding-right: 15px;
+}
+
+table.list tr td.middle {
+    padding: 0 15px;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+}
+
+table.list tr td.right {
+    padding: 0 15px;
+    border-left: 1px solid black;
+}
+
+table.list tr td.center {
+    text-align: center;
+    padding: 0;
+}
+
+table.details tbody tr td.label {
+    font-weight: bold !important;
+    text-align: right !important;
+    padding-right: 10px !important;
+    border-right: 1px solid black !important;
+}
+
+table.details tbody tr td.value {
+    padding-left: 10px !important;
+}
+
+
+
 
 /* ---- [Main Menu] ---- */
 #menu ul {
@@ -268,6 +323,9 @@ p.sidebar {
 	clear: left;
 }
 
+
+
+
 /* ---- [Forms] ---- */
 label {
 	float: left;
@@ -344,6 +402,9 @@ table.form tbody tr td.subheading {
     border-bottom: 2px solid black;
     padding-bottom: 15px
 }
+
+
+
 
 /* ---- [Info Box] ---- */
 div#infoBox {

@@ -5,6 +5,13 @@
     Add New Brother | {{ block.super }}
 {% endblock %}
 
+{% block sidebar %}
+    <h3>Note</h3>
+    <p>This form should only be used when absolutely necessary. If possible, the brother should create
+    an account on his own by visiting <a class="alwaysgreen" href="{% url 'gtphipsi.views.register' %}">this link</a>.
+    (The link won't work when you are signed in, but it will work for someone who is not already registered.)</p>
+{% endblock %}
+
 {% block content %}
     <h1>Add New Brother</h1>
     <p>Use this form to add a new brother. Fields in bold are required.</p>

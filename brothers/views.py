@@ -15,10 +15,10 @@ This module exports the following view functions:
     - change_password_success (request)
     - manage_groups (request)
     - add_group (request)
-    - edit_group_perms (request, name)
-    - edit_group_members (request, name)
-    - delete_group (request, name)
-    - show_group (request, name)
+    - edit_group_perms (request, id)
+    - edit_group_members (request, id)
+    - delete_group (request, id)
+    - show_group (request, id)
     - visibility (request)
     - edit_visibility (request[, public])
     - edit_public_visibility (request)
@@ -136,17 +136,19 @@ def my_profile(request):
 
 
 @login_required
-@permission_required('brothers.change_userprofile', login_url=settings.FORBIDDEN_URL)
 def manage(request):
     """Return a listing of user accounts along with some administrative data (which users are locked out)."""
-    undergrad_profiles = UserProfile.objects.filter(status='U')
-    undergrads = User.objects.filter(pk__in=[profile.user.id for profile in undergrad_profiles])
-    locked_out_undergrads = [profile.user for profile in undergrad_profiles if profile.has_bit(STATUS_BITS['LOCKED_OUT'])]
-    alumni_profiles = UserProfile.objects.filter(status='A')
-    alumni = User.objects.filter(pk__in=[profile.user.id for profile in alumni_profiles])
-    locked_out_alumni = [profile.user for profile in alumni_profiles if profile.has_bit(STATUS_BITS['LOCKED_OUT'])]
+    undergrads = UserProfile.objects.filter(status='U')
+    alumni = UserProfile.objects.filter(status='A')
+    if 'sort' in request.GET:
+        sort = _get_sort_field(request.GET.get('sort'), request.GET.get('order', 'asc'))
+        undergrads = undergrads.order_by(sort)
+        alumni = alumni.order_by(sort)
+    locked_out_undergrads = [profile for profile in undergrads if profile.has_bit(STATUS_BITS['LOCKED_OUT'])]
+    locked_out_alumni = [profile for profile in alumni if profile.has_bit(STATUS_BITS['LOCKED_OUT'])]
+    directory = (request.GET.get('view', 'admin') == 'directory')
     context = {'undergrads': undergrads, 'alumni': alumni, 'locked_out_undergrads': locked_out_undergrads,
-               'locked_out_alumni': locked_out_alumni}
+               'locked_out_alumni': locked_out_alumni, 'directory': directory}
     return render(request, 'brothers/manage.html', context, context_instance=RequestContext(request))
 
 
@@ -241,8 +243,7 @@ def edit_account(request, badge=0):
                 req.save()
                 send_mail(get_message('email.change.subject'),
                           get_message('email.change.body', args=(user.first_name, settings.URI_PREFIX, digest)),
-                          'webmaster@gtphipsi.org', [data['email']])
-                # TODO notify user to check his email
+                          settings.EMAIL_HOST_USER, [data['email']])
             profile.save()
             if save_user:
                 user.save()
@@ -261,7 +262,7 @@ def edit_account(request, badge=0):
 
     badge = profile.badge if (badge and not own_account) else None  # pass badge if admin editing someone else's account
     return render(request, 'brothers/edit_account.html',
-                  {'form': form, 'name': user.get_full_name(), 'own_account': own_account, 'badge': badge},
+                  {'form': form, 'name': user.get_full_name(), 'own_account': own_account, 'badge': badge, 'alum': (profile.status == 'A')},
                   context_instance=RequestContext(request))
 
 
@@ -282,7 +283,10 @@ def change_password(request):
             if reset:
                 profile.clear_bit(STATUS_BITS['PASSWORD_RESET'])
                 profile.save()
-            # TODO email user about password change ?? (else block)
+            else:
+                send_mail(get_message('email.new_password.subject'),
+                          get_message('email.new_password.body', args=(user.first_name,)),
+                          settings.EMAIL_HOST_USER, [user.email])
             return HttpResponseRedirect(reverse('change_password_success'))
     else:
         form = ChangePasswordForm()
@@ -305,12 +309,12 @@ def manage_groups(request):
     """Render a listing of user groups and the brothers or permissions belonging to each group."""
     groups = Group.objects.all()
     if request.GET.get('view', '') == 'members':
-        map = {}
+        group_list = []
         for group in groups:
             profiles = UserProfile.objects.filter(user__id__in=group.user_set.values_list('id', flat=True)).order_by('badge')
             names = ['%s ... %d' % (profile.common_name(), profile.badge) for profile in profiles]
-            map[group.name] = names
-        context = {'map': map, 'show_perms': False}
+            group_list.append((group.id, group.name, names))
+        context = {'group_list': group_list, 'show_perms': False}
     else:
         context = {'groups': groups, 'show_perms': True}
     return render(request, 'brothers/manage_groups.html', context, context_instance=RequestContext(request))
@@ -355,15 +359,15 @@ def add_group(request):
 
 @login_required
 @permission_required('auth.change_group', login_url=settings.FORBIDDEN_URL)
-def edit_group_perms(request, name):
+def edit_group_perms(request, id):
     """Render and process a form to modify the permissions associated with a user group.
 
     Required parameters:
-        - name  =>  the name of the group to edit (as a string)
+        - id  =>  the unique ID of the group to edit (as an integer)
 
     """
     try:
-        group = Group.objects.get(name=name)
+        group = Group.objects.get(id=id)
     except Group.DoesNotExist:
         raise Http404
     if request.method == 'POST':
@@ -373,7 +377,8 @@ def edit_group_perms(request, name):
                 ids.append(int(value))
         group.permissions = Permission.objects.filter(id__in=ids)
         group.save()
-        return HttpResponseRedirect(reverse('view_group', kwargs={'name': group.name}))
+        del request.session['group_perms']  # clear existing group permissions in case they just changed
+        return HttpResponseRedirect(reverse('view_group', kwargs={'id': group.id}))
     else:
         perms = _get_available_permissions()
         group_perms = group.permissions.all()
@@ -384,31 +389,32 @@ def edit_group_perms(request, name):
             if perm in group_perms:
                 initial.append(perm.id)
     return render(request, 'brothers/edit_group_perms.html',
-                  {'group_name': group.name, 'perms': choices, 'initial': initial},
+                  {'group': group, 'perms': choices, 'initial': initial},
                   context_instance=RequestContext(request))
 
 
 @login_required
 @permission_required('auth.change_group', login_url=settings.FORBIDDEN_URL)
-def edit_group_members(request, name):
+def edit_group_members(request, id):
     """Render and process a form to modify the members of a user group.
 
     Required parameters:
-        - name  =>  the name of the group to edit (as a string)
+        - id  =>  the unique ID of the group to edit (as an integer)
 
     """
     try:
-        group = Group.objects.get(name=name)
+        group = Group.objects.get(id=id)
     except Group.DoesNotExist:
         raise Http404
     if request.method == 'POST':
-        ids = []
+        user_ids = []
         for name, value in request.POST.items():
             if name.find('user_') > -1:
-                ids.append(int(value))
-        group.user_set = User.objects.filter(id__in=ids)
+                user_ids.append(int(value))
+        group.user_set = User.objects.filter(id__in=user_ids)
         group.save()
-        return HttpResponseRedirect(reverse('view_group', kwargs={'name': group.name}))
+        del request.session['group_perms']  # clear existing group permissions in case they just changed
+        return HttpResponseRedirect(reverse('view_group', kwargs={'id': group.id}))
     else:
         users = User.objects.exclude(is_superuser=True) # only one superuser (root) should exist, so exclude that user
         group_members = group.user_set.all()
@@ -419,20 +425,20 @@ def edit_group_members(request, name):
             if user in group_members:
                 initial.append(user.id)
     return render(request, 'brothers/edit_group_members.html',
-                  {'group_name': group.name, 'choices': choices, 'initial': initial},
+                  {'group': group, 'choices': choices, 'initial': initial},
                   context_instance=RequestContext(request))
 
 
 @login_required
 @permission_required('auth.delete_group', login_url=settings.FORBIDDEN_URL)
-def delete_group(request, name):
+def delete_group(request, id):
     """Delete a user group, first removing the group from each of its users' set of groups.
 
     Required parameters:
-        - name  =>  the name of the group to delete (as a string)
+        - id  =>  the unique ID of the group to delete (as an integer)
 
     """
-    group = get_object_or_404(Group, name=name)
+    group = get_object_or_404(Group, id=id)
     group.user_set = User.objects.none()
     group.save()
     group.delete()
@@ -441,14 +447,14 @@ def delete_group(request, name):
 
 @login_required
 @permission_required('auth.change_group', login_url=settings.FORBIDDEN_URL)
-def show_group(request, name):
+def show_group(request, id):
     """Render a display of users and permissions associated with a user group.
 
     Required parameters:
-        - name  =>  the name of the group to display (as a string)
+        - id  =>  the unique ID of the group to display (as an integer)
 
     """
-    group = get_object_or_404(Group, name=name)
+    group = get_object_or_404(Group, id=id)
     profiles = UserProfile.objects.filter(user__id__in=group.user_set.values_list('id', flat=True)).order_by('badge')
     names = ['%s ... %d' % (profile.common_name(), profile.badge) for profile in profiles]
     return render(request, 'brothers/show_group.html', {'group': group, 'users': names},
@@ -543,7 +549,8 @@ def edit_notification_settings(request):
     else:
         form = NotificationSettingsForm(initial=initial)
 
-    return render(request, 'brothers/notification_settings.html', {'form': form, 'email': request.user.email},
+    return render(request, 'brothers/notification_settings.html',
+                  {'form': form, 'email': request.user.email, 'from_email': settings.EMAIL_HOST_USER},
                   context_instance=RequestContext(request))
 
 
@@ -681,7 +688,7 @@ def _get_available_permissions():
 
 
 def _process_status_change(user, old_status, new_status):
-    """Add a user to or remove a user from the 'Undergraduates' user group when his chapter status changes.
+    """Add a user to and remove a user from the appropriate user groups when his chapter status changes.
 
     Return True if a change was made, False otherwise.
 
@@ -689,15 +696,37 @@ def _process_status_change(user, old_status, new_status):
     result = False
     try:
         undergrads = Group.objects.get(name='Undergraduates')
+        alumni = Group.objects.get(name='Alumni')
     except Group.DoesNotExist:
         # this should never happen
-        log.warn("Failed to find user group 'Undergraduates' while processing status change for user '%s' (badge %d)",
+        log.warn("Failed to find default user group while processing status change for user '%s' (badge %d)",
                  user.get_full_name(), user.get_profile().badge)
     else:
-        if old_status != 'U' and new_status == 'U':
+        if old_status == 'A' and new_status != 'A':
+            user.groups.remove(alumni)
             user.groups.add(undergrads)
             result = True
-        elif old_status == 'U':
+        elif old_status != 'A' and new_status == 'A':
             user.groups.remove(undergrads)
+            user.groups.add(alumni)
             result = True
     return result
+
+
+def _get_sort_field(sort, order):
+    """Return the name of the field by which to sort, based on the content of the request's query string."""
+
+    if sort not in ['name', 'email', 'phone', 'city', 'login']:
+        sort = 'name'
+    if sort == 'name':
+        sort = 'user__first_name'
+    elif sort == 'city':
+        sort = 'current_city'
+    elif sort == 'email':
+        sort = 'user__email'
+    elif sort == 'login':
+        sort = 'user__last_login'
+
+    if order == 'desc':
+        sort = '-%s' % sort
+    return sort

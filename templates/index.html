@@ -2,21 +2,10 @@
 {% load static %}
 {% load url from future %}
 
-{% block head_extras %}
-    <script type="text/javascript">
-        function closeNotification() {
-            document.getElementById("notification").style.display = "none";
-        }
-    </script>
-{% endblock %}
-
 {% block content %}
-    <div id="notification">
-        You suck. <span style="float: right; padding-right: 8px">[<a href="#" onclick="closeNotification();">x</a>]</span>
-    </div>
     <h1>Brotherhood</h1>
 	<h3>the idea behind phi kappa psi</h3>
-	<img class="content-left" alt="Badge" title="The Badge of Phi Kappa Psi" src="{% get_static_prefix %}images/badge.jpg" />
+	<img class="content-left" alt="Badge" title="The Badge of Phi Kappa Psi" src="{{ STATIC_URL }}images/badge.jpg" />
 	<p>The Phi Kappa Psi Fraternity is a private association of educated men who endeavor to
 	    live honorably and humanely. Its Brotherhood is open to men of talent and character,
 	    but to those in particular who as <strong>gentlemen</strong> feel an affinity with one
@@ -28,7 +17,7 @@
 
 	<h1>History</h1>
 	<h3>learn how phi psi became what it is today</h3>
-	<img class="content-right" alt="Founders" title="W.H. Letterman and C.P.T. Moore" src="{% get_static_prefix %}images/founders.jpg" />
+	<img class="content-right" alt="Founders" title="W.H. Letterman and C.P.T. Moore" src="{{ STATIC_URL }}images/founders.jpg" />
 	<p>Founded over 150 years ago, Phi Psi boasts a rich history at many of the nation's top colleges
 	    and universities. <strong>William H. Letterman</strong> and <strong>Charles P.T. Moore</strong>
 	    founded Phi Kappa Psi in the little college town of Canonsburg, Pennsylvania, when they were nursing

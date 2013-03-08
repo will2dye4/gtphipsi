@@ -6,7 +6,6 @@
         <ul>
             <li><a href="{% url 'gtphipsi.rush.views.list' %}">All Rushes</a></li>
             <li><a href="{% url 'gtphipsi.rush.views.show' %}">Current Rush</a></li>
-            <li><a href="{% url 'gtphipsi.rush.views.add' %}">Add New Rush</a></li>
             <li><a href="{% url 'gtphipsi.rush.views.info_card_list' %}">Information Cards</a></li>
             <li><a href="{% url 'gtphipsi.rush.views.potentials' %}">Potential Members</a></li>
             <li><a href="{% url 'gtphipsi.rush.views.pledges' %}">Pledges</a></li>
@@ -15,32 +14,35 @@
     <li><a href="{% url 'gtphipsi.chapter.views.announcements' %}" {% ifequal menu_item 'announcements' %}class="selected"{% endifequal %}>Announcements</a>
         <ul>
             <li><a href="{% url 'gtphipsi.chapter.views.announcements' %}">All Announcements</a></li>
-            <li><a href="{% url 'gtphipsi.chapter.views.add_announcement' %}">Add Announcement</a></li>
+            {% if 'add_announcement' in group_perms %}
+                <li><a href="{% url 'gtphipsi.chapter.views.add_announcement' %}">Add Announcement</a></li>
+            {% endif %}
         </ul>
     </li>
     <li><a href="{% url 'gtphipsi.forums.views.forums' %}" {% ifequal menu_item 'forums' %}class="selected"{% endifequal %}>Forums</a>
         <ul>
             <li><a href="{% url 'gtphipsi.forums.views.forums' %}">View Forums</a></li>
-            <li><a href="{% url 'gtphipsi.forums.views.add_forum' %}">Add New Forum</a></li>
             <li><a href="{% url 'gtphipsi.forums.views.subscriptions' %}">Subscribed Threads</a></li>
+            <li><a href="{% url 'gtphipsi.forums.views.my_threads' %}">My Threads</a></li>
         </ul>
     </li>
     <li><a href="{% url 'gtphipsi.officers.views.officers' %}" {% ifequal menu_item 'officers' %}class="selected"{% endifequal %}>Officers</a>
         <ul>
-            <li><a href="{% url 'gtphipsi.officers.views.officers' %}">{% if user.get_profile.is_admin %}View/Update Officers{% else %}View Officer List{% endif %}</a></li>
+            <li><a href="{% url 'gtphipsi.officers.views.officers' %}">{% if 'change_chapterofficer' in group_perms %}View/Update Officers{% else %}View Officer List{% endif %}</a></li>
             <li><a href="{% url 'gtphipsi.officers.views.officer_history' %}">View Officer History</a></li>
         </ul>
     </li>
-    <li><a href="{% url 'gtphipsi.brothers.views.manage' %}" {% ifequal menu_item 'admin' %}class="selected"{% endifequal %}>Admin</a>
+    <li><a href="{% url 'gtphipsi.brothers.views.manage' %}" {% ifequal menu_item 'admin' %}class="selected"{% endifequal %}>{% if user_profile.is_admin %}Admin{% else %}Brothers{% endif %}</a>
         <ul>
-            <li><a href="{% url 'gtphipsi.brothers.views.manage' %}">Manage Users</a></li>
-            {% if user.get_profile.is_admin %}
+            <li><a href="{% url 'gtphipsi.brothers.views.manage' %}">{% if 'change_userprofile' in group_perms %}Manage Users{% else %}User Directory{% endif %}</a></li>
+            {% if 'add_userprofile' in group_perms %}
                 <li><a href="{% url 'gtphipsi.brothers.views.add' %}">Add New User</a></li>
+            {% endif %}
+            {% if 'change_group' in group_perms %}
                 <li><a href="{% url 'gtphipsi.brothers.views.manage_groups' %}">Manage User Groups</a></li>
             {% endif %}
         </ul>
     </li>
-    {% comment %}<li><a href="{% url 'gtphipsi.chapter.views.word' %}" {% ifequal menu_item 'word' %}class="selected"{% endifequal %}>WORD</a></li>{% endcomment %}
     <li><a href="{% url 'gtphipsi.brothers.views.my_profile' %}" {% ifequal menu_item 'account' %}class="selected"{% endifequal %}>Account</a>
         <ul>
             <li><a href="{% url 'gtphipsi.brothers.views.my_profile' %}">View Profile</a></li>

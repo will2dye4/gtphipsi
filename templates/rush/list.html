@@ -5,18 +5,58 @@
     Rush List | {{ block.super }}
 {% endblock %}
 
+{% block head_extras %}
+    {{ block.super }}
+    <style type="text/css">
+        table.list {
+            margin: 30px 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Quick Links</h3>
+    <ul>
+        <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.show' %}">Current Rush</a></li>
+        <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.info_card_list' %}">Information Cards</a></li>
+        <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.pledges' %}">View Pledges</a></li>
+        <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.potentials' %}">View Potential Members</a></li>
+    </ul>
+{% endblock %}
+
 {% block content %}
     <h1>Rush List</h1>
-    <p>Here is a list of all rushes. Click on each rush to see more information about it.
-    The rush labeled "current" is the most recent rush that has been marked visible.</p>
-    <ul style="margin-bottom: 30px">
-    {% for rush in rushes %}
-        <li><a class="hovercolor" href="{{ rush.get_absolute_url }}">{{ rush.title }}</a> {% if rush.is_current %}(current){% endif %}</li>
-    {% empty %}
-        <li style="list-style-type: none">There are no rushes to display.</li>
-    {% endfor %}
-    </ul>
-    <form action="{% url 'gtphipsi.rush.views.add' %}" method="get">
-        <input type="submit" class="submit" value="New Rush" />
-    </form>
+    {% ifequal rushes|length 0 %}
+        <p>There are currently no rushes to display.</p>
+    {% else %}
+        <p>Here is a list of all rushes. Click on each rush to see more information about it.
+        The rush labeled "current" is the most recent rush that has been marked visible.</p>
+        <table class="list">
+            <thead>
+                <tr class="heading">
+                    <td class="left">Rush</td>
+                    <td class="middle">Start Date</td>
+                    <td class="middle">End Date</td>
+                    <td class="middle">Pledges</td>
+                    <td class="right">Visible</td>
+                </tr>
+            </thead>
+            <tbody>
+            {% for rush in rushes %}
+                <tr>
+                    <td class="left"><a class="alwaysgreen" href="{{ rush.get_absolute_url }}">{{ rush.title }}</a>{% if rush.is_current %} (current){% endif %}</td>
+                    <td class="middle">{{ rush.start_date|date:"F j, Y" }}</td>
+                    <td class="middle">{{ rush.end_date|date:"F j, Y" }}</td>
+                    <td class="middle center">{{ rush.get_num_pledges }}</td>
+                    <td class="right center">{{ rush.visible|yesno:"Yes,No" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endifequal %}
+    {% if 'add_rush' in group_perms %}
+        <form action="{% url 'gtphipsi.rush.views.add' %}" method="get">
+            <input type="submit" class="submit" value="New Rush" />
+        </form>
+    {% endif %}
 {% endblock %}

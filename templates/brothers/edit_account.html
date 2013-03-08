@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block head_extras %}
+    {{ block.super }}
     <script type="text/javascript">
         var originalIndex = null;
         window.onload = function() {
@@ -25,7 +26,7 @@
 {% block content %}
     <h1>Edit Account Details</h1>
     <p>Use the form below to edit {% if own_account %}your{% else %}{{ name }}'s{% endif %} account details. Click "Save" when you are finished.</p>
-    {% if own_account %}<p>You may also want to <a href="{% url 'gtphipsi.brothers.views.edit' %}">edit your user profile</a> or <a href="{% url 'gtphipsi.brothers.views.change_password' %}">change your password</a>.</p>{% endif %}
+    {% if own_account %}<p>You may also want to <a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.edit' %}">edit your user profile</a> or <a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.change_password' %}">change your password</a>.</p>{% endif %}
     <form action="{% if own_account %}{% url 'gtphipsi.brothers.views.edit_account' %}{% else %}{% url 'gtphipsi.brothers.views.edit_account' badge=badge %}{% endif %}" method="post">
         {% csrf_token %}
         <table class="form">
@@ -205,6 +206,8 @@
                 {% endif %}
             {% endwith %}
             <!-- Status -->
+            {% with field=form.status %}
+            {% if not own_account or not alum %}
             <tr>
                 <td class="spaced"></td>
             </tr>
@@ -214,7 +217,6 @@
                     <hr />
                 </td>
             </tr>
-            {% with field=form.status %}
                 <tr>
                     <td {% if field.errors %}class="error {% if not field.help_text %}spaced{% endif %}" style="font-weight: bold"{% else %}{% if not field.help_text %}class="spaced"{% endif %}{% endif %}>
                         {{ field.label_tag }}
@@ -239,6 +241,9 @@
                         <td></td>
                     </tr>
                 {% endif %}
+            {% else %}
+                <div style="display: none">{{ field }}</div>
+            {% endif %}
             {% endwith %}
             <tr>
                 <td colspan="3">

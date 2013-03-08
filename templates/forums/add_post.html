@@ -1,4 +1,4 @@
-{% extends 'base_bros_only.html' %}
+{% extends "base_bros_only.html" %}
 {% load url from future %}
 
 {% block title %}
@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block head_extras %}
+    {{ block.super }}
     <style type="text/css">
         #content div.quote {
             margin: 10px 50px 20px 20px;
@@ -26,7 +27,16 @@
     {% endif %}
 {% endblock %}
 
-{% comment %} TODO - add sidebar explaining formatting options (B, I, U, URL) {% endcomment %}
+
+{% block sidebar %}
+    <h3>Note</h3>
+    <p>You can add formatting your posts using BB code.</p>
+    <p>Type [B]bold[/B] to create <span style="font-weight: bold">bold</span> text.</p>
+    <p>Type [I]italics[/I] to create <span style="font-style: italic">italics</span>.</p>
+    <p>Type [U]underline[/U] to create an <span style="text-decoration: underline">underline</span>.</p>
+    <p>Type [URL="http://gtphipsi.org"]link[/URL] to create a <a class="alwaysgreen" href="http://gtphipsi.org">link</a>.
+    If you are linking to an external site, be sure to include the full URL (e.g., "http://www.google.com" instead of "google.com").</p>
+{% endblock %}
 
 
 {% block content %}

@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block head_extras %}
+    {{ block.super }}
     <style type="text/css">
         #content form ul li {
             list-style-type: none;
@@ -14,9 +15,9 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Edit Members of Group "{{ group_name }}"</h1>
-    <p>Use the checkboxes below to change the members associated with the user group <b>{{ group_name }}</b>. Click "Save" when you are finished.</p>
-    <form action="{% url 'gtphipsi.brothers.views.edit_group_members' name=group_name %}" method="post">
+    <h1>Edit Members of Group "{{ group.name }}"</h1>
+    <p>Use the checkboxes below to change the members associated with the user group <b>{{ group.name }}</b>. Click "Save" when you are finished.</p>
+    <form action="{% url 'gtphipsi.brothers.views.edit_group_members' id=group.id %}" method="post">
         {% csrf_token %}
         <ul id="members_list">
         {% for id, name in choices %}

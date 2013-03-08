@@ -41,6 +41,11 @@ GTPHIPSI_MESSAGES = {
     'email.password.body':          'Dear %s,\n\n%s. The next time you sign in, please use the following temporary password.'
                                      '\n\nPassword: %s\n\nAfter signing in, you will be prompted to change your password '
                                      'to something more memorable.\n\nCheers,\ngtphipsi Webmaster',
+    'email.new_password.subject':   'Your password has changed',
+    'email.new_password.body':      'Dear %s,\n\nYour password for gtphipsi.org has recently been changed.\n\n'
+                                     'If you changed your password, you may disregard this email. However, if you '
+                                     'did not change your password, please contact the webmaster at webmaster@gtphipsi.org '
+                                     'and request to have your password reset immediately.\n\nYours,\ngtphipsi Webmaster',
 
     'notify.announcement.subject':  'New announcement posted at gtphipsi.org',
     'notify.announcement.body':     'The following announcement was just posted by %s:\n\n%s%s\n\n'

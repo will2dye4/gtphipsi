@@ -7,6 +7,7 @@ This module exports the following view functions:
     - edit_forum (request, slug)
     - view_thread (request, forum, id, thread[, page])
     - subscriptions (request)
+    - my_threads (request)
     - add_thread (request, slug)
     - edit_thread (request, forum, id, thread)
     - add_post (request, forum, id, thread)
@@ -48,9 +49,7 @@ def forums(request):
         else:
             last_post = None
         forums.append((forum, last_post))
-    can_add = request.user.has_perm('forums.add_forum')
-    return render(request, 'forums/forums.html', {'forums': forums, 'can_add': can_add},
-                  context_instance=RequestContext(request))
+    return render(request, 'forums/forums.html', {'forums': forums}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -102,6 +101,7 @@ def add_forum(request):
 
 
 @login_required
+@permission_required('forums.change_forum', login_url=settings.FORBIDDEN_URL)
 def edit_forum(request, slug):
     """Render and process a form to modify an existing forum.
 
@@ -169,7 +169,7 @@ def view_thread(request, forum, id, thread, page=1):
                                                                         'thread': thread.slug, 'page': page}))
 
     return render(request, 'forums/view_thread.html',
-                  {'thread': thread, 'posts': posts, 'forum': forum, 'subscribed': subscribed, 'profile': profile, 'is_mod': is_mod},
+                  {'thread': thread, 'posts': posts, 'forum': forum, 'subscribed': subscribed, 'is_mod': is_mod},
                   context_instance=RequestContext(request))
 
 
@@ -177,11 +177,20 @@ def view_thread(request, forum, id, thread, page=1):
 def subscriptions(request):
     """Render a listing of all threads to which the current user is subscribed."""
     threads = request.user.get_profile().subscriptions.all().order_by('-updated')
-    return render(request, 'forums/subscriptions.html', {'subscriptions': threads},
+    return render(request, 'forums/subscriptions.html', {'threads': threads, 'subscribe': True},
                   context_instance=RequestContext(request))
 
 
 @login_required
+def my_threads(request):
+    """Render a listing of all threads belonging to the current user."""
+    threads = Thread.objects.filter(owner=request.user.get_profile()).order_by('-updated')
+    return render(request, 'forums/subscriptions.html', {'threads': threads, 'subscribe': False},
+                  context_instance=RequestContext(request))
+
+
+@login_required
+@permission_required('forums.add_thread', login_url=settings.FORBIDDEN_URL)
 def add_thread(request, slug):
     """Render and process a form to create a new thread.
 
@@ -199,6 +208,8 @@ def add_thread(request, slug):
             thread.owner = profile
             thread.slug = slugify(thread.title)
             thread.save()
+            thread.subscribers.add(profile)
+            thread.save()
             body = _bb_code_escape(form.cleaned_data.get('post'))
             post = Post.objects.create(thread=thread, user=profile, updated_by=profile, number=1, deleted=False, body=body)
             post.save()     # create and save the first post belonging to the new thread
@@ -210,6 +221,7 @@ def add_thread(request, slug):
 
 
 @login_required
+@permission_required('forums.change_thread', login_url=settings.FORBIDDEN_URL)
 def edit_thread(request, forum, id, thread):
     """Render and process a form to modify an existing thread and its first post.
 
@@ -248,6 +260,7 @@ def edit_thread(request, forum, id, thread):
 
 
 @login_required
+@permission_required('forums.add_post', login_url=settings.FORBIDDEN_URL)
 def add_post(request, forum, id, thread):
     """Render and process a form to create a new post.
 
@@ -299,6 +312,7 @@ def add_post(request, forum, id, thread):
 
 
 @login_required
+@permission_required('forums.change_post', login_url=settings.FORBIDDEN_URL)
 def edit_post(request, id):
     """Render and process a form to modify an existing post.
 

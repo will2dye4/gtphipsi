@@ -7,8 +7,8 @@
 
 {% block sidebar %}
     {% if form.errors %}
-        <h3 class="sidebar">Oops!</h3>
-        <p class="sidebar">There is a problem with the following field{{ form.errors|pluralize }}:
+        <h3>Oops!</h3>
+        <p>There is a problem with the following field{{ form.errors|pluralize }}:
         {% for name, errors in form.errors.items %}
             {% if forloop.last %}
                 {{ name }}.
@@ -19,8 +19,8 @@
         Please fix {{ form.errors|pluralize:"it,them" }} and click "Submit" again.
         </p>
     {% else %}
-        <h3 class="sidebar">Note</h3>
-        <p class="sidebar">Only the name, year, and email fields are required.</p>
+        <h3>Note</h3>
+        <p>Only the name, year, and email fields are required.</p>
     {% endif %}
 {% endblock %}
 

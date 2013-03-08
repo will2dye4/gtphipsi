@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block head_extras %}
+    {{ block.super }}
     <style type="text/css">
         #content ul li {
             list-style-type: none;
@@ -32,12 +33,12 @@
 {% endblock %}
 
 {% block sidebar %}
-    <h3 class="sidebar">Note</h3>
-    <p class="sidebar">You can switch between viewing a group's permissions and its members using the links in the right-hand corner.</p>
+    <h3>Note</h3>
+    <p>You can switch between viewing a group's permissions and its members using the links in the right-hand corner.</p>
 {% endblock %}
 
 {% block content %}
-    <div style="float: right; padding: 15px">Show: {% if not show_perms %}<a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.manage_groups' %}">{% endif %}permissions{% if not show_perms %}</a>{% endif %} | {% if show_perms %}<a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.manage_groups' %}?view=members">{% endif %}members{% if show_perms %}</a>{% endif %}</div>
+    <div style="float: right; padding: 15px">Show: {% if not show_perms %}<a class="alwaysgreen" href=".">{% endif %}permissions{% if not show_perms %}</a>{% endif %} | {% if show_perms %}<a class="alwaysgreen" href="?view=members">{% endif %}members{% if show_perms %}</a>{% endif %}</div>
     <h1 style="padding-bottom: 15px">Manage User Groups</h1>
     <p>
     {% if show_perms %}
@@ -52,7 +53,7 @@
     {% for group in groups %}
     {% with group.name as group_name %}
         <li>
-            <a href="#" id="{{ group_name }}_toggle" class="hovercolor" onclick="togglePermissionDisplay('{{ group_name }}', true)">+</a> <b><a class="hovercolor" href="{% url 'gtphipsi.brothers.views.show_group' name=group_name %}">{{ group_name }}</a></b>
+            <a href="#" id="{{ group_name }}_toggle" class="hovercolor" onclick="togglePermissionDisplay('{{ group_name }}', true)">+</a> <b><a class="hovercolor" href="{% url 'gtphipsi.brothers.views.show_group' id=group.id %}">{{ group_name }}</a></b>
             <ul id="{{ group_name }}_permissions" style="display: none">
             {% for permission in group.permissions.all %}
                 <li>{{ permission.name }}</li>
@@ -64,9 +65,9 @@
         <li>There are no groups to display.</li>
     {% endfor %}
     {% else %}
-    {% for name, members in map.items %}
+    {% for id, name, members in group_list %}
         <li>
-            <a href="#" id="{{ name }}_toggle" class="hovercolor" onclick="togglePermissionDisplay('{{ name }}', false)">+</a> <b><a class="hovercolor" href="{% url 'gtphipsi.brothers.views.show_group' name=name %}">{{ name }}</a></b>
+            <a href="#" id="{{ name }}_toggle" class="hovercolor" onclick="togglePermissionDisplay('{{ name }}', false)">+</a> <b><a class="hovercolor" href="{% url 'gtphipsi.brothers.views.show_group' id=id %}">{{ name }}</a></b>
             <ul id="{{ name }}_members" style="display: none">
             {% for member in members %}
                 <li>{{ member }}</li>
@@ -80,5 +81,7 @@
     {% endfor %}
     {% endif %}
     </ul>
-    <p><a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.add_group' %}">add user group</a></p>
+    {% if 'add_group' in group_perms %}
+        <p><a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.add_group' %}">add user group</a></p>
+    {% endif %}
 {% endblock %}

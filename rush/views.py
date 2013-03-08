@@ -2,7 +2,7 @@
 
 This module exports the following view functions:
     - rush (request)
-    - rushphipsi (request)
+    - rush_phi_psi (request)
     - schedule (request)
     - old_schedule (request)
     - info_card (request)
@@ -35,7 +35,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.core.mail import get_connection
 from django.core.mail.message import EmailMessage
 from django.core.urlresolvers import reverse
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.template import RequestContext
 

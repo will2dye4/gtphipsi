@@ -53,6 +53,7 @@ STATUS_CHOICES = (
 # Possible majors at Georgia Tech.
 # This list was last updated on 12/3/2011.
 MAJOR_CHOICES = (
+    ('', '---------'),
     ('College of Architecture', (
             ('AR', 'Architecture'),
             ('BC', 'Building Construction'),

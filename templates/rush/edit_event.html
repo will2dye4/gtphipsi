@@ -6,14 +6,15 @@
 {% endblock %}
 
 {% block head_extras %}
+    {{ block.super }}
+    {% if 'delete_rushevent' in group_perms %}
     <script type="text/javascript">
         function confirm_delete () {
-            var result = confirm("Are you sure you want to delete this rush event? You cannot undo this action.");
-            if (result == true) {
+            if (confirm("Are you sure you want to delete this rush event? You cannot undo this action."))
                 window.location.href = "{% url 'gtphipsi.rush.views.edit_event' id=event_id %}?delete=true";
-            }
         }
     </script>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -22,5 +23,7 @@
     <form action="{% url 'gtphipsi.rush.views.edit_event' id=event_id %}" method="post">
         {% include "snippets/_table_form.html" with submit_text="Save" %}
     </form>
-    <div style="float: right"><a href="#" onclick="confirm_delete()">delete</a></div>
+    {% if 'delete_rushevent' in group_perms %}
+        <div style="float: right"><a onclick="confirm_delete()">delete</a></div>
+    {% endif %}
 {% endblock %}

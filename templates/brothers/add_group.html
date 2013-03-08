@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block head_extras %}
+    {{ block.super }}
     <style type="text/css">
         #content form {
             padding-left: 10px;
@@ -14,6 +15,11 @@
             list-style-type: none;
         }
     </style>
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Note</h3>
+    <p>Choose a good, descriptive group name. Try to keep the number of permissions for each group as small as possible.</p>
 {% endblock %}
 
 {% block content %}

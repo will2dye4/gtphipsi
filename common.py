@@ -44,7 +44,7 @@ def create_user_and_profile(form_data):
     user = User.objects.create_user(form_data['username'], form_data['email'], form_data['password'])
     user.first_name = form_data['first_name']
     user.last_name = form_data['last_name']
-    _create_user_permissions(user, status == 'U', form_data['make_admin'])
+    _create_user_permissions(user, status != 'A', form_data['make_admin'])
     user.save()
 
     # create and save the UserProfile instance
@@ -76,14 +76,20 @@ def _create_user_permissions(user, undergrad, admin):
     if undergrad:
         group, created = Group.objects.get_or_create(name='Undergraduates')
         if created:
-            group.permissions = [Permission.objects.get(codename=code) for code in settings.UNDERGRADUATE_PERMISSIONS]
+            group.permissions = Permission.objects.filter(codename__in=settings.UNDERGRADUATE_PERMISSIONS)
+            group.save()
+        user.groups.add(group)
+    else:
+        group, created = Group.objects.get_or_create(name='Alumni')
+        if created:
+            group.permissions = Permission.objects.filter(codename__in=settings.ALUMNI_PERMISSIONS)
             group.save()
         user.groups.add(group)
 
     if admin:
         group, created = Group.objects.get_or_create(name='Administrators')
         if created:
-            group.permissions = [Permission.objects.get(codename=code) for code in settings.ADMINISTRATOR_PERMISSIONS]
+            group.permissions = Permission.objects.filter(codename__in=settings.ADMINISTRATOR_PERMISSIONS)
             group.save()
         user.groups.add(group)
 

@@ -2,41 +2,137 @@
 {% load static %}
 {% load url from future %}
 
+{% block head_extras %}
+    {{ block.super }}
+    <style type="text/css">
+        #content h2 {
+            font-style: italic;
+            color: #af1e2d;
+        }
+        table.list {
+            margin: 10px 10px 40px 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Quick Links</h3>
+    <ul>
+        <li><a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.my_profile' %}">View Your Profile</a></li>
+        <li><a class="alwaysgreen" href="{% url 'gtphipsi.forums.views.forums' %}">View Forums</a></li>
+        <li><a class="alwaysgreen" href="{% url 'gtphipsi.rush.views.show' %}">Current Rush</a></li>
+        <li><a class="alwaysgreen" href="{% url 'gtphipsi.chapter.views.announcements' %}">Recent Announcements</a></li>
+        {% if user_profile.is_admin %}
+            <li><a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.manage' %}">Manage Users</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+
+
 {% block content %}
-    <h1>Brotherhood</h1>
-	<h3>the idea behind phi kappa psi</h3>
-	<img class="content-left" alt="Badge" title="The Badge of Phi Kappa Psi" src="{% get_static_prefix %}images/badge.jpg" />
-	<p>The Phi Kappa Psi Fraternity is a private association of educated men who endeavor to
-	    live honorably and humanely. Its Brotherhood is open to men of talent and character,
-	    but to those in particular who as <strong>gentlemen</strong> feel an affinity with one
-	    another in the common ways of college life and, moreover, in the pursuit of excellence.
-	    Such men may differ in their origins, backgrounds, and beliefs, and even be set upon diverse
-	    purposes, interests and vocations. Yet as Brothers in Phi Kappa Psi, they are vitally united
-	    in their dedication to the highest standards of intellectual, emotional, and spiritual integrity.
-	    <a class="more" href="{% url 'gtphipsi.chapter.views.about' %}#idea" title="Continue reading about Brotherhood">Read More&#8230;</a></p>
-
-	<h1>History</h1>
-	<h3>learn how phi psi became what it is today</h3>
-	<img class="content-right" alt="Founders" title="W.H. Letterman and C.P.T. Moore" src="{% get_static_prefix %}images/founders.jpg" />
-	<p>Founded over 150 years ago, Phi Psi boasts a rich history at many of the nation's top colleges
-	    and universities. <strong>William H. Letterman</strong> and <strong>Charles P.T. Moore</strong>
-	    founded Phi Kappa Psi in the little college town of Canonsburg, Pennsylvania, when they were nursing
-	    their stricken friends during an epidemic of typhoid fever at their college.
-	    It was through these long night vigils that an appreciation of <strong>the great joy of serving
-	    others</strong> came into their lives. Calling a number of others to join them, a Brotherhood was
-	    founded on February 19, 1852.  It flourished, and gradually extended to other colleges and universities
-	    throughout the country. Idealists all, these founders of Phi Kappa Psi taught a new fraternity - a
-	    Fraternity that would complement the work of the university by cultivating those humanities without
-	    which the educated man fails of his greatest usefulness.
-	    <a class="more" href="{% url 'gtphipsi.chapter.views.history' %}" title="Continue reading about our history">Read More&#8230;</a></p>
-
-	<h1>Alumni</h1>
-	<h3>reinvest yourself in the chapter</h3>
-	<p>Phi Kappa Psi alumni are one of the major driving forces behind the longevity and success of
-	    its chapters. Without them we cannot truly function as a fraternity. Georgia Beta relies on its
-	    alumni for job support after graduation, financial contributions, housing corps management and
-	    <strong>continued involvement in the chapter.</strong> If you are a Georgia Beta alumnus and would
-	    like to get involved with chapter or make a financial contribution please contact our current
-	    Alumni Relations Chair. Be sure to check back periodically for alumni events and updates. Hope to
-	    see you in Atlanta in the near future!</p>
+    <h1 style="margin-bottom: 30px">GT Phi Psi Dashboard</h1>
+    {% ifnotequal subscriptions|length 0 %}
+    <h2>Subscribed Threads</h2>
+    <table class="list">
+        <thead>
+            <tr class="heading">
+                <td class="left">Thread</td>
+                <td class="middle">Owner</td>
+                <td class="middle">Last Post</td>
+                <td class="right">Replies</td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for thread in subscriptions %}
+            <tr>
+                <td class="left"><a class="alwaysgreen" href="{{ thread.get_absolute_url }}">{{ thread.title }}</a></td>
+                <td class="middle"><a class="alwaysgreen" href="{{ thread.owner.get_absolute_url }}">{{ thread.owner.common_name }}</a></td>
+                {% with thread.latest_post as post %}
+                <td class="middle">
+                    {{ post.created|date:"n/j/Y f A" }}
+                    by <a class="alwaysgreen" href="{{ post.user.get_absolute_url }}">{{ post.user.common_name }}</a>
+                    <span style="font-size: 0.7em; padding-left: 5px"><a class="alwaysgreen" href="{{ post.get_absolute_url }}">&#x25B6;</a></span>
+                </td>
+                <td class="right center">{{ thread.posts.count|add:-1 }}</td>
+                {% endwith %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endifnotequal %}
+    <h2>Recent Announcements</h2>
+    {% ifequal announcements|length 0 %}
+        <p>There are no recent announcements to display.</p>
+    {% else %}
+        <table class="list">
+            <thead>
+                <tr class="heading">
+                    <td class="left">Announcement</td>
+                    <td class="middle">Posted By</td>
+                    <td class="middle">Created</td>
+                    <td class="right">Public</td>
+                </tr>
+            </thead>
+            <tbody>
+            {% for announcement in announcements %}
+                <tr>
+                    <td class="left">{{ announcement.text }}</td>
+                    {% with announcement.user.get_profile as profile %}
+                    <td class="middle"><a class="alwaysgreen" href="{{ profile.get_absolute_url }}">{{ profile.common_name }}</a></td>
+                    {% endwith %}
+                    <td class="middle">{{ announcement.created|date:"n/j/Y f A" }}</td>
+                    <td class="right center">{{ announcement.public|yesno:"Yes,No" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endifequal %}
+    {% ifnotequal info_cards|length 0 %}
+        <h2>New Information Cards</h2>
+        <table class="list">
+            <thead>
+                <tr class="heading">
+                    <td class="left">Name</td>
+                    <td class="middle">Email</td>
+                    <td class="middle">Year</td>
+                    <td class="middle">Submitted</td>
+                    <td class="right">Subscribed</td>
+                </tr>
+            </thead>
+            <tbody>
+            {% for card in info_cards %}
+                <tr>
+                    <td class="left"><a class="alwaysgreen" href="{{ card.get_absolute_url }}">{{ card.name }}</a></td>
+                    <td class="middle">{{ card.email }}</td>
+                    <td class="middle">{{ card.get_year_display }}</td>
+                    <td class="middle">{{ card.created|date:"n/j/Y f A" }}</td>
+                    <td class="right center">{{ card.subscribe|yesno:"Yes,No" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endifnotequal %}
+    {% ifnotequal accounts|length 0 %}
+        <h2>New Accounts</h2>
+        <table class="list">
+            <thead>
+                <tr class="heading">
+                    <td class="left">Badge</td>
+                    <td class="middle">Name</td>
+                    <td class="middle">Status</td>
+                    <td class="right">Joined</td>
+                </tr>
+            </thead>
+            <tbody>
+            {% for account in accounts %}
+                <tr>
+                    <td class="left center">{{ account.badge }}</td>
+                    <td class="middle"><a class="alwaysgreen" href="{{ account.get_absolute_url }}">{{ account.common_name }}</a></td>
+                    <td class="middle">{{ account.get_status_display }}</td>
+                    <td class="right">{{ account.user.date_joined|date:"n/j/Y f A" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endifnotequal %}
 {% endblock %}

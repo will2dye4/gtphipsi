@@ -12,14 +12,15 @@
 {% endif %}
 
 {% block head_extras %}
+    {{ block.super }}
+    {% if 'delete_potential' in group_perms %}
     <script type="text/javascript">
         function confirm_delete () {
-            var result = confirm("Are you sure you want to delete this {% if pledge %}pledge{% else %}potential{% endif %}?");
-            if (result == true) {
+            if (confirm("Are you sure you want to delete this {% if pledge %}pledge{% else %}potential{% endif %}?"))
                 window.location.href = "{{ action_url }}?delete=true";
-            }
         }
     </script>
+    {% endif %}
 {% endblock %}
 
 {% block sidebar %}
@@ -46,6 +47,8 @@
     <p>Use this form to edit information about {{ potential.first_name }} {{ potential.last_name }}. Click "Save" when you are finished.</p>
     <form action="{{ action_url }}" method="post">
         {% include "snippets/_table_form.html" with submit_text="Save" %}
-        <div style="float: right"><a onclick="confirm_delete()">delete</a></div>
+        {% if 'delete_potential' in group_perms %}
+            <div style="float: right"><a onclick="confirm_delete()">delete</a></div>
+        {% endif %}
     </form>
 {% endblock %}

@@ -1,4 +1,4 @@
-{% extends 'base_bros_only.html' %}
+{% extends "base_bros_only.html" %}
 {% load url from future %}
 
 {% block title %}
@@ -6,7 +6,8 @@
 {% endblock %}
 
 {% block head_extras %}
-    {% if not create %}
+    {{ block.super }}
+    {% if not create and 'delete_thread' in group_perms %}
     <script type="text/javascript">
         function confirm_delete() {
             if (confirm("Are you sure you want to delete this thread? All posts in the thread will be deleted as well."))
@@ -28,8 +29,10 @@
         <form action="{% url 'gtphipsi.forums.views.edit_thread' forum=forum.slug id=thread.id thread=thread.slug %}" method="post">
             {% include 'snippets/_table_form.html' with submit_text='Save' %}
         </form>
-        <div style="float: right">
-            <a class="alwaysgreen" onclick="confirm_delete()">delete</a>
-        </div>
+        {% if 'delete_thread' in group_perms %}
+            <div style="float: right">
+                <a class="alwaysgreen" onclick="confirm_delete()">delete</a>
+            </div>
+        {% endif %}
     {% endif %}
 {% endblock %}

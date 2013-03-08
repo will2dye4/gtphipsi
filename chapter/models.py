@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import PhoneNumberField
+from django.core.urlresolvers import reverse
 from django.core.validators import MaxLengthValidator
 from django.db import models
 
@@ -101,6 +102,10 @@ class InformationCard(ContactRecord):
     def __unicode__(self):
         """Return a Unicode string representation of the information card."""
         return u'Information Card from %s on %s' % (self.name, self.created.strftime('%b %d, %Y'))
+
+    def get_absolute_url(self):
+        """Return the absolute URL path for the information card."""
+        return reverse('info_card_view', kwargs={'id': self.id})
 
     def to_string(self):
         """Return a string representation of the information card."""

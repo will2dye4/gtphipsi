@@ -5,17 +5,43 @@
     Information Cards | {{ block.super }}
 {% endblock %}
 
+{% block head_extras %}
+    {{ block.super }}
+    <style type="text/css">
+        table.list {
+            margin: 20px 10px;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
     <h1>Information Cards</h1>
-    <p>Here is a list of all information cards that have been submitted to the chapter,
-    listed from newest to oldest. Click on a card to see more information about it.</p>
-    <ul>
-    {% for card in cards %}
-        {% with card.id as card_id %}
-        <li><a class="hovercolor" href="{% url 'gtphipsi.rush.views.info_card_show' id=card_id %}">{{ card }}</a></li>
-        {% endwith %}
-    {% empty %}
-        <li style="list-style-type: none">There are no information cards to display.</li>
-    {% endfor %}
-    </ul>
+    {% ifequal cards|length 0 %}
+        <p>There are no information cards to display.</p>
+    {% else %}
+        <p>Here is a list of all information cards that have been submitted to the chapter,
+        listed from newest to oldest. Click on a card to see more information about it.</p>
+        <table class="list">
+            <thead>
+                <tr class="heading">
+                    <td class="left">Name</td>
+                    <td class="middle">Email</td>
+                    <td class="middle">Year</td>
+                    <td class="middle">Submitted</td>
+                    <td class="right">Subscribed</td>
+                </tr>
+            </thead>
+            <tbody>
+            {% for card in cards %}
+                <tr>
+                    <td class="left"><a class="alwaysgreen" href="{{ card.get_absolute_url }}">{{ card.name }}</a></td>
+                    <td class="middle"><a class="alwaysgreen" href="mailto:{{ card.email }}">{{ card.email }}</a></td>
+                    <td class="middle">{{ card.get_year_display }}</td>
+                    <td class="middle">{{ card.created|date:"M j, Y f A" }}</td>
+                    <td class="right center">{{ card.subscribe|yesno:"Yes,No" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endifequal %}
 {% endblock %}

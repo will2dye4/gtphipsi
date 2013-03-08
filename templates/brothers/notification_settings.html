@@ -6,11 +6,18 @@
 {% endblock %}
 
 {% block head_extras %}
+    {{ block.super }}
     <style type="text/css">
         #content form table tbody tr td label {
             width: auto;
         }
     </style>
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Note</h3>
+    <p>Notification emails will be sent from <span style="font-weight: bold">{{ from_email }}</span>. If you
+    elect to receive notifications, make sure this email address is not blocked by your email account's junk or spam filters.</p>
 {% endblock %}
 
 {% block content %}

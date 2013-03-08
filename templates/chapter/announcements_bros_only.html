@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block head_extras %}
+    {{ block.super }}
     <style type="text/css">
         ul li {
             list-style-type: none;
@@ -14,9 +15,8 @@
 {% endblock %}
 
 {% block sidebar %}
-    <h3 class="sidebar">Note</h3>
-    <p class="sidebar">You can switch between all announcements and just private announcements
-    using the links in the right-hand corner.</p>
+    <h3>Note</h3>
+    <p>You can switch between all announcements and just private announcements using the links in the right-hand corner.</p>
 {% endblock %}
 
 {% block content %}
@@ -33,5 +33,7 @@
         <li>There are no announcements to display.</li>
     {% endfor %}
     </ul>
-    <p><a class="alwaysgreen" href="{% url 'gtphipsi.chapter.views.add_announcement' %}">add announcement</a></p>
+    {% if 'add_announcement' in group_perms %}
+        <p><a class="alwaysgreen" href="{% url 'gtphipsi.chapter.views.add_announcement' %}">add announcement</a></p>
+    {% endif %}
 {% endblock %}

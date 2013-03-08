@@ -16,6 +16,7 @@ This module exports the following view functions:
 
 """
 
+from datetime import datetime, timedelta
 import logging
 
 from django.conf import settings
@@ -31,6 +32,7 @@ from django.template import RequestContext
 from gtphipsi.brothers.forms import UserForm
 from gtphipsi.brothers.models import UserProfile, STATUS_BITS
 from gtphipsi.chapter.forms import ContactForm
+from gtphipsi.chapter.models import Announcement, InformationCard
 from gtphipsi.common import create_user_and_profile, REFERRER
 from gtphipsi.messages import get_message
 
@@ -47,8 +49,24 @@ log = logging.getLogger('django.request')
 
 def home(request):
     """Render a home page - a page of text for visitors and a sort of 'dashboard' view for authenticated members."""
-    template = 'index.html' if request.user.is_anonymous() else 'index_bros_only.html'
-    return render(request, template, context_instance=RequestContext(request))
+    if request.user.is_anonymous():
+        template = 'index.html'
+        context = {}    # main index doesn't require any context
+    else:
+        template = 'index_bros_only.html'
+        user = request.user
+        profile = user.get_profile()
+        threads = profile.subscriptions.order_by('-updated')
+        if len(threads) > 5:
+            threads = threads[:5]
+        announcements = Announcement.most_recent(False)
+        two_months_ago = datetime.now() - timedelta(days=60)
+        info_cards = InformationCard.objects.filter(created__gte=two_months_ago).order_by('-created')
+        if len(info_cards) > 5:
+            info_cards = info_cards[:5]
+        accounts = UserProfile.objects.filter(user__date_joined__gte=two_months_ago).order_by('badge')
+        context = {'subscriptions': threads, 'announcements': announcements, 'info_cards': info_cards, 'accounts': accounts}
+    return render(request, template, context, context_instance=RequestContext(request))
 
 
 def sign_in(request):
@@ -89,7 +107,7 @@ def sign_in(request):
                     error = get_message('login.account.disabled')
                 else:
                     login(request, user)
-                    del request.session['login_attempts'], request.session['username']
+                    del request.session['login_attempts'], request.session['username'], request.session['group_perms']
                     return HttpResponseRedirect(_get_redirect_destination(request.META[REFERRER], user.get_profile()))
     else:
         username = ''
@@ -101,6 +119,8 @@ def sign_in(request):
 def sign_out(request):
     """Sign out the currently authenticated user (if there is one), then redirect to the home page."""
     logout(request)
+    if 'group_perms' in request.session:
+        del request.session['group_perms']
     return HttpResponseRedirect(reverse('home'))
 
 
@@ -111,6 +131,8 @@ def forbidden(request):
 
 def register(request):
     """Render and process a form for members to register with the site."""
+    if request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('home'))
     if request.method == 'POST':
         form = UserForm(request.POST)
         if form.is_valid():

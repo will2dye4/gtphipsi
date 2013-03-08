@@ -1,8 +1,9 @@
 {% extends "base.html" %}
+{% load static %}
 {% load url from future %}
 
 {% block head_extras %}
-    {# <link href="{% static "bros_only.css" %}" rel="stylesheet" type="text/css" media="screen" /> #}
+    <link href="{{ STATIC_URL }}styles/bros_only.css" rel="stylesheet" type="text/css" media="screen" />
 {% endblock %}
 
 {% block content %}

@@ -2,6 +2,8 @@
 
 This module exports the following context processor functions:
     - announcements_processor (request)
+    - user_profile_processor (request)
+    - group_perms_processor (request)
     - menu_item_processor (request)
 
 """
@@ -12,6 +14,25 @@ from gtphipsi.chapter.models import Announcement
 def announcements_processor(request):
     """Add an item 'recent_news', containing the most recently posted announcements, to all requests."""
     return {'recent_news': Announcement.most_recent(public=request.user.is_anonymous())}
+
+
+def user_profile_processor(request):
+    """Add an item 'user_profile', containing the profile of the currently authenticated user, to all requests."""
+    return {'user_profile': request.user.get_profile() if request.user.is_authenticated() else None}
+
+
+def group_perms_processor(request):
+    """Add an item 'group_perms', containing the permissions associated with the user's groups, to all requests."""
+    if 'group_perms' not in request.session:
+        perms = []
+        if request.user.is_authenticated():
+            for group in request.user.groups.all():
+                for perm in group.permissions.values_list('codename', flat=True):
+                    if perm not in perms:
+                        perms.append(perm)
+        request.session['group_perms'] = perms
+    return {'group_perms': request.session['group_perms']}
+
 
 
 def menu_item_processor(request):

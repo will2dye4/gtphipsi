@@ -2,40 +2,137 @@
 {% load url from future %}
 
 {% block title %}
-    Manage Users | {{ block.super }}
+    {% if 'change_userprofile' in group_perms %}Manage Users{% else %}User Directory{% endif %} | {{ block.super }}
 {% endblock %}
 
 {% block head_extras %}
+    {{ block.super }}
     <style type="text/css">
-        #content ul li {
-            list-style-type: none;
+        #content a.sort {
+            text-decoration: none !important;
+            font-size: 0.5em;
+        }
+        #content a.pad {
+            padding-left: 10px;
+        }
+        table.list {
+            margin: 10px 10px 30px 20px;
         }
     </style>
 {% endblock %}
 
+{% block sidebar %}
+    {% if 'change_userprofile' in group_perms %}
+        <h3>Note</h3>
+        <p>You can switch between the administrators' view and the user directory view using the links in the right-hand corner.</p>
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
+
 {% block content %}
-    <h1>Manage Users</h1>
-    <p>Here is a list of the chapter's undergradate members and a list of her alumni below that.
-    Brothers who have been locked out of their accounts (by typing the wrong password more than
-    three times) will have an "unlock" link next to their names, which you can use to unlock their accounts.</p>
-    <h3>Undergraduates</h3>
-    <ul>
-    {% for brother in undergrads %}
-        {% with brother.get_profile.badge as badge %}
-        <li>{{ brother.get_profile.common_name }} {% if brother in locked_out_undergrads %}<span style="padding-left: 15px"><a href="{% url 'gtphipsi.brothers.views.unlock' badge=badge %}">unlock</a></span>{% endif %}</li>
-        {% endwith %}
-    {% empty %}
-        <li>There are no brothers to display.</li>
-    {% endfor %}
-    </ul>
+    {% if 'change_userprofile' in group_perms %}
+        <div style="float: right; margin: 10px 10px 0 0">
+            View: {% if directory %}<a class="alwaysgreen" href=".">{% endif %}admin{% if directory %}</a>{% endif %} | {% if not directory %}<a class="alwaysgreen" href="?view=directory">{% endif %}directory{% if not directory %}</a>{% endif %}
+        </div>
+    {% endif %}
+    <h1>{% if 'change_userprofile' in group_perms %}Manage Users{% else %}User Directory{% endif %}</h1>
+    <h3 style="margin-top: 20px">Undergraduates</h3>
+    {% ifequal undergrads|length 0 %}
+        <p>There are currently no undergraduates to display.</p>
+    {% else %}
+        <table class="list">
+            <thead>
+                <tr class="heading">
+                    <td class="left">Badge</td>
+                    <td class="middle">Name <a class="alwaysgreen sort pad" href="?sort=name">&#x25B2;</a> <a class="alwaysgreen sort" href="?sort=name&order=desc">&#x25BC;</a></td>
+                {% if 'change_userprofile' in group_perms and not directory %}
+                    <td class="middle">Username</td>
+                    <td class="middle">Last Login <a class="alwaysgreen sort pad" href="?sort=login">&#x25B2;</a> <a class="alwaysgreen sort" href="?sort=login&order=desc">&#x25BC;</a></td>
+                    <td class="middle">Admin?</td>
+                    <td class="right">Locked?</td>
+                {% else %}
+                    <td class="middle">Email <a class="alwaysgreen sort pad" href="?sort=email">&#x25B2;</a> <a class="alwaysgreen sort" href="?sort=email&order=desc">&#x25BC;</a></td>
+                    <td class="middle">Phone <a class="alwaysgreen sort pad" href="?sort=phone">&#x25B2;</a> <a class="alwaysgreen sort" href="?sort=phone&order=desc">&#x25BC;</a></td>
+                    <td class="right">Current City <a class="alwaysgreen sort pad" href="?sort=city">&#x25B2;</a> <a class="alwaysgreen sort" href="?sort=city&order=desc">&#x25BC;</a></td>
+                {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+            {% for brother in undergrads %}
+            {% with brother.user as user %}
+                <tr>
+                    <td class="left center">{{ brother.badge }}</td>
+                    <td class="middle"><a class="alwaysgreen" href="{{ brother.get_absolute_url }}">{{ brother.full_name }}</a></td>
+                {% if 'change_userprofile' in group_perms and not directory %}
+                    <td class="middle">{{ user.username }}</td>
+                    <td class="middle">{{ user.last_login|date:"M j, Y f A" }}</td>
+                    <td class="middle center">{{ brother.is_admin|yesno:"Yes,No" }}</td>
+                    <td class="right center">
+                        {% if brother in locked_out_undergrads %}
+                            <a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.unlock' badge=brother.badge %}">Unlock</a>
+                        {% else %}
+                            No
+                        {% endif %}
+                    </td>
+                {% else %}
+                    <td class="middle"><a class="alwaysgreen" href="mailto:{{ user.email }}">{{ user.email }}</a></td>
+                    <td class="middle">{% if brother.chapter_visibility.phone %}{{ brother.phone }}{% endif %}</td>
+                    <td class="right">{% if brother.chapter_visibility.current_city %}{{ brother.current_city }}{% endif %}</td>
+                {% endif %}
+                </tr>
+            {% endwith %}
+            {% endfor %}
+            </tbody>
+        {% endifequal %}
+    </table>
     <h3>Alumni</h3>
-    <ul>
-    {% for alumnus in alumni %}
-        {% with alumnus.get_profile.badge as badge %}
-        <li>{{ alumnus.get_full_name }} {% if alumnus in locked_out_alumni %}<span style="padding-left: 15px"><a href="{% url 'gtphipsi.brothers.views.unlock' badge=badge %}">unlock</a></span>{% endif %}</li>
-        {% endwith %}
-    {% empty %}
-        <li>There are no alumni to display.</li>
-    {% endfor %}
-    </ul>
+    {% ifequal alumni|length 0 %}
+        <p>There are currently no alumni to display.</p>
+    {% else %}
+        <table class="list">
+            <thead>
+                <tr class="heading">
+                    <td class="left">Badge</td>
+                    <td class="middle">Name <a class="alwaysgreen sort pad" href="?sort=name">&#x25B2;</a> <a class="alwaysgreen sort" href="?sort=name&order=desc">&#x25BC;</a></td>
+                {% if 'change_userprofile' in group_perms and not directory %}
+                    <td class="middle">Username</td>
+                    <td class="middle">Last Login <a class="alwaysgreen sort pad" href="?sort=login">&#x25B2;</a> <a class="alwaysgreen sort" href="?sort=login&order=desc">&#x25BC;</a></td>
+                    <td class="middle">Admin?</td>
+                    <td class="right">Locked?</td>
+                {% else %}
+                    <td class="middle">Email <a class="alwaysgreen sort pad" href="?sort=email">&#x25B2;</a> <a class="alwaysgreen sort" href="?sort=email&order=desc">&#x25BC;</a></td>
+                    <td class="middle">Phone <a class="alwaysgreen sort pad" href="?sort=phone">&#x25B2;</a> <a class="alwaysgreen sort" href="?sort=phone&order=desc">&#x25BC;</a></td>
+                    <td class="right">Current City <a class="alwaysgreen sort pad" href="?sort=city">&#x25B2;</a> <a class="alwaysgreen sort" href="?sort=city&order=desc">&#x25BC;</a></td>
+                {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+            {% for brother in alumni %}
+            {% with brother.user as user %}
+                <tr>
+                    <td class="left center">{{ brother.badge }}</td>
+                    <td class="middle"><a class="alwaysgreen" href="{{ brother.get_absolute_url }}">{{ brother.full_name }}</a></td>
+                {% if 'change_userprofile' in group_perms and not directory %}
+                    <td class="middle">{{ user.username }}</td>
+                    <td class="middle">{{ user.last_login|date:"M j, Y f A" }}</td>
+                    <td class="middle center">{{ brother.is_admin|yesno:"Yes,No" }}</td>
+                    <td class="right center">
+                        {% if brother in locked_out_alumni %}
+                            <a class="alwaysgreen" href="{% url 'gtphipsi.brothers.views.unlock' badge=brother.badge %}">Unlock</a>
+                        {% else %}
+                            No
+                        {% endif %}
+                    </td>
+                {% else %}
+                    <td class="middle"><a class="alwaysgreen" href="mailto:{{ user.email }}">{{ user.email }}</a></td>
+                    <td class="middle">{% if brother.chapter_visibility.phone %}{{ brother.phone }}{% endif %}</td>
+                    <td class="right">{% if brother.chapter_visibility.current_city %}{{ brother.current_city }}{% endif %}</td>
+                {% endif %}
+                </tr>
+            {% endwith %}
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endifequal %}
 {% endblock %}

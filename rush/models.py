@@ -60,6 +60,10 @@ class Rush(models.Model):
         """Return the absolute URL path for the rush."""
         return reverse('view_rush', kwargs={'name': self.get_unique_name()})
 
+    def get_num_pledges(self):
+        """Return the number of pledges associated with the rush."""
+        return self.potentials.filter(pledged=True).count()
+
     class Meta:
         """Define a default sort of start date descending (most recent first)."""
         ordering = ['-start_date']

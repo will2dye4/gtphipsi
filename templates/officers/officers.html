@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% load url from future %}
 
 {% block title %}
@@ -6,23 +7,12 @@
 {% endblock %}
 
 {% block head_extras %}
+    {% if user_profile %}
+        <link href="{{ STATIC_URL }}styles/bros_only.css" rel="stylesheet" type="text/css" media="screen" />
+    {% endif %}
     <style type="text/css">
-        #content table {
-            border-collapse: collapse;
+        table.list {
             margin: 30px 10px 15px 10px;
-        }
-        #content table thead tr td {
-            border-bottom: 1px solid black;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #006b3f;
-        }
-        #content table tr td.left {
-            padding-right: 20px;
-        }
-        #content table tr td.right {
-            padding-left: 20px;
-            border-left: 1px solid black;
         }
     </style>
 {% endblock %}
@@ -30,7 +20,7 @@
 {% block content %}
     <h1>Chapter Officers</h1>
     {% ifequal officers|length 0 %}
-        {% if user.is_authenticated and user.get_profile.is_admin %}
+        {% if 'add_chapterofficer' in group_perms %}
             <p style="margin-top: 20px">
                 <span class="error">No officer positions have been added yet. Click <a class="alwaysgreen" href="{% url 'gtphipsi.officers.views.add_officer' %}">here</a> to add new officers.</span>
             </p>
@@ -39,15 +29,15 @@
         {% endif %}
     {% else %}
         <p>The following is a list of officer positions within the chapter, along with the name of the brother who currently holds that position.</p>
-        {% if user.is_authenticated and user.get_profile.is_admin %}
+        {% if 'change_chapterofficer' in group_perms %}
             <p>To update an officer position, click "edit" next to the name of the office you wish to change.</p>
             {% if add %}
                 <p><span class="error"><strong>NOTE:</strong> Some officer positions have not yet been added. Click <a class="alwaysgreen" href="{% url 'gtphipsi.officers.views.add_officer' %}">here</a> to add new officers.</span></p>
             {% endif %}
         {% endif %}
-        <table>
+        <table class="list">
             <thead>
-                <tr>
+                <tr class="heading">
                     <td class="left">Office</td>
                     <td class="right">Current Officer</td>
                 </tr>
@@ -57,7 +47,7 @@
                 <tr>
                     <td class="left">
                         {{ officer.get_office_display }}
-                        {% if user.is_authenticated and user.get_profile.is_admin %}
+                        {% if 'change_chapterofficer' in group_perms %}
                             <span class="small"><a class="alwaysgreen" href="{% url 'gtphipsi.officers.views.edit_officer' office=officer.office %}">edit</a></span>
                         {% endif %}
                     </td>

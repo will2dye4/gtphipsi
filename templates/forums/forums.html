@@ -1,4 +1,4 @@
-{% extends 'base_bros_only.html' %}
+{% extends "base_bros_only.html" %}
 {% load url from future %}
 
 {% block title %}
@@ -6,34 +6,13 @@
 {% endblock %}
 
 {% block head_extras %}
+    {{ block.super }}
     <style type="text/css">
-        #content table {
-            border-collapse: collapse;
+        table.list {
             margin: 30px 10px 15px 10px;
         }
-        #content table tr td {
+        table.list tr td {
             border-bottom: 1px solid black;
-        }
-        #content table thead tr td {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #006b3f;
-        }
-        #content table tr td.left {
-            padding-right: 10px;
-        }
-        #content table tr td.middle {
-            padding: 0 10px;
-            border-left: 1px solid black;
-            border-right: 1px solid black;
-        }
-        #content table tr td.right {
-            padding: 0 10px;
-            border-left: 1px solid black;
-        }
-        #content table tr td.center {
-            text-align: center;
-            padding: 0;
         }
     </style>
 {% endblock %}
@@ -44,9 +23,9 @@
         <p>There are currently no forums to display. Click "New Forum" to add a forum.</p>
     {% else %}
         <p>Below is a list of the chapter's forums. Click a forum's name to view its threads.{% if can_add %} Click "New Forum" below to add a new forum.{% endif %}</p>
-        <table>
+        <table class="list">
             <thead>
-                <tr>
+                <tr class="heading">
                     <td width="32%" class="left">Forum</td>
                     <td width="38%" class="middle">Last Post</td>
                     <td width="10%" class="middle">Threads</td>
@@ -86,7 +65,7 @@
             </tbody>
         </table>
     {% endifequal %}
-    {% if can_add %}
+    {% if 'add_forum' in group_perms %}
         <form action="{% url 'gtphipsi.forums.views.add_forum' %}" method="get">
             <input type="submit" class="submit" value="New Forum" />
         </form>

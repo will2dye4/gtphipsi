@@ -1,4 +1,4 @@
-{% extends 'base_bros_only.html' %}
+{% extends "base_bros_only.html" %}
 {% load url from future %}
 
 {% block title %}
@@ -6,14 +6,21 @@
 {% endblock %}
 
 {% block head_extras %}
+    {{ block.super }}
+    {% if not create and 'delete_forum' in group_perms %}
     <script type="text/javascript">
-    {% if not create %}
         function confirm_delete () {
-            if (confirm("Are you sure you want to delete this forum? All of the forum's threads and posts will also be deleted."));
+            if (confirm("Are you sure you want to delete this forum? All of the forum's threads and posts will also be deleted."))
                 window.location.href = "{% url 'gtphipsi.forums.views.edit_forum' slug=forum.slug %}?delete=true";
         }
-    {% endif %}
     </script>
+    {% endif %}
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Note</h3>
+    <p>Include a brief description of the forum where possible. Select at least two responsible brothers to moderate the
+    forum unless you have a good reason for having only one moderator.</p>
 {% endblock %}
 
 {% block content %}
@@ -28,8 +35,10 @@
         <form action="{% url 'gtphipsi.forums.views.edit_forum' slug=forum.slug %}" method="post">
             {% include 'snippets/_table_form.html' with submit_text='Save' %}
         </form>
-        <div style="float: right">
-            <a class="alwaysgreen" onclick="confirm_delete()">delete</a>
-        </div>
+        {% if 'delete_forum' in group_perms %}
+            <div style="float: right">
+                <a class="alwaysgreen" onclick="confirm_delete()">delete</a>
+            </div>
+        {% endif %}
     {% endif %}
 {% endblock %}
