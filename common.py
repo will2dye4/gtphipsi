@@ -81,7 +81,10 @@ def log_page_view(request, name):
         client_string = ' User: %s (%s ... %d),' % (request.user.username, profile.common_name(), profile.badge)
     else:
         client_string = ''
-    user_agent = request.META['HTTP_USER_AGENT']
+    if 'HTTP_USER_AGENT' in request.META:
+	user_agent = request.META['HTTP_USER_AGENT']
+    else:
+	user_agent = '<not supplied>'
     log.debug('[%s]%s Request: %s %s%s, User Agent: %s' % (name, client_string, method, path, post, user_agent))
 
 
