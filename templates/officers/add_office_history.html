@@ -1,0 +1,20 @@
+{% extends "base_bros_only.html" %}
+{% load url from future %}
+
+{% block title %}
+    Add Office History | {{ block.super }}
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Note</h3>
+    <p>Enter complete dates (e.g., "2/19/1852") for the start and end dates, but don't worry about getting the day of the month
+    exactly right. Only the month and year will be shown.</p>
+{% endblock %}
+
+{% block content %}
+    <h1>Add Office History</h1>
+    <p>Use the form below to add a record of a past {{ office }}. Click "Add" when you are finished.</p>
+    <form action="{% url 'gtphipsi.officers.views.add_office_history' office=abbrev %}" method="post">
+        {% include "snippets/_table_form.html" with submit_text="Add" %}
+    </form>
+{% endblock %}

@@ -49,7 +49,7 @@ class RushEventForm(ModelForm):
     class Meta:
         """Associate the form with the RushEvent model."""
         model = RushEvent
-        fields = ('title', 'date', 'start', 'end', 'description', 'location', 'food')
+        fields = ('title', 'date', 'start', 'end', 'description', 'location', 'link', 'food')
 
 
 class PotentialForm(ModelForm):

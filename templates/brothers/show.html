@@ -6,6 +6,9 @@
 {% endblock %}
 
 {% block head_extras %}
+    {% if user_profile %}
+        <link href="{{ STATIC_URL }}styles/bros_only.css" rel="stylesheet" type="text/css" media="screen" />
+    {% endif %}
     <style type="text/css">
         table {
             border-collapse: collapse;

@@ -42,7 +42,7 @@ from django.template import RequestContext
 from gtphipsi.brothers.models import UserProfile, STATUS_BITS
 from gtphipsi.chapter.forms import InformationForm
 from gtphipsi.chapter.models import InformationCard
-from gtphipsi.common import REFERRER
+from gtphipsi.common import log_page_view, REFERRER
 from gtphipsi.messages import get_message
 from gtphipsi.rush.forms import PledgeForm, PotentialForm, RushEventForm, RushForm
 from gtphipsi.rush.models import Potential, Rush, RushEvent
@@ -60,16 +60,19 @@ log = logging.getLogger('django')
 
 def rush(request):
     """Render a page of text containing general information about fraternity rush."""
+    log_page_view(request, 'Rush Info')
     return render(request, 'rush/rush.html', context_instance=RequestContext(request))
 
 
 def rush_phi_psi(request):
     """Render a page of text containing information about rushing Phi Kappa Psi."""
+    log_page_view(request, 'Rush Phi Psi')
     return render(request, 'rush/phipsi.html', context_instance=RequestContext(request))
 
 
 def schedule(request):
     """Render a schedule of events for the current rush."""
+    log_page_view(request, 'Rush Schedule')
     current_rush = Rush.current()
     if current_rush is None:
         raise Http404
@@ -84,17 +87,20 @@ def old_schedule(request):
     view as a pass-through to convert the old URI to the new one.
 
     """
+    log_page_view(request, 'Old Rush Schedule')
     return HttpResponseRedirect(reverse('rush_schedule'))
 
 
 def info_card(request):
     """Render and process a form for potential members to provide information about themselves to the chapter."""
+    log_page_view(request, 'Add Info Card')
     if request.method == 'POST':
         form = InformationForm(request.POST)
         if form.is_valid():
             card = form.save()
             _send_info_card_emails(card)
             request.META[REFERRER] = reverse('info_card')   # set the HTTP_REFERER header, expected by the 'thanks' view
+            log.info('New information card submitted by %s', card.name)
             return HttpResponseRedirect(reverse('info_card_thanks'))
     else:
         form = InformationForm()
@@ -120,6 +126,7 @@ def info_card_thanks(request):
 @login_required
 def list(request):
     """Render a listing of rushes."""
+    log_page_view(request, 'Rush List')
     return render(request, 'rush/list.html', {'rushes': Rush.objects.all()}, context_instance=RequestContext(request))
 
 
@@ -131,6 +138,7 @@ def show(request, name=None):
         - name  =>  the unique name (abbreviation) of the rush to view (as a string): defaults to the current rush
 
     """
+    log_page_view(request, 'View Rush')
     if name is None:
         rush = Rush.current()       # use the most recent visible rush (if there is one)
         if rush is None:
@@ -147,10 +155,12 @@ def show(request, name=None):
 @permission_required('rush.add_rush', login_url=settings.FORBIDDEN_URL)
 def add(request):
     """Render and process a form for users to create new rushes."""
+    log_page_view(request, 'Add Rush')
     if request.method == 'POST':
         form = RushForm(request.POST)
         if form.is_valid():
-            form.save()
+            rush = form.save()
+            log.info('%s (%s) created %s', request.user.username, request.user.get_full_name(), rush.title())
             return HttpResponseRedirect(reverse('rush_list'))
     else:
         form = RushForm()
@@ -167,6 +177,7 @@ def edit(request, name):
         - name  =>  the unique name (abbreviation) of the rush to edit (as a string)
 
     """
+    log_page_view(request, 'Edit Rush')
     rush = _get_rush_or_404(name)
     if request.method == 'POST':
         form = RushForm(request.POST, instance=rush)
@@ -181,7 +192,7 @@ def edit(request, name):
         if 'delete' in request.GET and request.GET.get('delete') == 'true':
             name = rush.title()
             rush.delete()
-            log.info('User %s (badge %d) deleted %s', request.user.get_full_name(), request.user.get_profile().badge, name)
+            log.info('%s (%s) deleted %s', request.user.username, request.user.get_full_name(), name)
             return HttpResponseRedirect(reverse('rush_list'))
         form = RushForm(instance=rush)
     return render(request, 'rush/edit.html', {'rush_name': name, 'form': form}, context_instance=RequestContext(request))
@@ -196,6 +207,7 @@ def add_event(request, name):
         - name  =>  the unique name (abbreviation) of the rush to which the new event should belong (as a string)
 
     """
+    log_page_view(request, 'Add Rush Event')
     rush = _get_rush_or_404(name)
     if request.method == 'POST':
         form = RushEventForm(request.POST)
@@ -220,6 +232,7 @@ def edit_event(request, id):
         - id    =>  the unique ID of the rush event to edit (as an integer)
 
     """
+    log_page_view(request, 'Edit Rush Event')
     event = get_object_or_404(RushEvent, id=id)
     if request.method == 'POST':
         form = RushEventForm(request.POST, instance=event)
@@ -231,6 +244,8 @@ def edit_event(request, id):
             return _get_redirect_from_rush(rush)
     else:
         if 'delete' in request.GET and request.GET.get('delete') == 'true':
+            log.info('%s (%s) deleted event \'%s\' from %s', request.user.username, request.user.get_full_name(),
+                     event.title, event.rush.title())
             event.delete()
             return _get_redirect_from_rush(event.rush)
         form = RushEventForm(instance=event)
@@ -241,6 +256,7 @@ def edit_event(request, id):
 @login_required
 def info_card_list(request):
     """Render a listing of all information cards that have been submitted to the chapter."""
+    log_page_view(request, 'Info Card List')
     return render(request, 'rush/infocard_list.html', {'cards': InformationCard.objects.all()},
                   context_instance=RequestContext(request))
 
@@ -253,6 +269,7 @@ def info_card_show(request, id):
         - id    =>  the unique ID of the information card to view (as an integer)
 
     """
+    log_page_view(request, 'View Info Card')
     card = get_object_or_404(InformationCard, id=id)
     return render(request, 'rush/infocard_show.html', {'card': card}, context_instance=RequestContext(request))
 
@@ -265,6 +282,7 @@ def potentials(request, name=None):
         - name => the unique name (abbreviation) of the rush for which to show potentials (as a string): defaults to all
 
     """
+    log_page_view(request, 'Potentials')
     rush = _get_rush_or_404(name)
     if 'all' in request.GET and request.GET.get('all') == 'true':
         hidden = 0
@@ -286,6 +304,7 @@ def show_potential(request, id):
         - id    =>  the unique ID of the potential to view (as an integer)
 
     """
+    log_page_view(request, 'View Potential')
     potential = get_object_or_404(Potential, id=id)
     return render(request, 'rush/potential_show.html', {'potential': potential}, context_instance=RequestContext(request))
 
@@ -299,6 +318,7 @@ def add_potential(request, name=None):
         - name  =>  the unique name (abbreviation) of the rush with which to associate the potential: defaults to none
 
     """
+    log_page_view(request, 'Add Potential')
     rush = _get_rush_or_404(name)
     if request.method == 'POST':
         form = PotentialForm(request.POST)
@@ -326,6 +346,7 @@ def edit_potential(request, id):
         - id    =>  the unique ID of the potential to edit (as an integer)
 
     """
+    log_page_view(request, 'Edit Potential')
     potential = get_object_or_404(Potential, id=id)
     if request.method == 'POST':
         form = PotentialForm(request.POST, instance=potential)
@@ -342,6 +363,8 @@ def edit_potential(request, id):
                 redirect = reverse('potentials', kwargs={'name': potential.rush.get_unique_name()})
             else:
                 redirect = reverse('all_potentials')
+            log.info('%s (%s) deleted potential %s %s', request.user.username, request.user.get_full_name(),
+                     potential.first_name, potential.last_name)
             potential.delete()
             return HttpResponseRedirect(redirect)
         form = PotentialForm(instance=potential)
@@ -357,17 +380,22 @@ def update_potentials(request, name=None):
         - name  =>  the unique name of the rush with which the potentials are associated (as a string): defaults to none
 
     """
+    log_page_view(request, 'Update Potentials')
     if request.method != 'POST':
         return HttpResponseRedirect(reverse('forbidden'))
     action = request.POST.get('action', '')
     if action in ['hide', 'pledge', 'delete']:
         potentials = Potential.objects.filter(id__in=[int(potential) for potential in request.POST.getlist('potential')])
+        count = potentials.count()
         if action == 'hide':
             potentials.update(hidden=True)
+            log.info('%s (%s) marked %d potentials as hidden', request.user.username, request.user.get_full_name(), count)
         elif action == 'pledge':
             potentials.update(pledged=True)
+            log.info('%s (%s) marked %d potentials as pledges', request.user.username, request.user.get_full_name(), count)
         else:   # action == 'delete'
             potentials.delete()
+            log.info('%s (%s) deleted %d potentials', request.user.username, request.user.get_full_name(), count)
     rush = _get_rush_or_404(name)
     redirect = reverse('all_potentials') if rush is None else reverse('potentials', kwargs={'name': name})
     return HttpResponseRedirect(redirect)
@@ -382,6 +410,7 @@ def pledges(request, name=None):
         - name => the unique name (abbreviation) of the rush to which to restrict the listing; defaults to all rushes
 
     """
+    log_page_view(request, 'Pledges')
     rush = _get_rush_or_404(name)
     if rush is not None or ('all' in request.GET and request.GET.get('all') == 'true'):
         hidden = 0
@@ -403,6 +432,7 @@ def show_pledge(request, id):
         - id    => the unique ID of the pledge to view (as an integer)
 
     """
+    log_page_view(request, 'View Pledge')
     pledge = get_object_or_404(Potential, id=id)
     return render(request, 'rush/potential_show.html', {'potential': pledge}, context_instance=RequestContext(request))
 
@@ -416,6 +446,7 @@ def add_pledge(request, name=None):
         - name  =>  the unique name (abbreviation) of the rush with which to associate the pledge: defaults to none
 
     """
+    log_page_view(request, 'Add Pledge')
     rush = _get_rush_or_404(name)
     if request.method == 'POST':
         form = PledgeForm(request.POST)
@@ -445,6 +476,7 @@ def edit_pledge(request, id):
         - id    =>  the unique ID of the pledge to edit (as an integer)
 
     """
+    log_page_view(request, 'Edit Pledge')
     pledge = get_object_or_404(Potential, id=id)
     if request.method == 'POST':
         form = PledgeForm(request.POST, instance=pledge)
@@ -457,6 +489,8 @@ def edit_pledge(request, id):
                 redirect = reverse('pledges', kwargs={'name': pledge.rush.get_unique_name()})
             else:
                 redirect = reverse('all_pledges')
+            log.info('%s (%s) deleted pledge %s %s', request.user.username, request.user.get_full_name(),
+                     pledge.first_name, pledge.last_name)
             pledge.delete()
             return HttpResponseRedirect(redirect)
         form = PledgeForm(instance=pledge)

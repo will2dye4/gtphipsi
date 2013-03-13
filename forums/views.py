@@ -16,19 +16,24 @@ This module exports the following view functions:
 """
 
 from datetime import datetime
+import logging
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.paginator import EmptyPage, InvalidPage, Paginator
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
-from django.http import Http404, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.template import RequestContext
 from django.template.defaultfilters import slugify
 
+from gtphipsi.common import log_page_view
 from gtphipsi.forums.forms import ForumForm, PostForm, ThreadForm
 from gtphipsi.forums.models import Forum, Post, Thread
+
+
+log = logging.getLogger('django')
 
 
 ## ============================================= ##
@@ -41,6 +46,7 @@ from gtphipsi.forums.models import Forum, Post, Thread
 @login_required
 def forums(request):
     """Render a listing of all forums, including the most recent post of all threads within each forum."""
+    log_page_view(request, 'Forum List')
     forum_list = Forum.objects.all()
     forums = []
     for forum in forum_list:
@@ -60,6 +66,7 @@ def view_forum(request, slug):
         - slug  =>  the slug of the forum to view (as a string)
 
     """
+    log_page_view(request, 'View Forum')
     forum = get_object_or_404(Forum, slug=slug)
     is_mod = (request.user.get_profile() in forum.moderators.all())
     objects = Thread.objects.filter(forum=forum).order_by('-updated')
@@ -80,6 +87,7 @@ def view_forum(request, slug):
 @permission_required('forums.add_forum', login_url=settings.FORBIDDEN_URL)
 def add_forum(request):
     """Render and process a form to create a new forum."""
+    log_page_view(request, 'Add Forum')
     if request.method == 'POST':
         form = ForumForm(request.POST)
         if form.is_valid():
@@ -93,6 +101,7 @@ def add_forum(request):
                 for mod in form.cleaned_data.get('moderators'):
                     forum.moderators.add(mod)
                 forum.save()
+                log.info('%s (%s) added new forum \'%s\'', request.user.username, request.user.get_full_name(), forum.name)
                 return HttpResponseRedirect(reverse('forums'))
     else:
         form = ForumForm()
@@ -111,6 +120,7 @@ def edit_forum(request, slug):
     If 'delete=true' appears in the request's query string, the forum will be deleted, along with all of its threads.
 
     """
+    log_page_view(request, 'Edit Forum')
     forum = get_object_or_404(Forum, slug=slug)
     profile = request.user.get_profile()
     if profile not in forum.moderators.all() and not profile.is_admin():
@@ -122,6 +132,7 @@ def edit_forum(request, slug):
             return HttpResponseRedirect(reverse('forums'))
     else:
         if 'delete' in request.GET and request.GET.get('delete') == 'true':
+            log.info('%s (%s) deleted forum \'%s\'', request.user.username, request.user.get_full_name(), forum.name)
             forum.delete()
             return HttpResponseRedirect(reverse('forums'))
         form = ForumForm(instance=forum)
@@ -143,6 +154,7 @@ def view_thread(request, forum, id, thread, page=1):
 
     """
 
+    log_page_view(request, 'View Thread')
     forum = get_object_or_404(Forum, slug=forum)
     thread = get_object_or_404(Thread, id=id)
     objects = Post.objects.filter(thread=thread).order_by('number')
@@ -176,6 +188,7 @@ def view_thread(request, forum, id, thread, page=1):
 @login_required
 def subscriptions(request):
     """Render a listing of all threads to which the current user is subscribed."""
+    log_page_view(request, 'Subscribed Threads')
     threads = request.user.get_profile().subscriptions.all().order_by('-updated')
     return render(request, 'forums/subscriptions.html', {'threads': threads, 'subscribe': True},
                   context_instance=RequestContext(request))
@@ -184,6 +197,7 @@ def subscriptions(request):
 @login_required
 def my_threads(request):
     """Render a listing of all threads belonging to the current user."""
+    log_page_view(request, 'My Threads')
     threads = Thread.objects.filter(owner=request.user.get_profile()).order_by('-updated')
     return render(request, 'forums/subscriptions.html', {'threads': threads, 'subscribe': False},
                   context_instance=RequestContext(request))
@@ -198,6 +212,7 @@ def add_thread(request, slug):
         - slug  =>  the slug of the forum to which the new thread should belong (as a string)
 
     """
+    log_page_view(request, 'Add Thread')
     forum = get_object_or_404(Forum, slug=slug)
     if request.method == 'POST':
         form = ThreadForm(request.POST)
@@ -235,6 +250,7 @@ def edit_thread(request, forum, id, thread):
     If 'delete=true' appears in the request's query string, the thread will be deleted, along with all of its posts.
 
     """
+    log_page_view(request, 'Edit Thread')
     forum = get_object_or_404(Forum, slug=forum)
     thread = get_object_or_404(Thread, id=id)
     first_post = get_object_or_404(Post, thread=thread, number=1)
@@ -271,6 +287,7 @@ def add_post(request, forum, id, thread):
 
     """
 
+    log_page_view(request, 'Reply to Thread')
     forum = get_object_or_404(Forum, slug=forum)
     thread = get_object_or_404(Thread, id=id)
 
@@ -323,6 +340,7 @@ def edit_post(request, id):
     be set to True), but the post instance will not actually deleted from the database.
 
     """
+    log_page_view(request, 'Edit Post')
     post = get_object_or_404(Post, id=id)
     profile = request.user.get_profile()
     if post.user != profile and profile not in post.thread.forum.moderators.all() and not profile.is_admin():

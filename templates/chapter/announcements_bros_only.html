@@ -2,7 +2,7 @@
 {% load url from future %}
 
 {% block title %}
-    Announcement List | {{ block.super }}
+    {% if private %}Private{% else %}All{% endif %} Announcements | {{ block.super }}
 {% endblock %}
 
 {% block head_extras %}
@@ -21,13 +21,27 @@
 
 {% block content %}
     <div style="float: right; padding: 15px">{% if private %}<a class="alwaysgreen" href="{% url 'gtphipsi.chapter.views.announcements' %}">{% endif %}all{% if private %}</a>{% endif %} | {% if not private %}<a class="alwaysgreen" href="{% url 'gtphipsi.chapter.views.announcements' %}?bros_only=true">{% endif %}only private{% if not private %}</a>{% endif %}</div>
-    <h1>Announcement List</h1>
-    <p>These are all the {% if private %}private{% endif %} announcements posted by the chapter.</p>
+    <h1>{% if private %}Private{% else %}All{% endif %} Announcements</h1>
+    <p style="margin: 10px 0 25px 0">These are all the {% if private %}private{% endif %} announcements posted by the chapter.</p>
     <ul>
     {% for announcement in announcements.object_list %}
         {% with announcement.id as id %}
-        <li>{% if announcement.date %}<strong>{{ announcement.date|date:"D, M j" }}:</strong>{% endif %} {{ announcement.text }} 
-            <span style="padding-left: 10px; font-style: italic; font-size: 0.8em; color: #999999">Posted by {{ announcement.user.get_full_name }} on {{ announcement.created|date:"M j" }} at {{ announcement.created|date:"g:i A" }}</span><span style="padding-left: 10px; font-size: 0.8em"><a href="{% url 'gtphipsi.chapter.views.edit_announcement' id=id %}">edit</a></span></li>
+        <li>
+            {% if announcement.date %}
+                <strong>{{ announcement.date|date:"D, M j" }}:</strong>
+            {% endif %}
+            {{ announcement.text }}
+            {% with announcement.user as announcer %}
+            <span style="padding-left: 10px; font-style: italic; font-size: 0.8em; color: #999999">Posted by {{ announcer.get_full_name }} on {{ announcement.created|date:"M j" }} at {{ announcement.created|date:"g:i A" }}</span>
+            {% ifequal announcer user_profile.user %}
+                <span style="padding-left: 10px; font-size: 0.8em"><a href="{% url 'gtphipsi.chapter.views.edit_announcement' id=id %}">edit</a></span>
+            {% else %}
+                {% if 'change_announcement' in group_perms %}
+                    <span style="padding-left: 10px; font-size: 0.8em"><a href="{% url 'gtphipsi.chapter.views.edit_announcement' id=id %}">edit</a></span>
+                {% endif %}
+            {% endifequal %}
+            {% endwith %}
+        </li>
         {% endwith %}
     {% empty %}
         <li>There are no announcements to display.</li>

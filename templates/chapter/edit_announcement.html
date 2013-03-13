@@ -29,6 +29,6 @@
         {% include "snippets/_table_form.html" with submit_text="Save" %}
     </form>
     {% if 'delete_announcement' in group_perms %}
-        <div style="float: right"><a href="#" onclick="confirm_delete()">delete</a></div>
+        <div style="float: right"><a onclick="confirm_delete()">delete</a></div>
     {% endif %}
 {% endblock %}

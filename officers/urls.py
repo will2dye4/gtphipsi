@@ -20,4 +20,5 @@ urlpatterns = patterns('gtphipsi.officers.views',
     url(r'^history/$', 'officer_history', name='officer_history'),
     url(r'^(?P<office>G?P|VGP|[A|B|S]G|Hod|H[i|M]|Phu|IFC)/edit/$', 'edit_officer', name='edit_officer'),
     url(r'^(?P<office>G?P|VGP|[A|B|S]G|Hod|H[i|M]|Phu|IFC)/history/$', 'office_history', name='office_history'),
+    url(r'^(?P<office>G?P|VGP|[A|B|S]G|Hod|H[i|M]|Phu|IFC)/history/add/$', 'add_office_history', name='add_office_history'),
 )

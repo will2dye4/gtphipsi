@@ -24,6 +24,7 @@ from django.template import RequestContext
 from gtphipsi.brothers.models import UserProfile, STATUS_BITS
 from gtphipsi.chapter.models import Announcement, InformationCard
 from gtphipsi.chapter.forms import AnnouncementForm
+from gtphipsi.common import log_page_view
 from gtphipsi.messages import get_message as _
 
 
@@ -39,22 +40,26 @@ log = logging.getLogger('django')
 
 def about(request):
     """Render a page of text containing general information about the chapter."""
+    log_page_view(request, 'Chapter Info')
     return render(request, 'chapter/about.html', context_instance=RequestContext(request))
 
 
 def history(request):
     """Render a page of text describing the history of the national fraternity and the Georgia Beta chapter."""
+    log_page_view(request, 'Chapter History')
     return render(request, 'chapter/history.html', context_instance=RequestContext(request))
 
 
 def creed(request):
     """Render a page of text containing the Creed of Phi Kappa Psi."""
+    log_page_view(request, 'Creed')
     return render(request, 'chapter/creed.html', context_instance=RequestContext(request))
 
 
 def announcements(request):
     """Render a listing of announcements posted by members of the chapter."""
 
+    log_page_view(request, 'Announcement List')
     private = False
     if request.user.is_authenticated():
         if 'bros_only' in request.GET and request.GET['bros_only'] == 'true':
@@ -99,6 +104,7 @@ def add_announcement(request):
     who have submitted information cards and elected to subscribe to chapter updates.
 
     """
+    log_page_view(request, 'Add Announcement')
     if request.method == 'POST':
         form = AnnouncementForm(request.POST)
         if form.is_valid():
@@ -114,6 +120,8 @@ def add_announcement(request):
                                                                        date, announcement.text, settings.URI_PREFIX)),
                                    to=['messenger@gtphipsi.org'], bcc=recipients)
             message.send()
+            log.info('%s (%s) added a new announcement: \'%s\'', request.user.username, request.user.get_full_name(),
+                     announcement.text)
             return HttpResponseRedirect(reverse('announcements'))
     else:
         form = AnnouncementForm()
@@ -131,6 +139,7 @@ def edit_announcement(request, id):
     If 'delete=true' appears in the request's query string, the announcement will be deleted.
 
     """
+    log_page_view(request, 'Edit Announcement')
     announcement = get_object_or_404(Announcement, id=id)
     profile = request.user.get_profile()
     if announcement.user != request.user and not profile.is_admin():
@@ -144,7 +153,7 @@ def edit_announcement(request, id):
         if 'delete' in request.GET and request.GET['delete'] == 'true':
             text = announcement.text
             announcement.delete()
-            log.info('User %s (badge %d) deleted announcement "%s"', request.user.get_full_name(), profile.badge, text)
+            log.info('%s (%s) deleted announcement \'%s\'', request.user.username, request.user.get_full_name(), text)
             return HttpResponseRedirect(reverse('announcements'))
         form = AnnouncementForm(instance=announcement)
     return render(request, 'chapter/edit_announcement.html', {'form': form, 'id': announcement.id},

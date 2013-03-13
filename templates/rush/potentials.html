@@ -124,7 +124,7 @@
                             {% if not rush %}
                                 <td class="middle">{{ potential.rush }}</td>
                             {% endif %}
-                            <td class="middle">{{ potential.created|date:"F d, Y" }}</td>
+                            <td class="middle">{{ potential.created|date:"F j, Y" }}</td>
                             <td class="right" align="center"><input type="checkbox" name="potential" value="{{ potential.id }}" /></td>
                         </tr>
                     {% endfor %}

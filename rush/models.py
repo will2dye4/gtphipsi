@@ -79,6 +79,7 @@ class RushEvent(models.Model):
     start = models.TimeField(null=True)
     end = models.TimeField(null=True)
     location = models.CharField(max_length=100, blank=True)
+    link = models.CharField(max_length=100, blank=True, help_text='A website to link to for the event\'s location (if applicable)')
     food = models.CharField(max_length=75, blank=True)
 
     def __unicode__(self):

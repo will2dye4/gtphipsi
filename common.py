@@ -4,11 +4,14 @@ This module exports the following functions:
     - get_name_from_badge (badge)
     - get_all_big_bro_choices ()
     - create_user_and_profile (form_data)
+    - log_page_view (request, name)
 
 This module exports the following constant definitions:
     - REFERRER
 
 """
+
+import logging
 
 from django.conf import settings
 from django.contrib.auth.models import Group, Permission
@@ -16,6 +19,8 @@ from django.contrib.auth.models import Group, Permission
 from gtphipsi.brothers.bootstrap import INITIAL_BROTHER_LIST
 from gtphipsi.brothers.models import User, UserProfile, VisibilitySettings
 
+
+log = logging.getLogger('django.request')
 
 # The literal name of the HTTP Referrer header. The typo below in 'referrer' is intentional.
 REFERRER = 'HTTP_REFERER'
@@ -58,6 +63,26 @@ def create_user_and_profile(form_data):
                                          public_visibility=public, chapter_visibility=chapter)
     profile.save()
 
+
+def log_page_view(request, name):
+    """Log a view to the specified page (view), including information about the client viewing the page."""
+    method = request.method
+    path = request.path
+    if method == 'POST':
+        post = ', POST Data: { '
+        for key, value in request.POST.iteritems():
+            if key not in ['csrfmiddlewaretoken', 'password', 'confirm', 'old_pass']:
+                post += '%s: \'%s\', ' % (key, unicode(value))
+        post += '}'
+    else:
+        post = ''
+    if request.user.is_authenticated():
+        profile = request.user.get_profile()
+        client_string = ' User: %s (%s ... %d),' % (request.user.username, profile.common_name(), profile.badge)
+    else:
+        client_string = ''
+    user_agent = request.META['HTTP_USER_AGENT']
+    log.debug('[%s]%s Request: %s %s%s, User Agent: %s' % (name, client_string, method, path, post, user_agent))
 
 
 

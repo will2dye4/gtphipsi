@@ -35,7 +35,7 @@ class ChapterOfficer(models.Model):
 
     office = models.CharField(choices=OFFICER_CHOICES, max_length=3)
     brother = models.ForeignKey(UserProfile, related_name='offices')
-    updated = models.DateTimeField(auto_now=True)
+    updated = models.DateField()
 
 
 class OfficerHistory(models.Model):
@@ -43,5 +43,5 @@ class OfficerHistory(models.Model):
 
     office = models.CharField(choices=OFFICER_CHOICES, max_length=3)
     brother = models.ForeignKey(UserProfile, related_name='former_offices')
-    start = models.DateTimeField()
-    end = models.DateTimeField(auto_now_add=True)
+    start = models.DateField(verbose_name='Start date')
+    end = models.DateField(verbose_name='End date')

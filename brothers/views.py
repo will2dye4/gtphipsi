@@ -45,7 +45,7 @@ from gtphipsi.brothers.bootstrap import INITIAL_BROTHER_LIST as IBL
 from gtphipsi.brothers.forms import ChangePasswordForm, ChapterVisibilityForm, EditAccountForm, EditProfileForm,\
     NotificationSettingsForm, PublicVisibilityForm, UserForm
 from gtphipsi.brothers.models import EmailChangeRequest, UserProfile, STATUS_BITS
-from gtphipsi.common import create_user_and_profile, get_name_from_badge
+from gtphipsi.common import create_user_and_profile, get_name_from_badge, log_page_view
 from gtphipsi.messages import get_message
 
 
@@ -61,6 +61,7 @@ log = logging.getLogger('django')
 
 def list(request):
     """Render a listing of all members of the chapter, separating undergraduates from alumni."""
+    log_page_view(request, 'Brother List')
     columns = 3
     undergrad_rows, num_undergrads = _get_brother_listing(num_cols=columns)
     alumni_rows, num_alumni = _get_brother_listing(False, columns)
@@ -76,6 +77,7 @@ def show(request, badge):
         - badge =>  the badge number of the brother to view (as an integer)
 
     """
+    log_page_view(request, 'View Profile')
     try:
         profile = UserProfile.objects.get(badge=badge)
         user = profile.user
@@ -105,9 +107,11 @@ def show(request, badge):
 
 def change_email(request):
     """Process a request from a user to change his email address, verifying the validity of the new email address."""
+    log_page_view(request, 'Change Email')
     if 'hash' in request.GET:
         req = get_object_or_404(EmailChangeRequest, hash=request.GET.get('hash'))
         user = req.user
+        log.info('Email address for %s (%s) changed from %s to %s', user.username, user.get_full_name(), user.email, req.email)
         user.email = req.email
         user.save()
         req.delete()    # to keep the email change request table as small as possible, delete requests as they are processed
@@ -132,12 +136,14 @@ def change_email_success(request):
 @login_required
 def my_profile(request):
     """Return a display of information about the currently authenticated user."""
+    log_page_view(request, 'My Profile')
     return show(request, request.user.get_profile().badge)
 
 
 @login_required
 def manage(request):
     """Return a listing of user accounts along with some administrative data (which users are locked out)."""
+    log_page_view(request, 'Manage Users')
     undergrads = UserProfile.objects.filter(status='U')
     alumni = UserProfile.objects.filter(status='A')
     if 'sort' in request.GET:
@@ -156,13 +162,13 @@ def manage(request):
 @permission_required('brothers.add_userprofile', login_url=settings.FORBIDDEN_URL)
 def add(request):
     """Render and process a form for administrators to create new user accounts."""
+    log_page_view(request, 'Add User')
     if request.method == 'POST':
         form = UserForm(request.POST)
         if form.is_valid():
             create_user_and_profile(form.cleaned_data)
-            log.info('Admin %s (badge %d) created new user %s (%s %s)', request.user.get_full_name(),
-                    request.user.get_profile().badge, form.cleaned_data['username'], form.cleaned_data['first_name'],
-                    form.cleaned_data['last_name'])
+            log.info('Admin %s (#%d) created new user %s (badge = %d)', request.user.get_full_name(),
+                    request.user.get_profile().badge, form.cleaned_data['username'], form.cleaned_data['badge'])
             return HttpResponseRedirect(reverse('manage_users'))
     else:
         form = UserForm()
@@ -174,6 +180,7 @@ def add(request):
 @login_required
 def edit(request):
     """Render a form for the currently authenticated user to modify his user profile."""
+    log_page_view(request, 'Edit Profile')
     profile = get_object_or_404(UserProfile, user=request.user)
     if request.method == 'POST':
         form = EditProfileForm(request.POST, instance=profile)
@@ -194,10 +201,12 @@ def unlock(request, badge):
         - badge =>  the badge number of the user to unlock (as an integer)
 
     """
+    log_page_view(request, 'Unlock Account')
     profile = get_object_or_404(UserProfile, badge=badge)
     if profile.has_bit(STATUS_BITS['LOCKED_OUT']):
         profile.clear_bit(STATUS_BITS['LOCKED_OUT'])
         profile.save()
+        log.info('User %s (%s) is now unlocked', profile.user.username, profile.user.get_full_name())
     return HttpResponseRedirect(reverse('manage_users'))
 
 
@@ -209,6 +218,8 @@ def edit_account(request, badge=0):
         - badge =>  the badge number of the user to edit (as an integer): defaults to the currently authenticated user
 
     """
+
+    log_page_view(request, 'Edit Account')
 
     if badge:
         profile = get_object_or_404(UserProfile, badge=badge)
@@ -270,6 +281,7 @@ def edit_account(request, badge=0):
 def change_password(request):
     """Render and process a form for the currently authenticated user to change his password."""
 
+    log_page_view(request, 'Change Password')
     user = request.user
     profile = user.get_profile()
     reset = profile.has_bit(STATUS_BITS['PASSWORD_RESET'])
@@ -287,6 +299,7 @@ def change_password(request):
                 send_mail(get_message('email.new_password.subject'),
                           get_message('email.new_password.body', args=(user.first_name,)),
                           settings.EMAIL_HOST_USER, [user.email])
+            log.info('User %s (%s) changed his password', user.username, user.get_full_name())
             return HttpResponseRedirect(reverse('change_password_success'))
     else:
         form = ChangePasswordForm()
@@ -307,6 +320,7 @@ def change_password_success(request):
 @permission_required('auth.change_group', login_url=settings.FORBIDDEN_URL)
 def manage_groups(request):
     """Render a listing of user groups and the brothers or permissions belonging to each group."""
+    log_page_view(request, 'Manage User Groups')
     groups = Group.objects.all()
     if request.GET.get('view', '') == 'members':
         group_list = []
@@ -324,6 +338,7 @@ def manage_groups(request):
 @permission_required('auth.add_group', login_url=settings.FORBIDDEN_URL)
 def add_group(request):
     """Render and process a form to create a new user group."""
+    log_page_view(request, 'Add User Group')
     error = None
     initial_name = ''   # empty string, not None (otherwise 'None' will appear in the form input)
     if request.method == 'POST':
@@ -349,6 +364,7 @@ def add_group(request):
                 group = Group.objects.create(name=group_name)
                 group.permissions = Permission.objects.filter(id__in=ids)
                 group.save()
+                log.info('%s (%s) created user group \'%s\'', request.user.username, request.user.get_full_name(), group_name)
                 return HttpResponseRedirect(reverse('view_group', kwargs={'name': group.name}))
     perms = _get_available_permissions()
     choices = [[perm.id, perm.name] for perm in perms]
@@ -366,10 +382,8 @@ def edit_group_perms(request, id):
         - id  =>  the unique ID of the group to edit (as an integer)
 
     """
-    try:
-        group = Group.objects.get(id=id)
-    except Group.DoesNotExist:
-        raise Http404
+    log_page_view(request, 'Edit Group Permissions')
+    group = get_object_or_404(Group, id=id)
     if request.method == 'POST':
         ids = []
         for name, value in request.POST.items():
@@ -378,6 +392,7 @@ def edit_group_perms(request, id):
         group.permissions = Permission.objects.filter(id__in=ids)
         group.save()
         del request.session['group_perms']  # clear existing group permissions in case they just changed
+        log.info('%s (%s) edited permissions for group \'%s\'', request.user.username, request.user.get_full_name(), group.name)
         return HttpResponseRedirect(reverse('view_group', kwargs={'id': group.id}))
     else:
         perms = _get_available_permissions()
@@ -402,10 +417,8 @@ def edit_group_members(request, id):
         - id  =>  the unique ID of the group to edit (as an integer)
 
     """
-    try:
-        group = Group.objects.get(id=id)
-    except Group.DoesNotExist:
-        raise Http404
+    log_page_view(request, 'Edit Group Members')
+    group = get_object_or_404(Group, id=id)
     if request.method == 'POST':
         user_ids = []
         for name, value in request.POST.items():
@@ -414,6 +427,7 @@ def edit_group_members(request, id):
         group.user_set = User.objects.filter(id__in=user_ids)
         group.save()
         del request.session['group_perms']  # clear existing group permissions in case they just changed
+        log.info('%s (%s) edited members of group \'%s\'', request.user.username, request.user.get_full_name(), group.name)
         return HttpResponseRedirect(reverse('view_group', kwargs={'id': group.id}))
     else:
         users = User.objects.exclude(is_superuser=True) # only one superuser (root) should exist, so exclude that user
@@ -438,9 +452,11 @@ def delete_group(request, id):
         - id  =>  the unique ID of the group to delete (as an integer)
 
     """
+    log_page_view(request, 'Delete User Group')
     group = get_object_or_404(Group, id=id)
     group.user_set = User.objects.none()
     group.save()
+    log.info('%s (%s) deleted user group \'%s\'', request.user.username, request.user.get_full_name(), group.name)
     group.delete()
     return HttpResponseRedirect(reverse('manage_groups'))
 
@@ -454,6 +470,7 @@ def show_group(request, id):
         - id  =>  the unique ID of the group to display (as an integer)
 
     """
+    log_page_view(request, 'View User Group')
     group = get_object_or_404(Group, id=id)
     profiles = UserProfile.objects.filter(user__id__in=group.user_set.values_list('id', flat=True)).order_by('badge')
     names = ['%s ... %d' % (profile.common_name(), profile.badge) for profile in profiles]
@@ -464,6 +481,7 @@ def show_group(request, id):
 @login_required
 def visibility(request):
     """Render a display of the currently authenticated user's visibility settings, both public and private."""
+    log_page_view(request, 'Visibility Settings')
     profile = request.user.get_profile()
     public = profile.public_visibility
     chapter = profile.chapter_visibility
@@ -506,12 +524,14 @@ def edit_visibility(request, public=True):
 @login_required
 def edit_public_visibility(request):
     """Render a form for the currently authenticated user to modify his public visibility settings."""
+    log_page_view(request, 'Edit Public Visibility')
     return edit_visibility(request)
 
 
 @login_required
 def edit_chapter_visibility(request):
     """Render a form for the currently authenticated user to modify his chapter visibility settings."""
+    log_page_view(request, 'Edit Chapter Visibility')
     return edit_visibility(request, False)
 
 
@@ -519,6 +539,7 @@ def edit_chapter_visibility(request):
 def edit_notification_settings(request):
     """Render and process a form for the currently authenticated user to modify his notification settings."""
 
+    log_page_view(request, 'Edit Notification Settings')
     profile = request.user.get_profile()
     initial = {'infocard': profile.has_bit(STATUS_BITS['EMAIL_NEW_INFOCARD']),
                'contact': profile.has_bit(STATUS_BITS['EMAIL_NEW_CONTACT']),

@@ -53,7 +53,7 @@
     {% for group in groups %}
     {% with group.name as group_name %}
         <li>
-            <a href="#" id="{{ group_name }}_toggle" class="hovercolor" onclick="togglePermissionDisplay('{{ group_name }}', true)">+</a> <b><a class="hovercolor" href="{% url 'gtphipsi.brothers.views.show_group' id=group.id %}">{{ group_name }}</a></b>
+            <a href="." id="{{ group_name }}_toggle" class="hovercolor" onclick="togglePermissionDisplay('{{ group_name }}', true)">+</a> <b><a class="hovercolor" href="{% url 'gtphipsi.brothers.views.show_group' id=group.id %}">{{ group_name }}</a></b>
             <ul id="{{ group_name }}_permissions" style="display: none">
             {% for permission in group.permissions.all %}
                 <li>{{ permission.name }}</li>
@@ -67,7 +67,7 @@
     {% else %}
     {% for id, name, members in group_list %}
         <li>
-            <a href="#" id="{{ name }}_toggle" class="hovercolor" onclick="togglePermissionDisplay('{{ name }}', false)">+</a> <b><a class="hovercolor" href="{% url 'gtphipsi.brothers.views.show_group' id=id %}">{{ name }}</a></b>
+            <a href="." id="{{ name }}_toggle" class="hovercolor" onclick="togglePermissionDisplay('{{ name }}', false)">+</a> <b><a class="hovercolor" href="{% url 'gtphipsi.brothers.views.show_group' id=id %}">{{ name }}</a></b>
             <ul id="{{ name }}_members" style="display: none">
             {% for member in members %}
                 <li>{{ member }}</li>

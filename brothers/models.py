@@ -223,4 +223,4 @@ class EmailChangeRequest(models.Model):
     """A request from a user to change his email address."""
     user = models.ForeignKey(User)
     email = models.EmailField()
-    hash = models.CharField(max_length=28)
+    hash = models.CharField(max_length=64)

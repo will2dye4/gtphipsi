@@ -59,7 +59,7 @@ def menu_item_processor(request):
         elif path.startswith('/forums'):
             menu_item = 'forums'
     else:
-        if path.startswith('/chapter') or path.startswith('/brothers'):
+        if path.startswith('/chapter') or path.startswith('/brothers') or path.startswith('/officers'):
             menu_item = 'chapter'
         elif path.startswith('/contact'):
             menu_item = 'contact'

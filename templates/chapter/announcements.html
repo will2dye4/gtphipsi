@@ -2,7 +2,7 @@
 {% load url from future %}
 
 {% block title %}
-    Announcement List | {{ block.super }}
+    All Announcements | {{ block.super }}
 {% endblock %}
 
 {% block head_extras %}
@@ -20,8 +20,8 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Announcement List</h1>
-    <p>These are all the announcements posted by the chapter.</p>
+    <h1>All Announcements</h1>
+    <p style="margin: 10px 0 25px 0">These are all the announcements posted by the chapter.</p>
     <ul>
     {% for announcement in announcements.object_list %}
         <li>{% if announcement.date %}<strong>{{ announcement.date|date:"D, M j" }}:</strong>{% endif %} {{ announcement.text }} <span style="padding-left: 10px; font-style: italic; color: #999999">Posted on {{ announcement.created|date:"M j" }} at {{ announcement.created|date:"g:i A" }}</span></li>

@@ -62,7 +62,7 @@
     {% endifnotequal %}
     <h2>Recent Announcements</h2>
     {% ifequal announcements|length 0 %}
-        <p>There are no recent announcements to display.</p>
+        <p style="margin-bottom: 40px">There are no recent announcements to display.</p>
     {% else %}
         <table class="list">
             <thead>
@@ -94,7 +94,7 @@
                 <tr class="heading">
                     <td class="left">Name</td>
                     <td class="middle">Email</td>
-                    <td class="middle">Year</td>
+                    <td width="15%" class="middle">Year</td>
                     <td class="middle">Submitted</td>
                     <td class="right">Subscribed</td>
                 </tr>
@@ -104,7 +104,7 @@
                 <tr>
                     <td class="left"><a class="alwaysgreen" href="{{ card.get_absolute_url }}">{{ card.name }}</a></td>
                     <td class="middle">{{ card.email }}</td>
-                    <td class="middle">{{ card.get_year_display }}</td>
+                    <td width="15%" class="middle">{{ card.get_year_display }}</td>
                     <td class="middle">{{ card.created|date:"n/j/Y f A" }}</td>
                     <td class="right center">{{ card.subscribe|yesno:"Yes,No" }}</td>
                 </tr>

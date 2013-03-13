@@ -7,9 +7,12 @@
 
 {% block content %}
     <h1>The Brothers</h1>
-    <p>The chapter currently has {{ num_undergrads }} undergraduate brother{{ num_undergrads|pluralize }}. The following is a list of the chapter's current active membership as well as a list of the chapter's alumni below that.</p>
-    <table width="100%">
-        <tbody>
+    {% ifequal num_undergrads 0 %}
+        <p>There is currently no available information about the chapter's members. Please check back later.</p>
+    {% else %}
+        <p>The chapter currently has {{ num_undergrads }} undergraduate brother{{ num_undergrads|pluralize }}. The following is a list of the chapter's current active membership as well as a list of the chapter's alumni below that.</p>
+        <table width="100%">
+            <tbody>
             {% for row in undergrad_rows %}
                 <tr>
                     {% for data in row %}
@@ -19,22 +22,23 @@
                     {% endfor %}
                 </tr>
             {% endfor %}
-        </tbody>
-    </table>
-    <br />
-    <hr>
-    <br />
-    <table width="100%">
-        <tbody>
-        {% for row in alumni_rows %}
-            <tr>
-                {% for data in row %}
-                    {% with badge=data.0 name=data.1 has_profile=data.2 %}
-                        <td width="{{ col_width }}%">{% if data %}{% if has_profile %}<a class="hovercolor" href="{% url 'gtphipsi.brothers.views.show' badge=badge %}">{% endif %}{{ name }} ... {{ badge }}{% if has_profile %}</a>{% endif %}{% endif %}</td>
-                    {% endwith %}
-                {% endfor %}
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+        <br />
+        <hr>
+        <br />
+        <table width="100%">
+            <tbody>
+            {% for row in alumni_rows %}
+                <tr>
+                    {% for data in row %}
+                        {% with badge=data.0 name=data.1 has_profile=data.2 %}
+                            <td width="{{ col_width }}%">{% if data %}{% if has_profile %}<a class="hovercolor" href="{% url 'gtphipsi.brothers.views.show' badge=badge %}">{% endif %}{{ name }} ... {{ badge }}{% if has_profile %}</a>{% endif %}{% endif %}</td>
+                        {% endwith %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endifequal %}
 {% endblock %}

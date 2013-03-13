@@ -4,15 +4,54 @@
     Rush Schedule | {{ block.super }}
 {% endblock %}
 
+{% block head_extras %}
+    <style type="text/css">
+        table.details {
+            margin-bottom: 25px;
+        }
+        table.details tbody tr td {
+            min-width: 85px;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
     <h1>Schedule for {{ rush }}</h1>
     <br />
     {% for event in rush.events.all %}
         <h3>{{ event.date|date:"l, F j" }} &mdash; {{ event.title }}</h3>
-        <p><strong>Location:</strong>{% if event.location %} {{ event.location }} {% else %} TBA {% endif %}<br />
-            <strong>Time:</strong> {{ event.start|time:"g:i A" }} &ndash; {{ event.end|time:"g:i A" }}<br />
-            {% if event.food %}<strong>Food:</strong> {{ event.food }}<br />{% endif %}
-            {% if event.description %}<strong>Description:</strong> {{ event.description }}</p>{% endif %}
+        <table class="details">
+            <tbody>
+                <tr>
+                    <td class="label top">Location</td>
+                    <td class="value top">
+                        {% if event.location %}
+                            {% if event.link %}<a href="{{ event.link }}" target="_blank">{% endif %}
+                            {{ event.location }}
+                            {% if event.link %}</a>{% endif %}
+                        {% else %}
+                            TBA
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">Time</td>
+                    <td class="value">{{ event.start|time:"g:i A" }} &ndash; {{ event.end|time:"g:i A" }}</td>
+                </tr>
+                {% if event.food %}
+                    <tr>
+                        <td class="label">Food</td>
+                        <td class="value">{{ event.food }}</td>
+                    </tr>
+                {% endif %}
+                {% if event.description %}
+                    <tr>
+                        <td class="label">Description</td>
+                        <td class="value">{{ event.description }}</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
     {% empty %}
         <p>There are currently no events to display. Check back soon!</p>
     {% endfor %}

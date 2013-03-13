@@ -33,7 +33,7 @@ from gtphipsi.brothers.forms import UserForm
 from gtphipsi.brothers.models import UserProfile, STATUS_BITS
 from gtphipsi.chapter.forms import ContactForm
 from gtphipsi.chapter.models import Announcement, InformationCard
-from gtphipsi.common import create_user_and_profile, REFERRER
+from gtphipsi.common import create_user_and_profile, log_page_view, REFERRER
 from gtphipsi.messages import get_message
 
 
@@ -49,6 +49,7 @@ log = logging.getLogger('django.request')
 
 def home(request):
     """Render a home page - a page of text for visitors and a sort of 'dashboard' view for authenticated members."""
+    log_page_view(request, 'Home')
     if request.user.is_anonymous():
         template = 'index.html'
         context = {}    # main index doesn't require any context
@@ -72,6 +73,7 @@ def home(request):
 def sign_in(request):
     """Render and process a form for users to sign into their accounts."""
 
+    log_page_view(request, 'Sign In')
     if request.user.is_authenticated():
         return HttpResponseRedirect(reverse('home'))    # you can't sign in once you're signed in ...
 
@@ -98,6 +100,7 @@ def sign_in(request):
                 error = get_message('login.account.locked')
                 profile.set_bit(STATUS_BITS['LOCKED_OUT'])
                 profile.save()
+                log.info('User %s (%s) is now locked out', profile.user.username, profile.common_name())
             else:
                 user = authenticate(username=username, password=request.POST.get('password'))
                 if user is None:
@@ -106,6 +109,8 @@ def sign_in(request):
                 elif not user.is_active:
                     error = get_message('login.account.disabled')
                 else:
+                    log.info('User %s (%s) signed in - last login was %s', user.username, user.get_full_name(),
+                             user.last_login.strftime('%m/%d/%Y %I:%M %p'))
                     login(request, user)
                     del request.session['login_attempts'], request.session['username'], request.session['group_perms']
                     return HttpResponseRedirect(_get_redirect_destination(request.META[REFERRER], user.get_profile()))
@@ -118,6 +123,8 @@ def sign_in(request):
 
 def sign_out(request):
     """Sign out the currently authenticated user (if there is one), then redirect to the home page."""
+    log_page_view(request, 'Sign Out')
+    log.info('User %s (%s) signed out', request.user.username, request.user.get_full_name())
     logout(request)
     if 'group_perms' in request.session:
         del request.session['group_perms']
@@ -126,17 +133,21 @@ def sign_out(request):
 
 def forbidden(request):
     """Render a 'forbidden' page when a user tries to go to a page that he is not allowed to view."""
+    log_page_view(request, 'Forbidden')
+    log.info('Forbidden action attempted!')
     return render(request, 'forbidden.html', context_instance=RequestContext(request))
 
 
 def register(request):
     """Render and process a form for members to register with the site."""
+    log_page_view(request, 'Register')
     if request.user.is_authenticated():
         return HttpResponseRedirect(reverse('home'))
     if request.method == 'POST':
         form = UserForm(request.POST)
         if form.is_valid():
             create_user_and_profile(form.cleaned_data)
+            log.info('Created new user and profile (badge = %d)', form.cleaned_data.get('badge'))
             return HttpResponseRedirect(reverse('register_success'))
     else:
         form = UserForm()
@@ -150,11 +161,13 @@ def register_success(request):
 
 def calendar(request):
     """Display the chapter's calendar of events (currently displays a Google calendar inline)."""
+    log_page_view(request, 'Calendar')
     return render(request, 'public/calendar.html', context_instance=RequestContext(request))
 
 
 def contact(request):
     """Render and process a form for visitors to contact the chapter."""
+    log_page_view(request, 'Contact Us')
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
@@ -177,6 +190,7 @@ def contact_thanks(request):
 def forgot_password(request):
     """Render and process a form to allow users to reset their passwords."""
 
+    log_page_view(request, 'Forgot Password')
     if request.user.is_authenticated() and not request.user.get_profile().is_admin():
         return HttpResponseRedirect(reverse('forbidden'))   # if you're logged in but not admin, you shouldn't be here
 
@@ -207,6 +221,7 @@ def reset_password(request, id):
 
     """
 
+    log_page_view(request, 'Reset Password')
     if request.user.is_authenticated() and not request.user.get_profile().is_admin():
         return HttpResponseRedirect(reverse('forbidden'))   # non-admins should use the 'change password' form
 
@@ -226,10 +241,10 @@ def reset_password(request, id):
         user.email_user(get_message('email.password.subject'), message)
 
         if anonymous:
-            log.info('Password reset for user %s. Email sent successfully to %s', user.get_full_name(), user.email)
+            log.info('Password reset for %s (%s) - temporary password emailed to %s', user.username, user.get_full_name(), user.email)
             redirect = reverse('reset_password_success')
         else:
-            log.info('Admin %s (badge %d) reset password for user %s (%s). Email sent successfully to %s',
+            log.info('Admin %s (#%d) reset password for %s (%s) - temporary password emailed to %s',
                      request.user.get_full_name(), request.user.get_profile().badge, user.username,
                      user.get_full_name(), user.email)
             redirect = reverse('manage_users')
