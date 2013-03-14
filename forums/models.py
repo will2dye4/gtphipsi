@@ -33,6 +33,10 @@ class Forum(models.Model):
         """Return the absolute URL path for the forum."""
         return reverse('view_forum', kwargs={'slug': self.slug})
 
+    class Meta:
+        """Define a default sort by name ascending."""
+        ordering = ['name']
+
 
 class Post(models.Model):
 
