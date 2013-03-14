@@ -36,7 +36,8 @@ def get_all_big_bro_choices():
     list = INITIAL_BROTHER_LIST
     for profile in UserProfile.objects.filter(badge__gte=len(INITIAL_BROTHER_LIST)).order_by('badge'):
         tup = (profile.badge, profile.common_name())
-        list.append(tup)
+        if tup not in list:
+            list.append(tup)
     return list
 
 
