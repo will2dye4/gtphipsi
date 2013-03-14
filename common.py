@@ -71,7 +71,7 @@ def log_page_view(request, name):
     if method == 'POST':
         post = ', POST Data: { '
         for key, value in request.POST.iteritems():
-            if key not in ['csrfmiddlewaretoken', 'password', 'confirm', 'old_pass']:
+            if key not in ['csrfmiddlewaretoken', 'password', 'confirm', 'old_pass', 'secret_key', 'admin_password']:
                 post += '%s: \'%s\', ' % (key, unicode(value))
         post += '}'
     else:
@@ -82,9 +82,9 @@ def log_page_view(request, name):
     else:
         client_string = ''
     if 'HTTP_USER_AGENT' in request.META:
-	user_agent = request.META['HTTP_USER_AGENT']
+        user_agent = request.META['HTTP_USER_AGENT']
     else:
-	user_agent = '<not supplied>'
+        user_agent = '<not supplied>'
     log.debug('[%s]%s Request: %s %s%s, User Agent: %s' % (name, client_string, method, path, post, user_agent))
 
 
