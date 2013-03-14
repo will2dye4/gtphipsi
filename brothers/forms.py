@@ -69,7 +69,7 @@ class UserForm(forms.Form):
     def __init__(self, data=None):
         """Initialize the form and set the list of choices for the 'big_brother' field."""
         super(UserForm, self).__init__(data=data)
-        self.fields['big_brother']._set_choices(get_all_big_bro_choices())
+        self.fields['big_brother'].choices = get_all_big_bro_choices()
 
     def clean_username(self):
         """Ensure that the user does not enter a user name that is already taken."""
@@ -153,7 +153,7 @@ class EditProfileForm(forms.ModelForm):
     def __init__(self, data=None, instance=None):
         """Initialize the form and set the list of choices for the 'big_brother' field."""
         super(EditProfileForm, self).__init__(data=data, instance=instance)
-        self.fields['big_brother']._set_choices(get_all_big_bro_choices())
+        self.fields['big_brother'].choices = get_all_big_bro_choices()
 
     def clean_big_brother(self):
         """Ensure that the user does not try to specify himself or a younger member as his big brother."""
