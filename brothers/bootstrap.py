@@ -110,15 +110,15 @@ INITIAL_BROTHER_LIST = [
     (98, 'William Dye'),        # undergrad
     (99, 'William Cole'),       # undergrad
     (100, 'Brendan Haber'),     # undergrad
-#    (101, 'Mark Oh'),           # alumnus
+    (101, 'Mark Oh'),           # alumnus
     (102, 'Samuel Lancaster'),  # undergrad
     (103, 'Simisola Oludare'),  # undergrad
-#    (104, 'James Kelley'),      # alumnus
+    (104, 'James Kelley'),      # alumnus
     (105, 'Christopher Chun'),  # undergrad
-#    (106, 'Tony Choi'),         # alumnus
+    (106, 'Tony Choi'),         # alumnus
     (107, 'Henry Skelton'),     # undergrad
-#    (108, 'AJ Yllander'),       # undergrad
-#    (109, 'CJ Oh'),             # alumnus
+    (108, 'AJ Yllander'),       # undergrad
+    (109, 'CJ Oh'),             # alumnus
     (110, 'Andrew Schuster'),   # undergrad
     (111, 'Adam DeBruler'),     # undergrad
     (112, 'John Brawley'),      # undergrad
