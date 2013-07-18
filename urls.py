@@ -5,6 +5,7 @@ All URIs are routed to this URL configuration, then possibly dispatched to other
 """
 
 from django.conf.urls.defaults import patterns, url, include
+from django.views.generic.simple import direct_to_template
 
 
 # 'Global' pages. These are pages that don't fit neatly into one app (submodule) or another.
@@ -20,7 +21,8 @@ urlpatterns = patterns('gtphipsi.views',
     url(r'^forbidden/$', 'forbidden', name='forbidden'),
     url(r'^forgot/$', 'forgot_password', name='forgot_password'),
     url(r'^reset/(?P<id>\d+)/$', 'reset_password', name='reset_password'),
-    url(r'^reset/success/$', 'reset_password_success', name='reset_password_success')
+    url(r'^reset/success/$', 'reset_password_success', name='reset_password_success'),
+    url(r'^robots\.txt$', direct_to_template, {'template': 'robots.txt', 'mimetype': 'text/plain'}),
 )
 
 # Include other URL configurations for app-specific pages.
