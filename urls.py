@@ -32,6 +32,7 @@ urlpatterns += patterns('',
      url(r'^rush/', include('gtphipsi.rush.urls')),
      url(r'^chapter/', include('gtphipsi.chapter.urls')),
      url(r'^forums/', include('gtphipsi.forums.urls')),
+     url(r'^rest/v1/', include('gtphipsi.rest.v1.urls')),
 )
 
 # Hack - to continue to support the old rush schedule URI.

@@ -66,10 +66,13 @@ class Announcement(models.Model):
 class ContactRecord(models.Model):
     """A contact record, used by nonmembers to contact the chapter."""
 
-    name = models.CharField(max_length=50)
+    MAX_NAME_LENGTH = 50
+    MAX_MESSAGE_LENGTH = 500
+
+    name = models.CharField(max_length=MAX_NAME_LENGTH)
     email = models.EmailField()
     phone = PhoneNumberField(blank=True, help_text="XXX-XXX-XXXX")
-    message = models.TextField(default='--', validators=[MaxLengthValidator(500)])
+    message = models.TextField(default='--', validators=[MaxLengthValidator(MAX_MESSAGE_LENGTH)])
     created = models.DateTimeField(auto_now_add=True, null=True)
 
     def __unicode__(self):
@@ -88,9 +91,12 @@ class ContactRecord(models.Model):
 class InformationCard(ContactRecord):
     """An information card, used by potential members to provide information about themselves to the chapter."""
 
+    MAX_INTERESTS_LENGTH = 150
+    MAX_RELATIVES_LENGTH = MAX_INTERESTS_LENGTH
+
     year = models.CharField(choices=YEAR_CHOICES, max_length=3)
-    interests = models.CharField(max_length=150, blank=True)
-    relatives = models.CharField(max_length=150, blank=True, verbose_name="Phi Psi Relatives",
+    interests = models.CharField(max_length=MAX_INTERESTS_LENGTH, blank=True)
+    relatives = models.CharField(max_length=MAX_RELATIVES_LENGTH, blank=True, verbose_name="Phi Psi Relatives",
                                  help_text="If any, please include chapter and year.")
     subscribe = models.BooleanField(default=False, help_text="Get updates on the chapter's activities.")
 

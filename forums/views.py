@@ -28,7 +28,7 @@ from django.shortcuts import get_object_or_404, render
 from django.template import RequestContext
 from django.template.defaultfilters import slugify
 
-from gtphipsi.common import log_page_view
+from gtphipsi.common import bb_code_escape, bb_code_unescape, log_page_view
 from gtphipsi.forums.forms import ForumForm, PostForm, ThreadForm
 from gtphipsi.forums.models import Forum, Post, Thread
 
@@ -225,7 +225,7 @@ def add_thread(request, slug):
             thread.save()
             thread.subscribers.add(profile)
             thread.save()
-            body = _bb_code_escape(form.cleaned_data.get('post'))
+            body = bb_code_escape(form.cleaned_data.get('post'))
             post = Post.objects.create(thread=thread, user=profile, updated_by=profile, number=1, deleted=False, body=body)
             post.save()     # create and save the first post belonging to the new thread
             return HttpResponseRedirect(thread.get_absolute_url())
@@ -261,7 +261,7 @@ def edit_thread(request, forum, id, thread):
         form = ThreadForm(request.POST, instance=thread)
         if form.is_valid():
             form.save()
-            first_post.body = _bb_code_escape(form.cleaned_data.get('post'))
+            first_post.body = bb_code_escape(form.cleaned_data.get('post'))
             first_post.updated_by = profile
             first_post.save()   # update and save the thread's first post
             return HttpResponseRedirect(thread.get_absolute_url())
@@ -269,7 +269,7 @@ def edit_thread(request, forum, id, thread):
         if 'delete' in request.GET and request.GET.get('delete') == 'true':
             thread.delete()
             return HttpResponseRedirect(forum.get_absolute_url())
-        form = ThreadForm(instance=thread, initial={'post': _bb_code_unescape(first_post.body)})
+        form = ThreadForm(instance=thread, initial={'post': bb_code_unescape(first_post.body)})
     return render(request, 'forums/add_thread.html',
                   {'form': form, 'forum': forum, 'thread': thread, 'create': False},
                   context_instance=RequestContext(request))
@@ -309,7 +309,7 @@ def add_post(request, forum, id, thread):
             post.number = Post.objects.filter(thread=thread).count() + 1
             if quote is not None:
                 post.quote = quote
-            post.body = _bb_code_escape(post.body)
+            post.body = bb_code_escape(post.body)
             post.save()
             thread.updated = datetime.now()
             thread.save()   # set the thread's updated time to now, since the thread has a new post
@@ -346,11 +346,11 @@ def edit_post(request, id):
     if post.user != profile and profile not in post.thread.forum.moderators.all() and not profile.is_admin():
         return HttpResponseRedirect(reverse('forbidden'))
     if request.method == 'POST':
-        post.body = _bb_code_unescape(post.body)
+        post.body = bb_code_unescape(post.body)
         form = PostForm(request.POST, instance=post)
         if form.is_valid():
             post = form.save(commit=False)
-            post.body = _bb_code_escape(post.body)
+            post.body = bb_code_escape(post.body)
             post.updated_by = profile
             post.save()
             return HttpResponseRedirect(post.get_absolute_url())
@@ -360,55 +360,8 @@ def edit_post(request, id):
             post.updated_by = profile
             post.save()
             return HttpResponseRedirect(post.thread.get_absolute_url())
-        post.body = _bb_code_unescape(post.body)
+        post.body = bb_code_unescape(post.body)
         form = PostForm(instance=post)
     return render(request, 'forums/add_post.html',
                   {'form': form, 'forum': post.thread.forum, 'thread': post.thread, 'quote': post.quote, 'create': False, 'post': post},
                   context_instance=RequestContext(request))
-
-
-
-
-
-
-## ============================================= ##
-##                                               ##
-##               Private Functions               ##
-##                                               ##
-## ============================================= ##
-
-
-def _bb_code_escape(text):
-    r"""Return an escaped version of the provided text, with BB markup converted to HTML.
-
-    The text '<b>bold</b> & [B]bold[/B] [I]italic[/I] [U]underline[/U] \n [URL="/"]link[/URL]'
-    becomes  '&lt;b&gt;bold&lt;/b&gt; &amp; <b>bold</b> <i>italic</i> <u>underline</u> <br /> <a href="/">link</a>'.
-
-    Posts are rendered as-is (i.e., without HTML escaping) in the 'view_thread.html' template, so user input must be
-    escaped before being stored in the database and rendered in the browser. Any HTML tags in the input will be
-    converted to a safe representation (replacing '<', '>', and '&' with the HTML literals '&lt;', '&gt;', and '&amp;').
-    Then any BB markup in the input ('[B]...[/B]', '[URL="..."]...[/URL]', etc.) is converted to HTML.
-
-    """
-    return text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;') \
-            .replace('[B]', '<b>').replace('[/B]', '</b>').replace('[I]', '<i>').replace('[/I]', '</i>') \
-            .replace('[U]', '<u>').replace('[/U]', '</u>').replace('\n', '<br />') \
-            .replace('[URL=\"', '<a href=\"').replace('\"]', '\">').replace('[/URL]', '</a>')
-
-
-def _bb_code_unescape(text):
-    r"""Return an unescaped version of the provided text, with HTML converted to BB markup.
-
-    The text '&lt;b&gt;bold&lt;/b&gt; &amp; <b>bold</b> <i>italic</i> <u>underline</u> <br /> <a href="/">link</a>'
-    becomes  '<b>bold</b> & [B]bold[/B] [I]italic[/I] [U]underline[/U] \n [URL="/"]link[/URL]'.
-
-    When users edit posts, they expect to see the BB markup they originally wrote and not the escaped text returned by
-    _bb_code_escape(). Additionally, if previously-escaped text is re-escaped, the escaped HTML tags will be removed
-    and the post will not be properly formatted in the browser. This function avoids these issues by restoring escaped
-    text to its original (unescaped) form.
-
-    """
-    return text.replace('<b>', '[B]').replace('</b>', '[/B]').replace('<i>', '[I]').replace('</i>', '[/I]') \
-            .replace('<u>', '[U]').replace('</u>', '[/U]').replace('<br />', '\n') \
-            .replace('<a href=\"', '[URL=\"').replace('\">', '\"]').replace('</a>', '[/URL]') \
-            .replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>')

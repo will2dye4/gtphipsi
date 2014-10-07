@@ -42,7 +42,7 @@ from django.template import RequestContext
 from gtphipsi.brothers.models import UserProfile, STATUS_BITS
 from gtphipsi.chapter.forms import InformationForm
 from gtphipsi.chapter.models import InformationCard
-from gtphipsi.common import log_page_view, REFERRER
+from gtphipsi.common import get_rush_or_404, log_page_view, REFERRER
 from gtphipsi.messages import get_message
 from gtphipsi.rush.forms import PledgeForm, PotentialForm, RushEventForm, RushForm
 from gtphipsi.rush.models import Potential, Rush, RushEvent
@@ -144,7 +144,7 @@ def show(request, name=None):
         if rush is None:
             return HttpResponseRedirect(reverse('rush_list'))
     else:
-        rush = _get_rush_or_404(name)  # look up by unique name
+        rush = get_rush_or_404(name)  # look up by unique name
     num_pledges = Potential.objects.filter(rush=rush, pledged=True).count()
     num_potentials = Potential.objects.filter(rush=rush, pledged=False).count()
     return render(request, 'rush/show.html', {'rush': rush, 'pledges': num_pledges, 'potentials': num_potentials},
@@ -178,7 +178,7 @@ def edit(request, name):
 
     """
     log_page_view(request, 'Edit Rush')
-    rush = _get_rush_or_404(name)
+    rush = get_rush_or_404(name)
     if request.method == 'POST':
         form = RushForm(request.POST, instance=rush)
         if form.is_valid():
@@ -208,7 +208,7 @@ def add_event(request, name):
 
     """
     log_page_view(request, 'Add Rush Event')
-    rush = _get_rush_or_404(name)
+    rush = get_rush_or_404(name)
     if request.method == 'POST':
         form = RushEventForm(request.POST)
         if form.is_valid():
@@ -283,7 +283,7 @@ def potentials(request, name=None):
 
     """
     log_page_view(request, 'Potentials')
-    rush = _get_rush_or_404(name)
+    rush = get_rush_or_404(name)
     if 'all' in request.GET and request.GET.get('all') == 'true':
         hidden = 0
     else:
@@ -319,7 +319,7 @@ def add_potential(request, name=None):
 
     """
     log_page_view(request, 'Add Potential')
-    rush = _get_rush_or_404(name)
+    rush = get_rush_or_404(name)
     if request.method == 'POST':
         form = PotentialForm(request.POST)
         if form.is_valid():
@@ -396,7 +396,7 @@ def update_potentials(request, name=None):
         else:   # action == 'delete'
             potentials.delete()
             log.info('%s (%s) deleted %d potentials', request.user.username, request.user.get_full_name(), count)
-    rush = _get_rush_or_404(name)
+    rush = get_rush_or_404(name)
     redirect = reverse('all_potentials') if rush is None else reverse('potentials', kwargs={'name': name})
     return HttpResponseRedirect(redirect)
 
@@ -411,7 +411,7 @@ def pledges(request, name=None):
 
     """
     log_page_view(request, 'Pledges')
-    rush = _get_rush_or_404(name)
+    rush = get_rush_or_404(name)
     if rush is not None or ('all' in request.GET and request.GET.get('all') == 'true'):
         hidden = 0
     else:
@@ -447,7 +447,7 @@ def add_pledge(request, name=None):
 
     """
     log_page_view(request, 'Add Pledge')
-    rush = _get_rush_or_404(name)
+    rush = get_rush_or_404(name)
     if request.method == 'POST':
         form = PledgeForm(request.POST)
         if form.is_valid():
@@ -507,20 +507,6 @@ def edit_pledge(request, id):
 ##               Private Functions               ##
 ##                                               ##
 ## ============================================= ##
-
-
-def _get_rush_or_404(name):
-    """Return the rush instance having the provided unique name, if one exists.
-
-    Required parameters:
-        - name  =>  the unique name (abbreviation) of the rush to find (as a string)
-
-    If 'name' is None, the function returns None. Otherwise, the function looks for a rush with the provided unique
-    name, in the format returned by the get_unique_name() method of the Rush model class. If a matching rush is found,
-    it is returned; if not, Http404 is raised.
-
-    """
-    return None if name is None else get_object_or_404(Rush, season=name[0], start_date__year=int(name[1:]))
 
 
 def _send_info_card_emails(card):
