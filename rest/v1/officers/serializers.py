@@ -8,7 +8,7 @@ from gtphipsi.rest.v1.serializers import FormattedDates, HrefModelSerializer
 
 class OfficerSerializer(HrefModelSerializer):
     brother = SerializerMethodField('get_brother')
-    history = SerializerMethodField('get_history')
+    history_href = SerializerMethodField('get_history_href')
     title = CharField(source='get_office_display', read_only=True)
     updated = FormattedDates.new_date_field(required=False)
     view_name = 'officer_details'
@@ -16,11 +16,11 @@ class OfficerSerializer(HrefModelSerializer):
     def get_brother(self, officer):
         return NestedBrotherSerializer(officer.brother.badge, request=self.request).data
 
-    def get_history(self, officer):
-        history = None
+    def get_history_href(self, officer):
+        history_href = None
         if OfficerHistory.objects.filter(office=officer.office).exists() and self.is_request_authenticated():
-            history = reverse('officer_history', kwargs={'office': officer.office}, request=self.request)
-        return history
+            history_href = reverse('officer_history', kwargs={'office': officer.office}, request=self.request)
+        return history_href
 
     def get_href_kwargs(self, officer):
         return {'office': officer.office}

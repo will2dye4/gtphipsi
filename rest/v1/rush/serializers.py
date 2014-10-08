@@ -13,7 +13,7 @@ class InformationCardSerializer(HrefModelSerializer):
     year = CharField(source='get_year_display')
     interests = CharField(max_length=InformationCard.MAX_INTERESTS_LENGTH, required=False)
     relatives = CharField(max_length=InformationCard.MAX_RELATIVES_LENGTH, required=False)
-    created = FormattedDates.new_date_time_field()
+    created = FormattedDates.new_date_time_field(required=False)
     view_name = 'infocard_details'
 
     class Meta:

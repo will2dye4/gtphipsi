@@ -102,8 +102,8 @@ class RequestAwareRetrieveAPIView(RetrieveAPIView):
 
 
 def parse_date(date_string):
-    return datetime.strptime(date_string, API_DATE_INPUT_FORMAT).date()
+    return datetime.strptime(date_string, API_DATE_INPUT_FORMAT).date() if date_string is not None else None
 
 
 def parse_time(time_string):
-    return datetime.strptime(time_string, API_TIME_INPUT_FORMAT).time()
+    return datetime.strptime(time_string, API_TIME_INPUT_FORMAT).time() if time_string is not None else None

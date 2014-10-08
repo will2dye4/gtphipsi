@@ -4,7 +4,7 @@ from gtphipsi.rest.v1.rush import views
 
 
 urlpatterns = patterns('gtphipsi.rest.v1.rush.views',
-    url(r'^$', views.RushList.as_view(), name='rush_list'),
+    url(r'^$', views.RushList.as_view(), name='v1_rush_list'),
     url(r'^current/$', views.CurrentRushDetails.as_view(), name='current_rush_details'),
     url(r'^(?P<name>[FSU]\d{4})/$', views.RushDetails.as_view(), name='rush_details'),
     url(r'^(?P<name>[FSU]\d{4})/events/$', views.RushEventList.as_view(), name='rush_event_list'),
